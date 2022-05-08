@@ -142,8 +142,6 @@ export class Member extends BaseEntity {
         if(authorization === undefined){
             throw Message.UNAUTHORIZED;
         }
-
-        this.dataMigration(authorization);
     }
 
     dataMigration(object): void {

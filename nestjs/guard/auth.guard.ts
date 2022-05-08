@@ -38,6 +38,8 @@ export class AuthGuard implements CanActivate {
         member.tokenInfo = memberInfo;
         delete memberInfo.member;
 
+        await member.decodeToken();
+
         req.body.memberInfo = member;
 
         return true;
