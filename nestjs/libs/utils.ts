@@ -1,34 +1,68 @@
-const textReplace = async (data, key, from, to): Promise<void> => {
-    if(data[key] === undefined || data[key] === null) return;
+import {BaseEntity, Repository} from "typeorm";
+import {AST} from "eslint";
+import Token = AST.Token;
+import {TokenRepository} from "../src/member/token.repository";
 
-    if((data[key].constructor === Array && data[key].length !== 0) || data[key].constructor === Object){
-        await dataSortForTextReplace(data[key], from, to);
-    }else if(data[key].constructor === String){
+const textReplace = (data, key, from, to): void => {
+    if (data[key] === undefined || data[key] === null) return;
+
+    if ((data[key].constructor === Array && data[key].length !== 0) || data[key].constructor === Object) {
+        dataSortForTextReplace(data[key], from, to);
+    } else if (data[key].constructor === String) {
         data[key] = data[key].toString().replace(from, to);
     }
 };
 
-const dataSortForTextReplace = async (data, from, to): Promise<void> => {
-    if(data === undefined) return;
+const dataSortForTextReplace = (data, from, to): void => {
+    if (data === undefined) return;
 
-    if(data.constructor === Array && data.length !== 0){
-        for(let i=0 ; i<data.length ; i++){
-            await textReplace(data, i, from, to);
+    if (data.constructor === Array && data.length !== 0) {
+        for (let i=0 ; i<data.length ; i++) {
+            textReplace(data, i, from, to);
         }
-    }else if(data.constructor === Object && Object.keys(data).length !== 0){
-        for(const k in data){
-            if(!data.hasOwnProperty(k)) continue;
-            await textReplace(data, k, from, to);
+    } else if (data.constructor === Object && Object.keys(data).length !== 0) {
+        for (const k in data) {
+            if (!data.hasOwnProperty(k)) continue;
+            textReplace(data, k, from, to);
         }
     }
 };
 
-export default {
-    activeQuestionMark: async (data): Promise<void> => {
-        await dataSortForTextReplace(data, /\？/g, '?');
-    },
+const ranStr = 'qwertyuiopasdfghjklzxcvbnm0123456789';
 
-    deActiveQuestionMark: async (data): Promise<void> => {
-        await dataSortForTextReplace(data, /\?/g, '？');
+export const activeQuestionMark = (data): void => {
+    dataSortForTextReplace(data, /\？/g, '?');
+}
+
+export const deActiveQuestionMark = (data): void => {
+    dataSortForTextReplace(data, /\?/g, '？');
+}
+
+export const createKey = async <T extends Repository<BaseEntity>> (repository: T, key: string, length: number) => {
+    length = length || 32;
+
+    let createComplete;
+    let ranKey = '';
+
+    while (!createComplete) {
+        for (let i=0 ; i<length ; i++) {
+            const ranNum = Math.floor(Math.random()*ranStr.length);
+            const s = ranStr[ranNum];
+
+            ranKey += s;
+        }
+
+        const result = await repository.findOne({
+            where: {
+                [key]: ranKey
+            }
+        });
+
+        if(!result) createComplete = true;
     }
-};
+
+    return ranKey;
+}
+
+
+

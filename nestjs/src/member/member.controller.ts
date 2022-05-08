@@ -14,8 +14,7 @@ import {AuthGuard} from "guard/auth.guard";
 export class MemberController {
     constructor(
         private readonly memberService: MemberService,
-    ) {
-    }
+    ) {}
 
     @Post('/auth')
     @UseGuards(AuthGuard)
@@ -37,10 +36,9 @@ export class MemberController {
         const member: Member = await this.memberService.login(loginMemberDto, req.headers);
 
         return {
-            token: member.token
+            tokenCode: member.tokenInfo.code
         };
     }
-
 
     @Post('/signUp')
     async signUp(
