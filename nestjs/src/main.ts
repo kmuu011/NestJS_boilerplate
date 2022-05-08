@@ -5,10 +5,8 @@ import {
     OutOfControlExceptionFilter
   } from 'filter/exception.filter';
 
-import Config from 'config/config';
+import {port} from 'config/config';
 import {ValidationPipe} from "@nestjs/common";
-
-const port = Config.port;
 
 const appOptions = {
     cors: true

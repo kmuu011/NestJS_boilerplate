@@ -1,18 +1,19 @@
 import {Member} from "./entities/member.entity";
 import {EntityRepository, Repository} from "typeorm";
 
-const memberSelectKeys: any = ["idx", "id", "nickname", "email", "admin", "profile_img_key", "auth_type", "ip", "user_agent", "token", "created_at"];
-const memberUpdateKeys: string[] = ["nickname", "email", "profile_img_key", "ip", "user_agent", "token", "password"];
+const memberSelectKeys: any = ["idx", "id", "nickname", "email", "admin", "profile_img_key", "auth_type", "ip", "user_agent", "created_at"];
+const memberUpdateKeys: string[] = ["nickname", "email", "profile_img_key", "ip", "user_agent", "password"];
 
 @EntityRepository(Member)
 export class MemberRepository extends Repository<Member> {
 
     async select(member: Member): Promise<Member> {
-        const { idx } = member;
+        const {idx} = member;
 
         return await this.findOne({
             select: memberSelectKeys,
-            where: { idx }
+            relations: ["tokenInfo"],
+            where: {idx}
         });
     }
 
@@ -21,6 +22,7 @@ export class MemberRepository extends Repository<Member> {
 
         return await this.findOne({
             select: memberSelectKeys,
+            relations: ["tokenInfo"],
             where: {id, password}
         });
     }
@@ -39,8 +41,8 @@ export class MemberRepository extends Repository<Member> {
     async modify(member: Member) {
         const obj = {};
 
-        for(const key of memberUpdateKeys){
-            if(member[key] === undefined) continue;
+        for (const key of memberUpdateKeys) {
+            if (member[key] === undefined) continue;
             obj[key] = member[key];
         }
 

@@ -6,6 +6,9 @@ import {InjectRepository} from "@nestjs/typeorm";
 import {Message} from "libs/message";
 import {DuplicateCheckMemberDto} from "./dto/duplicate-check-member.dto";
 import {LoginMemberDto} from "./dto/login-member.dto";
+import {TokenRepository} from "./token.repository";
+import * as utils from "libs/utils";
+import {Token} from "./entities/token.entity";
 
 const duplicateCheckKeys = ['id', 'nickname', 'email'];
 
@@ -13,8 +16,8 @@ const duplicateCheckKeys = ['id', 'nickname', 'email'];
 export class MemberService {
     constructor(
         @InjectRepository(MemberRepository) private memberRepository: MemberRepository,
-    ) {
-    }
+        @InjectRepository(TokenRepository) private tokenRepository: TokenRepository,
+    ) {}
 
     async auth(headers) {
         const member: Member = new Member();
@@ -46,10 +49,13 @@ export class MemberService {
 
         member.dataMigration({
             ...loginResult,
-            ...{ip, user_agent, token}
+            ...{ip, user_agent}
         });
 
-        member.createToken();
+        const newToken: string = member.createToken();
+        const code: string = await utils.createKey<TokenRepository>(this.tokenRepository, 'code', 40);
+
+        member.tokenInfo = await this.tokenRepository.saveToken(member, newToken, code);
 
         await this.memberRepository.modify(member);
 

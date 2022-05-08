@@ -1,12 +1,12 @@
-import {IsBoolean, IsEmail, IsNumber, IsString, Length, NotContains} from "class-validator";
-import config from "config/config";
-import cipher from "libs/cipher";
+import {IsBoolean, IsDateString, IsEmail, IsNumber, IsString, Length, NotContains} from "class-validator";
+import {member} from "config/config";
 import {Message} from "libs/message";
+import {Token} from "./token.entity";
 
 import {
     BaseEntity,
     Column,
-    Entity,
+    Entity, OneToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -14,8 +14,8 @@ const jwt = require('jsonwebtoken');
 
 const crypto = require('crypto');
 
-const expireTime = config.member.expireTime;
-const jwtSecret = config.member.jwtSecret;
+const expireTime = member.expireTime;
+const jwtSecret = member.jwtSecret;
 
 @Entity({ name: 'member' })
 export class Member extends BaseEntity {
@@ -68,13 +68,13 @@ export class Member extends BaseEntity {
     @Column({ type: 'tinyint', default: 0, unsigned: true,comment: '관리자 유무' })
     admin: number = undefined;
 
-    @IsNumber()
-    @Column({ type: 'timestamp', default: "CURRENT_TIMESTAMP()", comment: '회원가입 일자' })
-    created_at: number = undefined;
-    
-    @IsNumber()
-    @Column({ type: 'timestamp', default: "CURRENT_TIMESTAMP()", comment: '수정 일자' })
-    updated_at: number = undefined;
+    @IsDateString()
+    @Column({ type: 'timestamp',comment: '회원가입 일자' })
+    created_at: string = undefined;
+
+    @IsDateString()
+    @Column({ type: 'timestamp', comment: '수정 일자' })
+    updated_at: string = undefined;
 
     @IsNumber()
     @Column({ type: 'tinyint', default: 0, comment: '가입 유형' })
@@ -92,18 +92,17 @@ export class Member extends BaseEntity {
     @Column({ type: 'varchar', length: 400, nullable: true, comment: '접속 환경' })
     user_agent: string = undefined;
 
-    @IsString()
-    @Column({ type: 'varchar', length: 1000, nullable: true, comment: '최근 사용 토큰' })
-    token: string = undefined;
-
     @IsBoolean()
     keep_check: boolean = undefined;
+
+    @OneToOne(() => Token, token => token.member)
+    tokenInfo: Token;
 
     passwordEncrypt(): void{
         if(this.password_encrypted !== true) {
             this.password = crypto
-                .createHash(config.member.hashAlgorithm)
-                .update(this.password + config.member.salt)
+                .createHash(member.hashAlgorithm)
+                .update(this.password + member.salt)
                 .digest('hex');
         }
     }
@@ -121,17 +120,15 @@ export class Member extends BaseEntity {
         }
     }
 
-    createToken(): void {
+    createToken(): string {
         const payloadObj = this.getPayload();
 
-        const token = jwt.sign(payloadObj, jwtSecret, {expiresIn: expireTime});
-
-        this.token = cipher.encrypt(token);
+        return jwt.sign(payloadObj, jwtSecret, {expiresIn: expireTime});
     }
 
     async decodeToken(): Promise<void> {
         const authorization = await new Promise(async (resolve) => {
-            const token = cipher.decrypt(this.token);
+            const token = this.tokenInfo.token;
             if(token === undefined) resolve(undefined);
 
             jwt.verify(token, jwtSecret, (err, decoded) => {
