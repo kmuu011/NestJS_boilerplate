@@ -8,7 +8,6 @@ import {
     Column,
     Entity,
     PrimaryGeneratedColumn,
-    Unique,
 } from 'typeorm';
 
 const jwt = require('jsonwebtoken');
@@ -94,7 +93,7 @@ export class Member extends BaseEntity {
     user_agent: string = undefined;
 
     @IsString()
-    @Column({ type: 'varchar', length: 300, nullable: true, comment: '최근 사용 토큰' })
+    @Column({ type: 'varchar', length: 1000, nullable: true, comment: '최근 사용 토큰' })
     token: string = undefined;
 
     @IsBoolean()
@@ -140,8 +139,8 @@ export class Member extends BaseEntity {
                     resolve(undefined);
                 }
                 resolve(decoded);
-            });
-        });
+            })
+        })
 
         if(authorization === undefined){
             throw Message.UNAUTHORIZED;

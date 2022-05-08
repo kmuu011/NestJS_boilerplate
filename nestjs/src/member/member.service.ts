@@ -1,9 +1,11 @@
 import {Injectable} from '@nestjs/common';
-import {Request} from "express";
 import {MemberRepository} from "./member.repository";
 import {Member} from "./entities/member.entity";
 import {CreateMemberDto} from "./dto/create-member-dto";
 import {InjectRepository} from "@nestjs/typeorm";
+import {Message} from "libs/message";
+import {DuplicateCheckMemberDto} from "./dto/duplicate-check-member.dto";
+import {LoginMemberDto} from "./dto/login-member.dto";
 
 const duplicateCheckKeys = ['id', 'nickname', 'email'];
 
@@ -11,13 +13,75 @@ const duplicateCheckKeys = ['id', 'nickname', 'email'];
 export class MemberService {
     constructor(
         @InjectRepository(MemberRepository) private memberRepository: MemberRepository,
-    ) {}
+    ) {
+    }
 
-    async signUp(createMemberDto: CreateMemberDto){
-        const result = await this.memberRepository.signUp(createMemberDto);
+    async auth(headers) {
+        const member: Member = new Member();
+        member.dataMigration({
+            token: headers["x-token"],
+            user_agent: headers["user_agent"],
+            ip: headers["ip"]
+        })
 
-        console.log(result);
+        await member.decodeToken();
+    }
 
+    async select(member) {
+        return this.memberRepository.select(member);
+    }
+
+    async login(loginMemberDto: LoginMemberDto, headers): Promise<Member> {
+        const member = new Member();
+        const {ip, "user-agent": user_agent, "x-token": token} = headers
+        member.dataMigration(loginMemberDto);
+
+        member.passwordEncrypt();
+
+        const loginResult: Member = await this.memberRepository.login(member);
+
+        if (!loginResult) {
+            throw Message.WRONG_ID_OR_PASSWORD;
+        }
+
+        member.dataMigration({
+            ...loginResult,
+            ...{ip, user_agent, token}
+        });
+
+        member.createToken();
+
+        await this.memberRepository.modify(member);
+
+        return member;
+    };
+
+    async signUp(createMemberDto: CreateMemberDto): Promise<void> {
+        const member = new Member();
+        member.dataMigration(createMemberDto);
+
+        for (const key of duplicateCheckKeys) {
+            const resultDuplicate = await this.memberRepository.duplicateCheck(key, member[key]);
+
+            if (resultDuplicate) {
+                throw Message.ALREADY_EXIST(key);
+            }
+        }
+
+        member.passwordEncrypt();
+
+        const result: Member = await this.memberRepository.signUp(member);
+
+        if (!result) {
+            throw Message.SERVER_ERROR;
+        }
+    }
+
+    async duplicateCheck(duplicateCheckDto: DuplicateCheckMemberDto): Promise<boolean> {
+        const {type, value} = duplicateCheckDto;
+        const result = await this.memberRepository.duplicateCheck(duplicateCheckKeys[type], value);
+
+        return !result;
     }
 
 
