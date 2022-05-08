@@ -37,16 +37,14 @@ export class MemberRepository extends Repository<Member> {
     }
 
     async modify(member: Member) {
-        const originalMember = await this.select(member);
-
-        console.log(member)
+        const obj = {};
 
         for(const key of memberUpdateKeys){
             if(member[key] === undefined) continue;
-            originalMember[key] = member[key]
+            obj[key] = member[key];
         }
 
-        return await this.save(originalMember);
+        return await this.update(member.idx, obj);
     }
 
     async duplicateCheck(type, value) {
