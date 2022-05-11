@@ -1,5 +1,5 @@
-import {Body, Controller, Get, Post, Req, UseGuards} from '@nestjs/common';
-import {Request} from "express";
+import {Body, Controller, Get, Post, Req, Res, UseGuards} from '@nestjs/common';
+import {Request, Response} from "express";
 
 import {MemberService} from './member.service';
 
@@ -31,13 +31,14 @@ export class MemberController {
     @Post('/login')
     async login(
         @Req() req: Request,
+        @Res() res: Response,
         @Body() loginMemberDto: LoginMemberDto
     ) {
         const member: Member = await this.memberService.login(loginMemberDto, req.headers);
 
-        return {
+        res.json({
             tokenCode: member.tokenInfo.code
-        };
+        });
     }
 
     @Post('/signUp')

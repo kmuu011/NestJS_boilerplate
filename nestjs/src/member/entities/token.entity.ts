@@ -3,7 +3,7 @@ import {IsNumber, IsString} from "class-validator";
 import {
     BaseEntity,
     Column,
-    Entity, JoinColumn, ManyToOne, OneToOne,
+    Entity, JoinColumn, OneToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm';
 import {Member} from "./member.entity";

@@ -1,5 +1,5 @@
 import {IsBoolean, IsDateString, IsEmail, IsNumber, IsString, Length, NotContains} from "class-validator";
-import {member} from "config/config";
+import {auth} from "config/config";
 import {Message} from "libs/message";
 import {Token} from "./token.entity";
 
@@ -9,13 +9,14 @@ import {
     Entity, OneToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm';
+import {JwtPayload} from "jsonwebtoken";
 
 const jwt = require('jsonwebtoken');
 
 const crypto = require('crypto');
 
-const expireTime = member.expireTime;
-const jwtSecret = member.jwtSecret;
+const expireTime = auth.expireTime;
+const jwtSecret = auth.jwtSecret;
 
 @Entity({ name: 'member' })
 export class Member extends BaseEntity {
@@ -101,8 +102,8 @@ export class Member extends BaseEntity {
     passwordEncrypt(): void{
         if(this.password_encrypted !== true) {
             this.password = crypto
-                .createHash(member.hashAlgorithm)
-                .update(this.password + member.salt)
+                .createHash(auth.hashAlgorithm)
+                .update(this.password + auth.salt)
                 .digest('hex');
         }
     }
@@ -126,8 +127,8 @@ export class Member extends BaseEntity {
         return jwt.sign(payloadObj, jwtSecret, {expiresIn: expireTime});
     }
 
-    async decodeToken(): Promise<void> {
-        const authorization = await new Promise(async (resolve) => {
+    async decodeToken(): Promise<JwtPayload> {
+        const jwpPayload = await new Promise(async (resolve) => {
             const token = this.tokenInfo.token;
             if(token === undefined) resolve(undefined);
 
@@ -139,11 +140,11 @@ export class Member extends BaseEntity {
             })
         })
 
-        if(authorization === undefined){
+        if(jwpPayload === undefined){
             throw Message.UNAUTHORIZED;
         }
 
-        this.dataMigration(authorization);
+        return jwpPayload;
     }
 
     dataMigration(object): void {
