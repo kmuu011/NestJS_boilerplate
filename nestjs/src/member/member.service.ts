@@ -22,7 +22,6 @@ export class MemberService {
     async auth(headers) {
         const member: Member = new Member();
         member.dataMigration({
-            token: headers["x-token"],
             user_agent: headers["user_agent"],
             ip: headers["ip"]
         })
@@ -36,7 +35,7 @@ export class MemberService {
 
     async login(loginMemberDto: LoginMemberDto, headers): Promise<Member> {
         const member = new Member();
-        const {ip, "user-agent": user_agent, "x-token": token} = headers
+        const {ip, "user-agent": user_agent, "token-code": token} = headers
         member.dataMigration(loginMemberDto);
 
         member.passwordEncrypt();
