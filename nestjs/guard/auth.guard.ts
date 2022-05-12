@@ -58,7 +58,7 @@ export class AuthGuard implements CanActivate {
             res.header('new-token-code', code);
         }
 
-        req.body.memberInfo = member;
+        res.locals.memberInfo = member;
 
         return true;
     }
