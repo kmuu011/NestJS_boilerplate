@@ -1,4 +1,18 @@
-import {PartialType} from "@nestjs/mapped-types";
-import {Member} from "../entities/member.entity";
+import {IsEmail, IsNotEmpty, IsOptional, IsString} from "class-validator";
 
-export class UpdateMemberDto extends PartialType(Member) {}
+export class UpdateMemberDto {
+    @IsNotEmpty()
+    @IsString()
+    readonly nickname: string;
+
+    @IsNotEmpty()
+    @IsString()
+    @IsEmail()
+    readonly email: string;
+
+    @IsNotEmpty()
+    @IsString()
+    @IsOptional()
+    readonly password: string;
+
+}

@@ -8,7 +8,6 @@ import {DuplicateCheckMemberDto} from "./dto/duplicate-check-member.dto";
 import {LoginMemberDto} from "./dto/login-member.dto";
 import {TokenRepository} from "./token.repository";
 import * as utils from "libs/utils";
-import {Token} from "./entities/token.entity";
 
 const duplicateCheckKeys = ['id', 'nickname', 'email'];
 

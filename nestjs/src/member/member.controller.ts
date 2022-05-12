@@ -1,5 +1,15 @@
-import {Body, Controller, Get, Post, Req, Res, UseGuards} from '@nestjs/common';
-import {Request, Response} from "express";
+import {
+    Body,
+    Controller,
+    Get,
+    Patch,
+    Post,
+    Req,
+    UploadedFile, UploadedFiles,
+    UseGuards,
+    UseInterceptors
+} from '@nestjs/common';
+import {Request} from "express";
 
 import {MemberService} from './member.service';
 
@@ -9,6 +19,12 @@ import {DuplicateCheckMemberDto} from "./dto/duplicate-check-member.dto";
 import {Member} from "./entities/member.entity"
 
 import {AuthGuard} from "guard/auth.guard";
+import {UpdateMemberDto} from "./dto/update-member.dto";
+import {FileInterceptor, FilesInterceptor} from "@nestjs/platform-express";
+
+import {multerOptions} from "config/config";
+
+import * as validator from "libs/validator";
 
 @Controller('/member')
 export class MemberController {
@@ -31,14 +47,13 @@ export class MemberController {
     @Post('/login')
     async login(
         @Req() req: Request,
-        @Res() res: Response,
         @Body() loginMemberDto: LoginMemberDto
     ) {
         const member: Member = await this.memberService.login(loginMemberDto, req.headers);
 
-        res.json({
+        return {
             tokenCode: member.tokenInfo.code
-        });
+        }
     }
 
     @Post('/signUp')
@@ -50,6 +65,37 @@ export class MemberController {
         return {
             result: true
         };
+    }
+
+    @Patch('/')
+    @UseGuards(AuthGuard)
+    async patch(
+        @Req() req: Request,
+        @Body() updateMemberDto: UpdateMemberDto
+    ){
+
+        const memberInfo = req.res.locals.memberInfo;
+        console.log(memberInfo instanceof Member)
+
+        return {
+            result: true
+        }
+    }
+
+    @Patch('img')
+    @UseGuards(AuthGuard)
+    @UseInterceptors(FileInterceptor('file', multerOptions))
+    async img(
+        @UploadedFile() file
+    ){
+
+        file = (validator.file([file], 10, validator.type.img))[0];
+
+        console.log(file);
+
+        return {
+            result: true
+        }
     }
 
 
