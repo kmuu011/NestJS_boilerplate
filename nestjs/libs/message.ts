@@ -6,7 +6,7 @@ const keyDescription = {
     email: '이메일'
 }
 
-export class Message extends HttpException{
+export class Message extends HttpException {
     static INVALID_PARAM(name) {
         return new HttpException({
             error: `invalid_parameter_${name}`,
@@ -35,9 +35,9 @@ export class Message extends HttpException{
         }, HttpStatus.NOT_FOUND);
     }
 
-    static DETAIL_ERROR(message) {
+    static CUSTOM_ERROR(message) {
         return new HttpException({
-            error: `already_exist_${message}`,
+            error: `custom_error`,
             message: message
         }, HttpStatus.BAD_REQUEST);
     }
@@ -64,8 +64,6 @@ export class Message extends HttpException{
     }
 
 
-
-
     static get CONNECTED_SNS() {
         return new HttpException({
             error: `connected_sns`,
@@ -73,6 +71,7 @@ export class Message extends HttpException{
             '연결한 SNS로그인으로 시도해주세요.`
         }, HttpStatus.BAD_REQUEST);
     }
+
     static get FORBIDDEN() {
         return new HttpException({
             error: `forbidden`,
@@ -98,6 +97,13 @@ export class Message extends HttpException{
         return new HttpException({
             error: `can_not_action_default`,
             message: `기본값은 삭제 또는 변경할 수 없습니다.`
+        }, HttpStatus.BAD_REQUEST);
+    }
+
+    static FILE_TOO_LARGE(maxSize) {
+        return new HttpException({
+            error: `file_too_large`,
+            message: `${maxSize}mb 이하만 업로드할 수 있습니다.`
         }, HttpStatus.BAD_REQUEST);
     }
 

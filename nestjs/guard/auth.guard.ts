@@ -1,8 +1,8 @@
 import {Injectable, CanActivate, ExecutionContext} from '@nestjs/common';
-import {Member} from "src/member/entities/member.entity";
+import {Member} from "src/modules/member/entities/member.entity";
 import {InjectRepository} from "@nestjs/typeorm";
 import {Message} from "../libs/message";
-import {TokenRepository} from "../src/member/token.repository";
+import {TokenRepository} from "../src/modules/member/token.repository";
 import * as utils from "../libs/utils";
 import {Request, Response} from "express";
 import { auth } from "config/config";
@@ -58,7 +58,7 @@ export class AuthGuard implements CanActivate {
             res.header('new-token-code', code);
         }
 
-        req.body.memberInfo = member;
+        res.locals.memberInfo = member;
 
         return true;
     }
