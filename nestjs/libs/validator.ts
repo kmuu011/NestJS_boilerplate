@@ -1,31 +1,15 @@
 import {Message} from "./message";
-import * as Buffer from "buffer";
+import {FileType, ValidatorType, ValidatorTypeObj} from "src/type/type";
 
-interface Type {
-    reg: RegExp,
-    msg: string
-}
-
-interface TypeObj {
-    [key: string]: Type
-}
-
-interface File {
-    fileType: string
-    fileName: string
-    fileBuffer: Buffer
-    fileSize: number
-}
-
-export const type: TypeObj = {
+export const type: ValidatorTypeObj = {
     img : {
         reg: /^jpg$|^jpeg$|^png$/,
         msg: 'jpg, jpeg, png 형식의 파일만 업로드 할 수 있습니다.'
     },
 }
 
-export const file = (files: any[], maxSize: number, type: Type ): File[] => {
-    const fileList: File[] = [];
+export const file = (files: any[], maxSize: number, type: ValidatorType): FileType[] => {
+    const fileList: FileType[] = [];
 
     if(files === undefined){
         throw Message.INVALID_PARAM('file');

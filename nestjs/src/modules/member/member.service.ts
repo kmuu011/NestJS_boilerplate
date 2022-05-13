@@ -7,7 +7,10 @@ import {Message} from "libs/message";
 import {DuplicateCheckMemberDto} from "./dto/duplicate-check-member.dto";
 import {LoginMemberDto} from "./dto/login-member.dto";
 import {TokenRepository} from "./token.repository";
-import * as utils from "libs/utils";
+import {createKey} from "libs/utils";
+
+import {writeFileSync} from "fs";
+import {FileType} from "../../type/type";
 
 const duplicateCheckKeys = ['id', 'nickname', 'email'];
 
@@ -51,7 +54,7 @@ export class MemberService {
         });
 
         const newToken: string = member.createToken();
-        const code: string = await utils.createKey<TokenRepository>(this.tokenRepository, 'code', 40);
+        const code: string = await createKey<TokenRepository>(this.tokenRepository, 'code', 40);
 
         member.tokenInfo = await this.tokenRepository.saveToken(member, newToken, code);
 
@@ -86,6 +89,14 @@ export class MemberService {
         const result = await this.memberRepository.duplicateCheck(duplicateCheckKeys[type], value);
 
         return !result;
+    }
+
+    async imgUpdate(file: FileType) {
+        const profileImgKey = 'imgs/' + await createKey(this.memberRepository, 'profile_img_key', 16) + '_' + Date.now() + '.' + file.fileType;
+
+        console.log(profileImgKey)
+
+        writeFileSync(global.filePath + profileImgKey, file.fileBuffer);
     }
 
 

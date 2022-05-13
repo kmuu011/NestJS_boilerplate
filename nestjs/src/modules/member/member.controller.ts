@@ -4,12 +4,12 @@ import {
     Get,
     Patch,
     Post,
-    Req,
-    UploadedFile, UploadedFiles,
+    Req, Res,
+    UploadedFile,
     UseGuards,
     UseInterceptors
 } from '@nestjs/common';
-import {Request} from "express";
+import {Request, Response} from "express";
 
 import {MemberService} from './member.service';
 
@@ -20,11 +20,11 @@ import {Member} from "./entities/member.entity"
 
 import {AuthGuard} from "guard/auth.guard";
 import {UpdateMemberDto} from "./dto/update-member.dto";
-import {FileInterceptor, FilesInterceptor} from "@nestjs/platform-express";
+import {FileInterceptor} from "@nestjs/platform-express";
 
 import {multerOptions} from "config/config";
-
 import * as validator from "libs/validator";
+import {FileType} from "../../type/type";
 
 @Controller('/member')
 export class MemberController {
@@ -88,14 +88,23 @@ export class MemberController {
     async img(
         @UploadedFile() file
     ){
+        const arrangedFile: FileType = (validator.file([file], 10, validator.type.img))[0];
 
-        file = (validator.file([file], 10, validator.type.img))[0];
+        await this.memberService.imgUpdate(arrangedFile);
 
-        console.log(file);
 
         return {
             result: true
         }
+    }
+
+    
+    //업로드한 이미지 다운로드 테스트
+    @Get('img')
+    async getImg(
+        @Res() res:Response
+    ){
+        res.download(global.filePath + 'imgs/hvhx9n35gd32yugm_1652451176060.jpg', 'test.jpg');
     }
 
 

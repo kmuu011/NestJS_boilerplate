@@ -1,7 +1,7 @@
 import {BaseEntity, Repository} from "typeorm";
 import {AST} from "eslint";
 import Token = AST.Token;
-import {TokenRepository} from "../src/member/token.repository";
+import {TokenRepository} from "../src/modules/member/token.repository";
 
 const textReplace = (data, key, from, to): void => {
     if (data[key] === undefined || data[key] === null) return;

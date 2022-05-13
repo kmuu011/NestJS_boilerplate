@@ -8,6 +8,8 @@ import {
 import {port} from 'config/config';
 import {ValidationPipe} from "@nestjs/common";
 
+global.filePath = __dirname + '/files/';
+
 const appOptions = {
     cors: true
 };
