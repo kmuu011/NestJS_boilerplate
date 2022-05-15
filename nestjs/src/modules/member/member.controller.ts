@@ -25,6 +25,10 @@ import {FileInterceptor} from "@nestjs/platform-express";
 import {multerOptions} from "config/config";
 import * as validator from "libs/validator";
 import {FileType} from "../../type/type";
+import {Message} from "libs/message";
+
+const duplicateCheckKeys = ['id', 'nickname', 'email'];
+
 
 @Controller('/member')
 export class MemberController {
@@ -60,6 +64,14 @@ export class MemberController {
     async signUp(
         @Body() createMemberDto: CreateMemberDto
     ) {
+        for (const key of duplicateCheckKeys) {
+            const usable = await this.memberService.duplicateCheck(key, createMemberDto[key]);
+
+            if (!usable) {
+                throw Message.ALREADY_EXIST(key);
+            }
+        }
+
         await this.memberService.signUp(createMemberDto);
 
         return {
@@ -73,9 +85,22 @@ export class MemberController {
         @Req() req: Request,
         @Body() updateMemberDto: UpdateMemberDto
     ){
-
         const memberInfo = req.res.locals.memberInfo;
-        console.log(memberInfo instanceof Member)
+        for (const key of duplicateCheckKeys) {
+            if(key === 'id') continue;
+
+            const usable = await this.memberService.duplicateCheck(key, updateMemberDto[key]);
+
+            if (!usable && memberInfo[key] !== updateMemberDto[key]) {
+                throw Message.ALREADY_EXIST(key);
+            }
+        }
+
+        if(memberInfo.auth_type === 0 && updateMemberDto.originalPassword === undefined){
+            throw Message.INVALID_PARAM('originalPassword');
+        }
+
+        await this.memberService.updateMember(updateMemberDto, memberInfo);
 
         return {
             result: true
@@ -86,11 +111,15 @@ export class MemberController {
     @UseGuards(AuthGuard)
     @UseInterceptors(FileInterceptor('file', multerOptions))
     async img(
+        @Req() req: Request,
         @UploadedFile() file
     ){
+        const memberInfo = req.res.locals.memberInfo;
         const arrangedFile: FileType = (validator.file([file], 10, validator.type.img))[0];
 
         await this.memberService.imgUpdate(arrangedFile);
+
+
 
 
         return {
@@ -112,8 +141,10 @@ export class MemberController {
     async duplicateCheck(
         @Body() duplicateCheckDto: DuplicateCheckMemberDto
     ) {
+        const { type, value } = duplicateCheckDto;
+
         return {
-            result: await this.memberService.duplicateCheck(duplicateCheckDto)
+            usable: await this.memberService.duplicateCheck(duplicateCheckKeys[type], value)
         };
     }
 

@@ -4,15 +4,15 @@ import {Member} from "./entities/member.entity";
 import {CreateMemberDto} from "./dto/create-member-dto";
 import {InjectRepository} from "@nestjs/typeorm";
 import {Message} from "libs/message";
-import {DuplicateCheckMemberDto} from "./dto/duplicate-check-member.dto";
 import {LoginMemberDto} from "./dto/login-member.dto";
-import {TokenRepository} from "./token.repository";
+import {TokenRepository} from "./token/token.repository";
 import {createKey} from "libs/utils";
 
 import {writeFileSync} from "fs";
 import {FileType} from "../../type/type";
-
-const duplicateCheckKeys = ['id', 'nickname', 'email'];
+import {UpdateMemberDto} from "./dto/update-member.dto";
+import {encryptPassword} from "libs/member";
+import {filePath} from "../../../config/config";
 
 @Injectable()
 export class MemberService {
@@ -26,7 +26,7 @@ export class MemberService {
         member.dataMigration({
             user_agent: headers["user_agent"],
             ip: headers["ip"]
-        })
+        });
 
         await member.decodeToken();
     }
@@ -37,12 +37,12 @@ export class MemberService {
 
     async login(loginMemberDto: LoginMemberDto, headers): Promise<Member> {
         const member = new Member();
-        const {ip, "user-agent": user_agent, "token-code": token} = headers
+        const {ip, "user-agent": user_agent} = headers
         member.dataMigration(loginMemberDto);
 
         member.passwordEncrypt();
 
-        const loginResult: Member = await this.memberRepository.login(member);
+        const loginResult: Member = await this.memberRepository.select(member, 'id, password');
 
         if (!loginResult) {
             throw Message.WRONG_ID_OR_PASSWORD;
@@ -58,7 +58,7 @@ export class MemberService {
 
         member.tokenInfo = await this.tokenRepository.saveToken(member, newToken, code);
 
-        await this.memberRepository.modify(member);
+        await this.memberRepository.updateMember(member);
 
         return member;
     };
@@ -66,15 +66,6 @@ export class MemberService {
     async signUp(createMemberDto: CreateMemberDto): Promise<void> {
         const member = new Member();
         member.dataMigration(createMemberDto);
-
-        for (const key of duplicateCheckKeys) {
-            const resultDuplicate = await this.memberRepository.duplicateCheck(key, member[key]);
-
-            if (resultDuplicate) {
-                throw Message.ALREADY_EXIST(key);
-            }
-        }
-
         member.passwordEncrypt();
 
         const result: Member = await this.memberRepository.signUp(member);
@@ -84,17 +75,36 @@ export class MemberService {
         }
     }
 
-    async duplicateCheck(duplicateCheckDto: DuplicateCheckMemberDto): Promise<boolean> {
-        const {type, value} = duplicateCheckDto;
-        const result = await this.memberRepository.duplicateCheck(duplicateCheckKeys[type], value);
+    async duplicateCheck(key: string, value: string): Promise<boolean> {
+        return !(await this.memberRepository.duplicateCheck(key, value));
+    }
 
-        return !result;
+    async updateMember(updateMemberDto: UpdateMemberDto, member: Member): Promise<void> {
+        const memberInfo = await this.memberRepository.select(member, undefined,true);
+
+        if(memberInfo.auth_type === 0) {
+            updateMemberDto.originalPassword = encryptPassword(updateMemberDto.originalPassword);
+
+            if (updateMemberDto.originalPassword !== memberInfo.password) {
+                throw Message.CUSTOM_ERROR("기존 비밀번호가 틀립니다.")
+            }
+
+            if(updateMemberDto.password !== undefined){
+                updateMemberDto.password = encryptPassword(updateMemberDto.password);
+            }
+        }
+
+        memberInfo.dataMigration(updateMemberDto);
+
+        const updateResult = await this.memberRepository.updateMember(memberInfo);
+
+        if(updateResult.affected !== 1){
+            throw Message.SERVER_ERROR;
+        }
     }
 
     async imgUpdate(file: FileType) {
-        const profileImgKey = 'imgs/' + await createKey(this.memberRepository, 'profile_img_key', 16) + '_' + Date.now() + '.' + file.fileType;
-
-        console.log(profileImgKey)
+        const profileImgKey = filePath.profileImg + await createKey(this.memberRepository, 'profile_img_key', 16) + '_' + Date.now() + '.' + file.fileType;
 
         writeFileSync(global.filePath + profileImgKey, file.fileBuffer);
     }

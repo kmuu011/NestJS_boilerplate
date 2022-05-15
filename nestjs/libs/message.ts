@@ -3,35 +3,36 @@ import {HttpException, HttpStatus} from "@nestjs/common";
 const keyDescription = {
     id: '아이디',
     nickname: '닉네임',
-    email: '이메일'
+    email: '이메일',
+    originalPassword: '기존 비밀번호'
 }
 
 export class Message extends HttpException {
     static INVALID_PARAM(name) {
         return new HttpException({
             error: `invalid_parameter_${name}`,
-            message: `${name} 을(를) 입력해주세요.`
+            message: `${keyDescription[name]}을(를) 입력해주세요.`
         }, HttpStatus.BAD_REQUEST);
     }
 
     static WRONG_PARAM(name) {
         return new HttpException({
             error: `wrong_param_${name}`,
-            message: `${name} 이(가) 올바르지 않습니다.`
+            message: `${keyDescription[name]}이(가) 올바르지 않습니다.`
         }, HttpStatus.BAD_REQUEST);
     }
 
     static INCLUDE_BAN_KEYWORD(name) {
         return new HttpException({
             error: `include_ban_keyword_${name}`,
-            message: `${name} 에 사용할 수 없는 값이 포함되어있습니다.`
+            message: `${keyDescription[name]}에 사용할 수 없는 값이 포함되어있습니다.`
         }, HttpStatus.BAD_REQUEST);
     }
 
     static NOT_EXIST(name) {
         return new HttpException({
             error: `not_exist_${name}`,
-            message: `${name} 이(가) 존재하지 않습니다.`
+            message: `${keyDescription[name]}이(가) 존재하지 않습니다.`
         }, HttpStatus.NOT_FOUND);
     }
 

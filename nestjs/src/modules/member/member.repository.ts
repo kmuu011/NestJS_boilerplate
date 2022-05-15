@@ -7,13 +7,25 @@ const memberUpdateKeys: string[] = ["nickname", "email", "profile_img_key", "ip"
 @EntityRepository(Member)
 export class MemberRepository extends Repository<Member> {
 
-    async select(member: Member): Promise<Member> {
-        const {idx} = member;
+    async select(member: Member, selectKeys?: string, includePassword?: boolean): Promise<Member> {
+        if(selectKeys === undefined) selectKeys = "idx";
+        const selectKeysList = selectKeys.replace(/\s/g, '').split(',');
+        const where = {};
+
+        for(const k of selectKeysList){
+            where[k] = member[k];
+        }
+
+        const additionalKeys = [];
+
+        if(includePassword === true){
+            additionalKeys.push('password');
+        }
 
         return await this.findOne({
-            select: memberSelectKeys,
+            select: [...memberSelectKeys, ... additionalKeys],
             relations: ["tokenInfo"],
-            where: {idx}
+            where
         });
     }
 
@@ -38,8 +50,8 @@ export class MemberRepository extends Repository<Member> {
         });
     }
 
-    async modify(member: Member) {
-        const obj = {};
+    async updateMember(member: Member) {
+        const obj = {"updated_at": "now()"};
 
         for (const key of memberUpdateKeys) {
             if (member[key] === undefined) continue;
