@@ -114,13 +114,9 @@ export class MemberController {
         @Req() req: Request,
         @UploadedFile() file
     ){
-        const memberInfo = req.res.locals.memberInfo;
         const arrangedFile: FileType = (validator.file([file], 10, validator.type.img))[0];
 
-        await this.memberService.imgUpdate(arrangedFile);
-
-
-
+        await this.memberService.imgUpdate(arrangedFile, req.res.locals.memberInfo);
 
         return {
             result: true
@@ -133,7 +129,7 @@ export class MemberController {
     async getImg(
         @Res() res:Response
     ){
-        res.download(global.filePath + 'imgs/hvhx9n35gd32yugm_1652451176060.jpg', 'test.jpg');
+        res.download(global.filePath + 'profileImages/wk8d3nf4nnb0gvbf_1652623252615.jpg', 'test.jpg');
     }
 
 

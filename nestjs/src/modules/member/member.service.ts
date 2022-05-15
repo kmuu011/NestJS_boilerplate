@@ -9,10 +9,13 @@ import {TokenRepository} from "./token/token.repository";
 import {createKey} from "libs/utils";
 
 import {writeFileSync} from "fs";
+
+import * as fs from "fs";
+
 import {FileType} from "../../type/type";
 import {UpdateMemberDto} from "./dto/update-member.dto";
 import {encryptPassword} from "libs/member";
-import {filePath} from "../../../config/config";
+import {filePath} from "config/config";
 
 @Injectable()
 export class MemberService {
@@ -103,10 +106,23 @@ export class MemberService {
         }
     }
 
-    async imgUpdate(file: FileType) {
+    async imgUpdate(file: FileType, member: Member) {
+        const originalProfileImgKey = member.profile_img_key;
         const profileImgKey = filePath.profileImg + await createKey(this.memberRepository, 'profile_img_key', 16) + '_' + Date.now() + '.' + file.fileType;
 
+        member.dataMigration({profile_img_key: profileImgKey});
+
+        const updateResult = await this.memberRepository.updateMember(member);
+
+        if(updateResult.affected !== 1){
+            throw Message.SERVER_ERROR;
+        }
+
         writeFileSync(global.filePath + profileImgKey, file.fileBuffer);
+
+        if(originalProfileImgKey !== undefined && fs.existsSync(global.filePath + originalProfileImgKey)){
+            fs.unlinkSync(global.filePath + originalProfileImgKey);
+        }
     }
 
 
