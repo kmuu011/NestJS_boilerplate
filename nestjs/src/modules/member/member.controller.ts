@@ -1,6 +1,6 @@
 import {
     Body,
-    Controller,
+    Controller, Delete,
     Get,
     Patch,
     Post,
@@ -123,13 +123,30 @@ export class MemberController {
         }
     }
 
+
+    @Delete('img')
+    @UseGuards(AuthGuard)
+    async deleteImg(
+        @Req() req: Request,
+    ){
+        await this.memberService.imgDelete(req.res.locals.memberInfo);
+
+        return {
+            result: true
+        }
+    }
+
     
     //업로드한 이미지 다운로드 테스트
     @Get('img')
     async getImg(
+        @Req() req: Request,
         @Res() res:Response
     ){
-        res.download(global.filePath + 'profileImages/wk8d3nf4nnb0gvbf_1652623252615.jpg', 'test.jpg');
+        const member: Member = await this.memberService.select({idx: '1'});
+        const profileImgKey = member.profile_img_key;
+
+        res.download(global.filePath + profileImgKey, 'test.jpg');
     }
 
 

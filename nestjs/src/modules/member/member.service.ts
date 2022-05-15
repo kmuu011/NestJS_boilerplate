@@ -34,7 +34,7 @@ export class MemberService {
         await member.decodeToken();
     }
 
-    async select(member) {
+    async select(member): Promise<Member> {
         return this.memberRepository.select(member);
     }
 
@@ -119,6 +119,22 @@ export class MemberService {
         }
 
         writeFileSync(global.filePath + profileImgKey, file.fileBuffer);
+
+        if(originalProfileImgKey !== undefined && fs.existsSync(global.filePath + originalProfileImgKey)){
+            fs.unlinkSync(global.filePath + originalProfileImgKey);
+        }
+    }
+
+    async imgDelete(member: Member) {
+        const originalProfileImgKey = member.profile_img_key;
+
+        member.dataMigration({profile_img_key: null});
+
+        const updateResult = await this.memberRepository.updateMember(member);
+
+        if(updateResult.affected !== 1){
+            throw Message.SERVER_ERROR;
+        }
 
         if(originalProfileImgKey !== undefined && fs.existsSync(global.filePath + originalProfileImgKey)){
             fs.unlinkSync(global.filePath + originalProfileImgKey);
