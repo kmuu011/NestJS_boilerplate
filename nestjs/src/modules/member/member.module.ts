@@ -4,7 +4,7 @@ import {MemberService} from "./member.service";
 import {MemberRepository} from "./member.repository";
 import {Member} from "./entities/member.entity";
 import {TypeOrmModule} from "@nestjs/typeorm";
-import {TokenRepository} from "./token.repository";
+import {TokenRepository} from "./token/token.repository";
 
 @Module({
     imports: [

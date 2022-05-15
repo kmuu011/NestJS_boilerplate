@@ -1,18 +1,18 @@
-import {IsEmail, IsNotEmpty, IsOptional, IsString} from "class-validator";
+import {IsNotEmpty, IsOptional, IsString} from "class-validator";
+import {PickType} from "@nestjs/mapped-types";
+import {Member} from "../entities/member.entity";
 
-export class UpdateMemberDto {
+export class UpdateMemberDto extends PickType(
+    Member,
+    ['nickname', 'email'] as const
+){
     @IsNotEmpty()
     @IsString()
-    readonly nickname: string;
-
-    @IsNotEmpty()
-    @IsString()
-    @IsEmail()
-    readonly email: string;
+    @IsOptional()
+    password: string;
 
     @IsNotEmpty()
     @IsString()
     @IsOptional()
-    readonly password: string;
-
+    originalPassword: string;
 }

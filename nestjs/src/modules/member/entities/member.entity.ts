@@ -1,6 +1,4 @@
 import {IsBoolean, IsDateString, IsEmail, IsNumber, IsString, Length, NotContains} from "class-validator";
-import {auth} from "config/config";
-import {Message} from "libs/message";
 import {Token} from "./token.entity";
 
 import {
@@ -10,13 +8,7 @@ import {
     PrimaryGeneratedColumn,
 } from 'typeorm';
 import {JwtPayload} from "jsonwebtoken";
-
-const jwt = require('jsonwebtoken');
-
-const crypto = require('crypto');
-
-const expireTime = auth.expireTime;
-const jwtSecret = auth.jwtSecret;
+import {createToken, decodeToken, encryptPassword} from "libs/member";
 
 @Entity({ name: 'member' })
 export class Member extends BaseEntity {
@@ -70,11 +62,11 @@ export class Member extends BaseEntity {
     admin: number = undefined;
 
     @IsDateString()
-    @Column({ type: 'timestamp',comment: '회원가입 일자' })
+    @Column({ type: 'timestamp', default: () => "now", comment: '회원가입 일자' })
     created_at: string = undefined;
 
     @IsDateString()
-    @Column({ type: 'timestamp', comment: '수정 일자' })
+    @Column({ type: 'timestamp', default: () => "now", comment: '수정 일자' })
     updated_at: string = undefined;
 
     @IsNumber()
@@ -101,10 +93,7 @@ export class Member extends BaseEntity {
 
     passwordEncrypt(): void{
         if(this.password_encrypted !== true) {
-            this.password = crypto
-                .createHash(auth.hashAlgorithm)
-                .update(this.password + auth.salt)
-                .digest('hex');
+            this.password = encryptPassword(this.password)
         }
     }
 
@@ -122,29 +111,11 @@ export class Member extends BaseEntity {
     }
 
     createToken(): string {
-        const payloadObj = this.getPayload();
-
-        return jwt.sign(payloadObj, jwtSecret, {expiresIn: expireTime});
+        return createToken(this.getPayload());
     }
 
     async decodeToken(): Promise<JwtPayload> {
-        const jwpPayload = await new Promise(async (resolve) => {
-            const token = this.tokenInfo.token;
-            if(token === undefined) resolve(undefined);
-
-            jwt.verify(token, jwtSecret, (err, decoded) => {
-                if(err){
-                    resolve(undefined);
-                }
-                resolve(decoded);
-            })
-        })
-
-        if(jwpPayload === undefined){
-            throw Message.UNAUTHORIZED;
-        }
-
-        return jwpPayload;
+        return decodeToken(this.tokenInfo.token);
     }
 
     dataMigration(object): void {
