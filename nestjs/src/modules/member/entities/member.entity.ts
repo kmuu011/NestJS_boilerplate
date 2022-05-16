@@ -4,11 +4,13 @@ import {Token} from "./token.entity";
 import {
     BaseEntity,
     Column,
-    Entity, OneToOne,
+    Entity, OneToMany, OneToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm';
 import {JwtPayload} from "jsonwebtoken";
 import {createToken, decodeToken, encryptPassword} from "libs/member";
+import {Todo} from "../../todo/entities/todo.entity";
+import {TodoGroup} from "../../todo/entities/todoGroup.entity";
 
 @Entity({ name: 'member' })
 export class Member extends BaseEntity {
@@ -90,6 +92,9 @@ export class Member extends BaseEntity {
 
     @OneToOne(() => Token, token => token.member)
     tokenInfo: Token;
+
+    @OneToMany(() => TodoGroup, todoGroup => todoGroup.member)
+    todoGroupList: TodoGroup;
 
     passwordEncrypt(): void{
         if(this.password_encrypted !== true) {

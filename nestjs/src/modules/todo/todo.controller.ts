@@ -6,11 +6,6 @@ import {NextFunction, Request} from "express";
 export class TodoController {
     constructor(private readonly todoService: TodoService) {}
 
-    @All(['', '*'])
-    test(@Next() next:NextFunction): void{
-        next()
-    }
-
     @Get()
     getList(@Req() req: Request){
         console.log(req['member_info']);
