@@ -1,4 +1,4 @@
-import {IsNumber, IsString} from "class-validator";
+import {IsDateString, IsNumber, IsString} from "class-validator";
 import {Member} from "../../member/entities/member.entity";
 
 import {
@@ -16,7 +16,7 @@ export class TodoGroup extends BaseEntity {
     @Column({primary: true, type: "int", unique: true, unsigned: true})
     idx: number = undefined
 
-    @ManyToOne(() => Member, member => member.todoGroupList,{
+    @ManyToOne(() => Member, member => member.todoGroupList, {
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
         nullable: false
@@ -28,11 +28,19 @@ export class TodoGroup extends BaseEntity {
     @Column({type: 'varchar', length: 100, comment: '할일 그룹 제목'})
     title: string = undefined;
 
-    @OneToMany(() => Todo, todo => todo.todoGroup,{
+    @OneToMany(() => Todo, todo => todo.todoGroup, {
         onDelete: "CASCADE",
         onUpdate: "CASCADE"
     })
     @JoinColumn()
     todoList: Todo[] = undefined;
+
+    @IsDateString()
+    @Column({type: "timestamp", default: () => "now", comment: "생성 일자"})
+    created_at: string = undefined;
+
+    @IsDateString()
+    @Column({type: "timestamp", default: () => "now", comment: "수정 일자"})
+    updated_at: string = undefined;
 
 }
