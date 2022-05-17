@@ -1,6 +1,7 @@
-import {DeleteResult, EntityRepository, Repository} from "typeorm";
+import {DeleteResult, EntityRepository, Repository, UpdateResult} from "typeorm";
 import {TodoGroup} from "./entities/todoGroup.entity";
 import {Member} from "../member/entities/member.entity";
+import {getUpdateObject} from "libs/utils";
 
 @EntityRepository(TodoGroup)
 export class TodoGroupRepository extends Repository<TodoGroup> {
@@ -21,6 +22,12 @@ export class TodoGroupRepository extends Repository<TodoGroup> {
 
     async saveTodoGroup(todoGroup: TodoGroup): Promise<TodoGroup> {
         return await this.save(todoGroup);
+    }
+
+    async updateTodoGroup(todoGroup: TodoGroup): Promise<UpdateResult> {
+        const obj = getUpdateObject(["title"], todoGroup, true);
+
+        return await this.update(todoGroup.idx, obj);
     }
 
     async deleteTodoGroup(todoGroup: TodoGroup): Promise<DeleteResult> {

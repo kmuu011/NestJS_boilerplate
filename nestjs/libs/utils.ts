@@ -14,7 +14,7 @@ const dataSortForTextReplace = (data, from, to): void => {
     if (data === undefined) return;
 
     if (data.constructor === Array && data.length !== 0) {
-        for (let i=0 ; i<data.length ; i++) {
+        for (let i = 0; i < data.length; i++) {
             textReplace(data, i, from, to);
         }
     } else if (data.constructor === Object && Object.keys(data).length !== 0) {
@@ -35,15 +35,15 @@ export const deActiveQuestionMark = (data): void => {
     dataSortForTextReplace(data, /\?/g, '？');
 }
 
-export const createKey = async <T extends Repository<BaseEntity>> (repository: T, key: string, length: number) => {
+export const createKey = async <T extends Repository<BaseEntity>>(repository: T, key: string, length: number) => {
     length = length || 32;
 
     let createComplete;
     let ranKey = '';
 
     while (!createComplete) {
-        for (let i=0 ; i<length ; i++) {
-            const ranNum = Math.floor(Math.random()*ranStr.length);
+        for (let i = 0; i < length; i++) {
+            const ranNum = Math.floor(Math.random() * ranStr.length);
             const s = ranStr[ranNum];
 
             ranKey += s;
@@ -55,11 +55,26 @@ export const createKey = async <T extends Repository<BaseEntity>> (repository: T
             }
         });
 
-        if(!result) createComplete = true;
+        if (!result) createComplete = true;
     }
 
     return ranKey;
 }
 
+export const getUpdateObject = <T>(keys: string[], entity: T, includeUpdateAt: boolean) => {
+    const obj: any = {};
+
+    if(includeUpdateAt){
+        obj.updated_at = 'now()';
+    }
+
+    for (const key of keys){
+        if(entity[key] === undefined) continue;
+        obj[key] = entity[key];
+    }
+
+    return obj;
+
+}
 
 

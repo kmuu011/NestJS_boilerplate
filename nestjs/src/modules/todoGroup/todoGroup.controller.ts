@@ -1,4 +1,4 @@
-import {All, Body, Controller, Delete, Get, Next, Param, Post, Query, Req, UseGuards} from '@nestjs/common';
+import {All, Body, Controller, Delete, Get, Next, Param, Patch, Post, Query, Req, UseGuards} from '@nestjs/common';
 import {TodoGroupService} from './todoGroup.service';
 import {NextFunction, Request} from "express";
 import {AuthGuard} from "guard/auth.guard";
@@ -6,6 +6,7 @@ import {Member} from "../member/entities/member.entity";
 import {CreateTodoGroupDto} from "./dto/create-todoGroup-dto";
 import {SelectQueryDto} from "../../common/dto/select-query-dto";
 import {Message} from "libs/message";
+import {UpdateTodoGroupDto} from "./dto/update-todoGroup-dto";
 
 @Controller('/todoGroup')
 @UseGuards(AuthGuard)
@@ -57,6 +58,20 @@ export class TodoGroupController {
         @Req() req: Request,
     ){
         return req.res.locals.todoGroupInfo;
+    }
+
+
+    @Patch('/:todoGroupIdx(\\d+)')
+    async updateTodoGroup(
+        @Req() req: Request,
+        @Body() body: UpdateTodoGroupDto
+    ){
+        const todoGroupInfo = req.res.locals.todoGroupInfo;
+        todoGroupInfo.dataMigration(body);
+
+        await this.todoGroupService.updateTodoGroup(todoGroupInfo);
+
+        return {result: true};
     }
 
 

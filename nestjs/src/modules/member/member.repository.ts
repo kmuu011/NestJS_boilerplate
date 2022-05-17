@@ -1,5 +1,6 @@
 import {Member} from "./entities/member.entity";
 import {EntityRepository, Repository} from "typeorm";
+import {getUpdateObject} from "libs/utils";
 
 const memberSelectKeys: any = ["idx", "id", "nickname", "email", "admin", "profile_img_key", "auth_type", "ip", "user_agent", "created_at"];
 const memberUpdateKeys: string[] = ["nickname", "email", "profile_img_key", "ip", "user_agent", "password"];
@@ -51,12 +52,7 @@ export class MemberRepository extends Repository<Member> {
     }
 
     async updateMember(member: Member) {
-        const obj = {"updated_at": "now()"};
-
-        for (const key of memberUpdateKeys) {
-            if (member[key] === undefined) continue;
-            obj[key] = member[key];
-        }
+        const obj = getUpdateObject(memberUpdateKeys, member, true);
 
         return await this.update(member.idx, obj);
     }

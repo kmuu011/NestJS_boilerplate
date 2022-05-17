@@ -4,7 +4,7 @@ import {TodoGroup} from "./entities/todoGroup.entity";
 import {Member} from "../member/entities/member.entity";
 import {CreateTodoGroupDto} from "./dto/create-todoGroup-dto";
 import {SelectObject} from "../../common/type/type";
-import {DeleteResult} from "typeorm";
+import {DeleteResult, UpdateResult} from "typeorm";
 import {Message} from "libs/message";
 
 @Injectable()
@@ -38,6 +38,14 @@ export class TodoGroupService {
         todoGroup.order = (await this.todoGroupRepository.select(member, 1, 1))[1] + 1;
 
         return await this.todoGroupRepository.saveTodoGroup(todoGroup);
+    }
+
+    async updateTodoGroup(todoGroup: TodoGroup) {
+        const updateResult: UpdateResult = await this.todoGroupRepository.updateTodoGroup(todoGroup);
+
+        if(updateResult.affected !== 1){
+            throw Message.SERVER_ERROR;
+        }
     }
 
     async deleteTodoGroup(todoGroup: TodoGroup): Promise<void> {
