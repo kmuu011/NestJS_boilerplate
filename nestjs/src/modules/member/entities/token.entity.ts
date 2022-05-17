@@ -15,9 +15,10 @@ export class Token extends BaseEntity {
     @Column({primary: true, type: "int", unique: true, unsigned: true})
     idx: number = undefined
 
-    @OneToOne(() => Member, member => member.tokenInfo,{
+    @OneToOne(() => Member, member => member.tokenInfo, {
         onDelete: "CASCADE",
-        onUpdate: "CASCADE"
+        onUpdate: "CASCADE",
+        nullable: false
     })
     @JoinColumn()
     member: Member = undefined;

@@ -123,7 +123,6 @@ export class MemberController {
         }
     }
 
-
     @Delete('img')
     @UseGuards(AuthGuard)
     async deleteImg(
@@ -136,19 +135,18 @@ export class MemberController {
         }
     }
 
-    
     //업로드한 이미지 다운로드 테스트
     @Get('img')
+    @UseGuards(AuthGuard)
     async getImg(
         @Req() req: Request,
         @Res() res:Response
     ){
-        const member: Member = await this.memberService.select({idx: '1'});
+        const member: Member = req.res.locals.memberInfo;
         const profileImgKey = member.profile_img_key;
 
         res.download(global.filePath + profileImgKey, 'test.jpg');
     }
-
 
     @Get('/duplicateCheck')
     async duplicateCheck(
