@@ -12,7 +12,7 @@ export class TodoGroupRepository extends Repository<TodoGroup> {
         });
     }
 
-    async select(member: Member, page: number, count: number): Promise<[TodoGroup[], number]> {
+    async selectList(member: Member, page: number, count: number): Promise<[TodoGroup[], number]> {
         return await this.createQueryBuilder('tg')
             .where({member})
             .skip(page-1)

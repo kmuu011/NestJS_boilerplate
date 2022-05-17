@@ -16,8 +16,8 @@ export class TodoGroupService {
         return await this.todoGroupRepository.selectOne(member, todoGroupIdx);
     }
 
-    async getList(member: Member, page: number, count: number): Promise<SelectObject<TodoGroup>> {
-        const result = await this.todoGroupRepository.select(member, page, count);
+    async selectList(member: Member, page: number, count: number): Promise<SelectObject<TodoGroup>> {
+        const result = await this.todoGroupRepository.selectList(member, page, count);
 
         return {
             items: result[0],
@@ -28,19 +28,19 @@ export class TodoGroupService {
         };
     }
 
-    async createTodoGroup(member: Member, body: CreateTodoGroupDto): Promise<TodoGroup> {
+    async create(member: Member, body: CreateTodoGroupDto): Promise<TodoGroup> {
         const todoGroup: TodoGroup = new TodoGroup();
         todoGroup.dataMigration({
             ...body,
             ...{member}
         });
 
-        todoGroup.order = (await this.todoGroupRepository.select(member, 1, 1))[1] + 1;
+        todoGroup.order = (await this.todoGroupRepository.selectList(member, 1, 1))[1] + 1;
 
         return await this.todoGroupRepository.saveTodoGroup(todoGroup);
     }
 
-    async updateTodoGroup(todoGroup: TodoGroup) {
+    async update(todoGroup: TodoGroup) {
         const updateResult: UpdateResult = await this.todoGroupRepository.updateTodoGroup(todoGroup);
 
         if(updateResult.affected !== 1){
@@ -48,7 +48,7 @@ export class TodoGroupService {
         }
     }
 
-    async deleteTodoGroup(todoGroup: TodoGroup): Promise<void> {
+    async delete(todoGroup: TodoGroup): Promise<void> {
         const deleteResult: DeleteResult = await this.todoGroupRepository.deleteTodoGroup(todoGroup);
 
         if (deleteResult.affected !== 1) {

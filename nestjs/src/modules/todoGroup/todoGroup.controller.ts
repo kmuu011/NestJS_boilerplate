@@ -14,14 +14,14 @@ export class TodoGroupController {
     constructor(private readonly todoGroupService: TodoGroupService) {}
 
     @Get()
-    async getGroupList(
+    async getTodoGroupList(
         @Req() req: Request,
         @Query() query: SelectQueryDto
     ){
         const { page, count } = query;
         const member: Member = req.res.locals.memberInfo;
 
-        return await this.todoGroupService.getList(member, page, count);
+        return await this.todoGroupService.selectList(member, page, count);
     }
 
     @Post()
@@ -31,11 +31,11 @@ export class TodoGroupController {
     ){
         const member: Member = req.res.locals.memberInfo;
 
-        return await this.todoGroupService.createTodoGroup(member, body);
+        return await this.todoGroupService.create(member, body);
     }
 
     @All('/:todoGroupIdx(\\d+)')
-    async selectGroup(
+    async selectTodoGroup(
         @Req() req: Request,
         @Next() next: NextFunction,
         @Param('todoGroupIdx') todoGroupIdx: number
@@ -54,7 +54,7 @@ export class TodoGroupController {
     }
 
     @Get('/:todoGroupIdx(\\d+)')
-    async selectOne(
+    async selectOneTodoGroup(
         @Req() req: Request,
     ){
         return req.res.locals.todoGroupInfo;
@@ -69,7 +69,7 @@ export class TodoGroupController {
         const todoGroupInfo = req.res.locals.todoGroupInfo;
         todoGroupInfo.dataMigration(body);
 
-        await this.todoGroupService.updateTodoGroup(todoGroupInfo);
+        await this.todoGroupService.update(todoGroupInfo);
 
         return {result: true};
     }
@@ -81,7 +81,7 @@ export class TodoGroupController {
     ){
         const todoGroupInfo = req.res.locals.todoGroupInfo;
 
-        await this.todoGroupService.deleteTodoGroup(todoGroupInfo);
+        await this.todoGroupService.delete(todoGroupInfo);
 
         return {result: true};
     }
