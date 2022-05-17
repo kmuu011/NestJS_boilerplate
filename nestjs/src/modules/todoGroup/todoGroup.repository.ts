@@ -1,13 +1,17 @@
-import {EntityRepository, Repository} from "typeorm";
+import {DeleteResult, EntityRepository, Repository} from "typeorm";
 import {TodoGroup} from "./entities/todoGroup.entity";
 import {Member} from "../member/entities/member.entity";
-import {SelectQueryDto} from "../../common/dto/select-query-dto";
 
 @EntityRepository(TodoGroup)
 export class TodoGroupRepository extends Repository<TodoGroup> {
-    async select(member: Member, query: SelectQueryDto): Promise<[TodoGroup[], number]> {
-        const { page, count } = query;
 
+    async selectOne(member: Member, todoGroupIdx: number) {
+        return await this.findOne({
+            where: {member, idx: todoGroupIdx}
+        });
+    }
+
+    async select(member: Member, page: number, count: number): Promise<[TodoGroup[], number]> {
         return await this.createQueryBuilder('tg')
             .where({member})
             .skip(page-1)
@@ -15,8 +19,12 @@ export class TodoGroupRepository extends Repository<TodoGroup> {
             .getManyAndCount();
     }
 
-    async saveGroup(todoGroup: TodoGroup): Promise<TodoGroup> {
+    async saveTodoGroup(todoGroup: TodoGroup): Promise<TodoGroup> {
         return await this.save(todoGroup);
+    }
+
+    async deleteTodoGroup(todoGroup: TodoGroup): Promise<DeleteResult> {
+        return await this.delete(todoGroup.idx);
     }
 
 }

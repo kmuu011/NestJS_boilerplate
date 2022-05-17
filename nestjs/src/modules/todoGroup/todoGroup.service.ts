@@ -3,16 +3,21 @@ import {TodoGroupRepository} from "./todoGroup.repository";
 import {TodoGroup} from "./entities/todoGroup.entity";
 import {Member} from "../member/entities/member.entity";
 import {CreateTodoGroupDto} from "./dto/create-todoGroup-dto";
-import {SelectQueryDto} from "../../common/dto/select-query-dto";
 import {SelectObject} from "../../common/type/type";
+import {DeleteResult} from "typeorm";
+import {Message} from "libs/message";
 
 @Injectable()
 export class TodoGroupService {
-    constructor(private readonly todoGroupRepository: TodoGroupRepository) {}
+    constructor(private readonly todoGroupRepository: TodoGroupRepository) {
+    }
 
-    async getList(member: Member, query: SelectQueryDto): Promise<SelectObject<TodoGroup>> {
-        const { page, count } = query;
-        const result = await this.todoGroupRepository.select(member, query);
+    async selectOne(member: Member, todoGroupIdx: number) {
+        return await this.todoGroupRepository.selectOne(member, todoGroupIdx);
+    }
+
+    async getList(member: Member, page: number, count: number): Promise<SelectObject<TodoGroup>> {
+        const result = await this.todoGroupRepository.select(member, page, count);
 
         return {
             items: result[0],
@@ -30,8 +35,17 @@ export class TodoGroupService {
             ...{member}
         });
 
-        todoGroup.order = 1;
+        todoGroup.order = (await this.todoGroupRepository.select(member, 1, 1))[1] + 1;
 
-        return await this.todoGroupRepository.saveGroup(todoGroup);
+        return await this.todoGroupRepository.saveTodoGroup(todoGroup);
     }
+
+    async deleteTodoGroup(todoGroup: TodoGroup): Promise<void> {
+        const deleteResult: DeleteResult = await this.todoGroupRepository.deleteTodoGroup(todoGroup);
+
+        if (deleteResult.affected !== 1) {
+            throw Message.SERVER_ERROR;
+        }
+    }
+
 }
