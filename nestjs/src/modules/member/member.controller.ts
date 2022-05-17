@@ -24,7 +24,7 @@ import {FileInterceptor} from "@nestjs/platform-express";
 
 import {multerOptions} from "config/config";
 import * as validator from "libs/validator";
-import {FileType} from "../../type/type";
+import {FileType} from "../../common/type/type";
 import {Message} from "libs/message";
 
 const duplicateCheckKeys = ['id', 'nickname', 'email'];

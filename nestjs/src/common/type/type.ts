@@ -1,4 +1,5 @@
 import Buffer from "buffer";
+import {BaseEntity} from "typeorm";
 
 export interface FileType {
     fileType: string
@@ -14,4 +15,12 @@ export interface ValidatorType {
 
 export interface ValidatorTypeObj {
     [key: string]: ValidatorType
+}
+
+export interface SelectObject<T> {
+    items: T[],
+    page: number,
+    count: number
+    totalCount: number;
+    last: number
 }

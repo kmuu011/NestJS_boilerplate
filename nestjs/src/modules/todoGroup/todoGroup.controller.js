@@ -11,7 +11,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 exports.__esModule = true;
 exports.TodoController = void 0;
 var common_1 = require("@nestjs/common");
-var TodoController = /** @class */ (function () {
+var TodoGroupController = /** @class */ (function () {
     function TodoController(todoService) {
         this.todoService = todoService;
     }
@@ -33,4 +33,4 @@ var TodoController = /** @class */ (function () {
     ], TodoController);
     return TodoController;
 }());
-exports.TodoController = TodoController;
+exports.TodoController = TodoGroupController;

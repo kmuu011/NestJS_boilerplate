@@ -9,8 +9,8 @@ import {
 } from 'typeorm';
 import {JwtPayload} from "jsonwebtoken";
 import {createToken, decodeToken, encryptPassword} from "libs/member";
-import {Todo} from "../../todo/entities/todo.entity";
-import {TodoGroup} from "../../todo/entities/todoGroup.entity";
+import {Todo} from "../../todoGroup/entities/todo.entity";
+import {TodoGroup} from "../../todoGroup/entities/todoGroup.entity";
 
 @Entity({name: 'member'})
 export class Member extends BaseEntity {

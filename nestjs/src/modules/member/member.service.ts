@@ -12,7 +12,7 @@ import {writeFileSync} from "fs";
 
 import * as fs from "fs";
 
-import {FileType} from "../../type/type";
+import {FileType} from "../../common/type/type";
 import {UpdateMemberDto} from "./dto/update-member.dto";
 import {encryptPassword} from "libs/member";
 import {filePath} from "config/config";

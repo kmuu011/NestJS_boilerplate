@@ -35,6 +35,10 @@ export class TodoGroup extends BaseEntity {
     @JoinColumn()
     todoList: Todo[] = undefined;
 
+    @IsNumber()
+    @Column({type: "tinyint", comment: "순서"})
+    order: number = undefined;
+
     @IsDateString()
     @Column({type: "timestamp", default: () => "now", comment: "생성 일자"})
     created_at: string = undefined;
@@ -42,5 +46,12 @@ export class TodoGroup extends BaseEntity {
     @IsDateString()
     @Column({type: "timestamp", default: () => "now", comment: "수정 일자"})
     updated_at: string = undefined;
+
+    dataMigration(object): void {
+        for (let k in new TodoGroup()) {
+            if (object[k] === undefined) continue;
+            this[k] = object[k];
+        }
+    }
 
 }

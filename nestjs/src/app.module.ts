@@ -1,6 +1,6 @@
 import {MiddlewareConsumer, Module, NestModule} from '@nestjs/common';
 
-import {TodoModule} from './modules/todo/todo.module';
+import {TodoGroupModule} from './modules/todoGroup/todoGroup.module';
 import {MemberModule} from "./modules/member/member.module";
 
 import {PrefixMiddleware} from "middleware/prefix.middleware";
@@ -13,7 +13,7 @@ import {typeOrmOptions} from "config/config";
     imports: [
         TypeOrmModule.forRoot(typeOrmOptions),
         MemberModule,
-        TodoModule,
+        TodoGroupModule,
     ]
 })
 

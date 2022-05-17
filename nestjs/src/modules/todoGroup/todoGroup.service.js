@@ -8,7 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 exports.__esModule = true;
 exports.TodoService = void 0;
 var common_1 = require("@nestjs/common");
-var TodoService = /** @class */ (function () {
+var TodoGroupService = /** @class */ (function () {
     function TodoService() {
     }
     TodoService.prototype.getList = function () {
@@ -19,4 +19,4 @@ var TodoService = /** @class */ (function () {
     ], TodoService);
     return TodoService;
 }());
-exports.TodoService = TodoService;
+exports.TodoService = TodoGroupService;
