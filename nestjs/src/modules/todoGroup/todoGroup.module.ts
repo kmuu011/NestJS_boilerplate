@@ -1,25 +1,24 @@
-import { Module } from '@nestjs/common';
-import { TodoGroupController } from './todoGroup.controller';
-import { TodoFileController } from "./file/file.controller";
-
-import { TodoGroupService } from './todoGroup.service';
-import { TodoFileService } from "./file/file.service";
+import {Global, Module} from '@nestjs/common';
+import {TodoGroupController} from './todoGroup.controller';
+import {TodoGroupService} from './todoGroup.service';
+import {TodoModule} from "./todo/todo.module";
 import {TypeOrmModule} from "@nestjs/typeorm";
-import {TokenRepository} from "../member/token/token.repository";
-import {MemberRepository} from "../member/member.repository";
 import {TodoGroupRepository} from "./todoGroup.repository";
 
-
+@Global()
 @Module({
     imports: [
         TypeOrmModule.forFeature([
-            MemberRepository,
-            TokenRepository,
             TodoGroupRepository,
         ]),
+        TodoModule
     ],
-    controllers: [TodoGroupController, TodoFileController],
-    providers: [TodoGroupService, TodoFileService],
+    controllers: [TodoGroupController],
+    providers: [TodoGroupService],
+    exports: [
+        TodoGroupService
+    ]
 })
 
-export class TodoGroupModule {}
+export class TodoGroupModule {
+}

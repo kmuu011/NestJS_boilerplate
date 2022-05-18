@@ -16,8 +16,6 @@ export class TodoGroupService {
         const todoGroupList = (await this.todoGroupRepository.selectList(member))[0];
         let splicedTodoGroupList = [...todoGroupList];
 
-        console.log(todoGroupList)
-
         if(todoGroup) {
             splicedTodoGroupList.splice(todoGroupList.findIndex(v => v.idx === todoGroup.idx), 1);
 

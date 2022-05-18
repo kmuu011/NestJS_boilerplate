@@ -42,7 +42,7 @@ export class MemberController {
     async auth(
         @Req() req: Request
     ) {
-        const memberInfo = req.body.memberInfo;
+        const memberInfo = req.res.locals.memberInfo;
 
         return {
             memberInfo
