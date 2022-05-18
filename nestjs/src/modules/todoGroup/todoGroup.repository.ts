@@ -12,11 +12,18 @@ export class TodoGroupRepository extends Repository<TodoGroup> {
         });
     }
 
-    async selectList(member: Member, page: number, count: number): Promise<[TodoGroup[], number]> {
-        return await this.createQueryBuilder('tg')
+    async selectList(member: Member, page?: number, count?: number): Promise<[TodoGroup[], number]> {
+        let query = this.createQueryBuilder('tg');
+
+        if(page && count){
+            query = query
+                .skip(page-1)
+                .take(count);
+        }
+
+        return await query
             .where({member})
-            .skip(page-1)
-            .take(count)
+            .orderBy('`order`')
             .getManyAndCount();
     }
 

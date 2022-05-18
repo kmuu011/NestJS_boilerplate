@@ -60,7 +60,6 @@ export class TodoGroupController {
         return req.res.locals.todoGroupInfo;
     }
 
-
     @Patch('/:todoGroupIdx(\\d+)')
     async updateTodoGroup(
         @Req() req: Request,

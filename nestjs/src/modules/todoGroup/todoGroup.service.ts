@@ -9,10 +9,9 @@ import {Message} from "libs/message";
 
 @Injectable()
 export class TodoGroupService {
-    constructor(private readonly todoGroupRepository: TodoGroupRepository) {
-    }
+    constructor(private readonly todoGroupRepository: TodoGroupRepository) {}
 
-    async selectOne(member: Member, todoGroupIdx: number) {
+    async selectOne(member: Member, todoGroupIdx: number): Promise<TodoGroup> {
         return await this.todoGroupRepository.selectOne(member, todoGroupIdx);
     }
 
@@ -35,12 +34,14 @@ export class TodoGroupService {
             ...{member}
         });
 
-        todoGroup.order = (await this.todoGroupRepository.selectList(member, 1, 1))[1] + 1;
+        todoGroup.order = (await this.todoGroupRepository.selectList(member))[1] + 1;
+
+        console.log(todoGroup)
 
         return await this.todoGroupRepository.saveTodoGroup(todoGroup);
     }
 
-    async update(todoGroup: TodoGroup) {
+    async update(todoGroup: TodoGroup): Promise<void> {
         const updateResult: UpdateResult = await this.todoGroupRepository.updateTodoGroup(todoGroup);
 
         if(updateResult.affected !== 1){

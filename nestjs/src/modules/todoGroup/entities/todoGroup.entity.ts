@@ -28,16 +28,16 @@ export class TodoGroup extends BaseEntity {
     @Column({type: 'varchar', length: 100, comment: '할일 그룹 제목'})
     title: string = undefined;
 
+    @IsNumber()
+    @Column({type: "tinyint", default: 1, comment: "순서"})
+    order: number = undefined;
+
     @OneToMany(() => Todo, todo => todo.todoGroup, {
         onDelete: "CASCADE",
         onUpdate: "CASCADE"
     })
     @JoinColumn()
     todoList: Todo[] = undefined;
-
-    @IsNumber()
-    @Column({type: "tinyint", comment: "순서"})
-    order: number = undefined;
 
     @IsDateString()
     @Column({type: "timestamp", default: () => "now", comment: "생성 일자"})
