@@ -65,22 +65,20 @@ export class TodoGroupController {
         @Req() req: Request,
         @Body() body: UpdateTodoGroupDto
     ){
-        const todoGroupInfo = req.res.locals.todoGroupInfo;
-        todoGroupInfo.dataMigration(body);
+        const {memberInfo, todoGroupInfo} = req.res.locals;
 
-        await this.todoGroupService.update(todoGroupInfo);
+        await this.todoGroupService.update(memberInfo, todoGroupInfo, body);
 
         return {result: true};
     }
-
 
     @Delete('/:todoGroupIdx(\\d+)')
     async deleteTodoGroup(
         @Req() req: Request,
     ){
-        const todoGroupInfo = req.res.locals.todoGroupInfo;
+        const {memberInfo, todoGroupInfo} = req.res.locals;
 
-        await this.todoGroupService.delete(todoGroupInfo);
+        await this.todoGroupService.delete(memberInfo, todoGroupInfo);
 
         return {result: true};
     }

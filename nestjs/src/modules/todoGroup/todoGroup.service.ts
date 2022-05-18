@@ -6,10 +6,42 @@ import {CreateTodoGroupDto} from "./dto/create-todoGroup-dto";
 import {SelectObject} from "../../common/type/type";
 import {DeleteResult, UpdateResult} from "typeorm";
 import {Message} from "libs/message";
+import {UpdateTodoGroupDto} from "./dto/update-todoGroup-dto";
 
 @Injectable()
 export class TodoGroupService {
     constructor(private readonly todoGroupRepository: TodoGroupRepository) {}
+
+    async arrangeOrder(member: Member, todoGroup?: TodoGroup, order?: number): Promise<void> {
+        const todoGroupList = (await this.todoGroupRepository.selectList(member))[0];
+        let splicedTodoGroupList = [...todoGroupList];
+
+        console.log(todoGroupList)
+
+        if(todoGroup) {
+            splicedTodoGroupList.splice(todoGroupList.findIndex(v => v.idx === todoGroup.idx), 1);
+
+            if(order === 1){
+                splicedTodoGroupList.push(todoGroup);
+            }else if(order === todoGroupList.length){
+                splicedTodoGroupList.unshift(todoGroup);
+            }else {
+                const targetIdx = todoGroupList.findIndex(v => v.order === order);
+
+                splicedTodoGroupList = [ ...splicedTodoGroupList.slice(0, targetIdx), todoGroup, ...splicedTodoGroupList.slice(targetIdx, splicedTodoGroupList.length)];
+            }
+        }
+
+        for (let i=0 ; i<splicedTodoGroupList.length ; i ++) {
+            splicedTodoGroupList[i].order = splicedTodoGroupList.length-i;
+
+            const updateResult: UpdateResult = await this.todoGroupRepository.updateTodoGroup(splicedTodoGroupList[i]);
+
+            if(updateResult.affected !== 1){
+                throw Message.SERVER_ERROR;
+            }
+        }
+    }
 
     async selectOne(member: Member, todoGroupIdx: number): Promise<TodoGroup> {
         return await this.todoGroupRepository.selectOne(member, todoGroupIdx);
@@ -36,25 +68,33 @@ export class TodoGroupService {
 
         todoGroup.order = (await this.todoGroupRepository.selectList(member))[1] + 1;
 
-        console.log(todoGroup)
+        await this.arrangeOrder(member);
 
         return await this.todoGroupRepository.saveTodoGroup(todoGroup);
     }
 
-    async update(todoGroup: TodoGroup): Promise<void> {
+    async update(member: Member, todoGroup: TodoGroup, body: UpdateTodoGroupDto): Promise<void> {
+        todoGroup.title = body.title;
+
         const updateResult: UpdateResult = await this.todoGroupRepository.updateTodoGroup(todoGroup);
 
         if(updateResult.affected !== 1){
             throw Message.SERVER_ERROR;
         }
+
+        if(todoGroup.order !== body.order && body.order !== undefined){
+            await this.arrangeOrder(member, todoGroup, body.order);
+        }
     }
 
-    async delete(todoGroup: TodoGroup): Promise<void> {
+    async delete(member: Member, todoGroup: TodoGroup): Promise<void> {
         const deleteResult: DeleteResult = await this.todoGroupRepository.deleteTodoGroup(todoGroup);
 
         if (deleteResult.affected !== 1) {
             throw Message.SERVER_ERROR;
         }
+
+        await this.arrangeOrder(member);
     }
 
 }

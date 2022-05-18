@@ -23,7 +23,7 @@ export class TodoGroupRepository extends Repository<TodoGroup> {
 
         return await query
             .where({member})
-            .orderBy('`order`')
+            .orderBy('`order`', "DESC")
             .getManyAndCount();
     }
 
@@ -32,7 +32,7 @@ export class TodoGroupRepository extends Repository<TodoGroup> {
     }
 
     async updateTodoGroup(todoGroup: TodoGroup): Promise<UpdateResult> {
-        const obj = getUpdateObject(["title"], todoGroup, true);
+        const obj = getUpdateObject(["title", "order"], todoGroup, true);
 
         return await this.update(todoGroup.idx, obj);
     }
