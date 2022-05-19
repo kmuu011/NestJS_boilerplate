@@ -8,7 +8,6 @@ import {
     PrimaryGeneratedColumn,
 } from 'typeorm';
 import {JwtPayload} from "jsonwebtoken";
-import {createToken, decodeToken, encryptPassword} from "libs/member";
 import {TodoGroup} from "../../todoGroup/entities/todoGroup.entity";
 
 @Entity({name: 'member'})
@@ -95,11 +94,11 @@ export class Member extends BaseEntity {
     @OneToMany(() => TodoGroup, todoGroup => todoGroup.member)
     todoGroupList: TodoGroup[];
 
-    passwordEncrypt(): void {
-        if (this.password_encrypted !== true) {
-            this.password = encryptPassword(this.password)
-        }
-    }
+    // passwordEncrypt(): void {
+    //     if (this.password_encrypted !== true) {
+    //         this.password = this.memberUtils.encryptPassword(this.password)
+    //     }
+    // }
 
     getPayload(): object {
         return {
@@ -114,13 +113,13 @@ export class Member extends BaseEntity {
         }
     }
 
-    createToken(): string {
-        return createToken(this.getPayload());
-    }
-
-    async decodeToken(): Promise<JwtPayload> {
-        return decodeToken(this.tokenInfo.token);
-    }
+    // createToken(): string {
+    //     return this.memberUtils.createToken(this.getPayload());
+    // }
+    //
+    // async decodeToken(): Promise<JwtPayload> {
+    //     return this.memberUtils.decodeToken(this.tokenInfo.token);
+    // }
 
     dataMigration(object): void {
         for (let k in new Member()) {

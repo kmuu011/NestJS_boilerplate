@@ -5,8 +5,8 @@ import {
     OutOfControlExceptionFilter
   } from 'filter/exception.filter';
 
-import {port} from 'config/config';
 import {ValidationPipe} from "@nestjs/common";
+import {ConfigModule} from "../config/configModule";
 
 require('../global');
 
@@ -36,7 +36,7 @@ async function bootstrap() {
     // 예상 범위 내의 예외 필터
     app.useGlobalFilters(new ControllableExceptionFilter());
 
-    await app.listen(port);
+    await app.listen(new ConfigModule().port);
 }
 
 bootstrap();

@@ -16,7 +16,7 @@ import {TodoGroupRepository} from "./todoGroup.repository";
     controllers: [TodoGroupController],
     providers: [TodoGroupService],
     exports: [
-        TodoGroupService
+        TodoGroupService,
     ]
 })
 

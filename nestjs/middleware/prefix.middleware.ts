@@ -1,6 +1,6 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import {NextFunction, Request, Response} from "express";
-import xss from 'libs/xss';
+import xss from 'utils/xss';
 
 @Injectable()
 export class PrefixMiddleware implements NestMiddleware {

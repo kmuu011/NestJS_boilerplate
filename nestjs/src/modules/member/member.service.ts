@@ -3,10 +3,10 @@ import {MemberRepository} from "./member.repository";
 import {Member} from "./entities/member.entity";
 import {CreateMemberDto} from "./dto/create-member-dto";
 import {InjectRepository} from "@nestjs/typeorm";
-import {Message} from "libs/message";
+import {Message} from "utils/message";
 import {LoginMemberDto} from "./dto/login-member.dto";
 import {TokenRepository} from "./token/token.repository";
-import {createKey} from "libs/utils";
+import {createKey} from "utils/utils";
 
 import {writeFileSync} from "fs";
 
@@ -14,14 +14,16 @@ import * as fs from "fs";
 
 import {FileType} from "../../common/type/type";
 import {UpdateMemberDto} from "./dto/update-member.dto";
-import {encryptPassword} from "libs/member";
-import {filePath} from "config/config";
+import {MemberUtils} from "utils/member";
+import {ConfigModule} from "../../../config/configModule";
 
 @Injectable()
 export class MemberService {
     constructor(
         @InjectRepository(MemberRepository) private memberRepository: MemberRepository,
         @InjectRepository(TokenRepository) private tokenRepository: TokenRepository,
+        private readonly memberUtils: MemberUtils,
+        private readonly configModule: ConfigModule
     ) {}
 
     async auth(headers) {
@@ -31,7 +33,7 @@ export class MemberService {
             ip: headers["ip"]
         });
 
-        await member.decodeToken();
+        await this.memberUtils.decodeToken(member.tokenInfo.token);
     }
 
     async select(member): Promise<Member> {
@@ -43,7 +45,8 @@ export class MemberService {
         const {ip, "user-agent": user_agent} = headers
         member.dataMigration(loginMemberDto);
 
-        member.passwordEncrypt();
+        // member.passwordEncrypt();
+        member.password = this.memberUtils.encryptPassword(member.password);
 
         const loginResult: Member = await this.memberRepository.select(member, 'id, password');
 
@@ -56,7 +59,7 @@ export class MemberService {
             ...{ip, user_agent}
         });
 
-        const newToken: string = member.createToken();
+        const newToken: string = this.memberUtils.createToken(member.getPayload());
         const code: string = await createKey<TokenRepository>(this.tokenRepository, 'code', 40);
 
         member.tokenInfo = await this.tokenRepository.saveToken(member, newToken, code);
@@ -69,7 +72,7 @@ export class MemberService {
     async signUp(createMemberDto: CreateMemberDto): Promise<void> {
         const member = new Member();
         member.dataMigration(createMemberDto);
-        member.passwordEncrypt();
+        member.password = this.memberUtils.encryptPassword(member.password);
 
         const result: Member = await this.memberRepository.signUp(member);
 
@@ -86,14 +89,14 @@ export class MemberService {
         const memberInfo = await this.memberRepository.select(member, undefined,true);
 
         if(memberInfo.auth_type === 0) {
-            updateMemberDto.originalPassword = encryptPassword(updateMemberDto.originalPassword);
+            updateMemberDto.originalPassword = this.memberUtils.encryptPassword(updateMemberDto.originalPassword);
 
             if (updateMemberDto.originalPassword !== memberInfo.password) {
                 throw Message.CUSTOM_ERROR("기존 비밀번호가 틀립니다.")
             }
 
             if(updateMemberDto.password !== undefined){
-                updateMemberDto.password = encryptPassword(updateMemberDto.password);
+                updateMemberDto.password = this.memberUtils.encryptPassword(updateMemberDto.password);
             }
         }
 
@@ -108,7 +111,7 @@ export class MemberService {
 
     async imgUpdate(file: FileType, member: Member) {
         const originalProfileImgKey = member.profile_img_key;
-        const profileImgKey = filePath.profileImg + await createKey(this.memberRepository, 'profile_img_key', 16) + '_' + Date.now() + '.' + file.fileType;
+        const profileImgKey = this.configModule.filePath.profileImg + await createKey(this.memberRepository, 'profile_img_key', 16) + '_' + Date.now() + '.' + file.fileType;
 
         member.dataMigration({profile_img_key: profileImgKey});
 

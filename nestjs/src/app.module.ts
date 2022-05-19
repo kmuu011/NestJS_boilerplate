@@ -7,16 +7,16 @@ import {PrefixMiddleware} from "middleware/prefix.middleware";
 import {LoggerMiddleware} from "middleware/logger.middleware";
 
 import {TypeOrmModule} from "@nestjs/typeorm";
-import {typeOrmOptions} from "config/config";
 import {MemberRepository} from "./modules/member/member.repository";
 import {TokenRepository} from "./modules/member/token/token.repository";
-import {TodoGroupRepository} from "./modules/todoGroup/todoGroup.repository";
+import {MemberUtils} from "../utils/member";
+import {ConfigModule} from "../config/configModule";
 
 
 @Global()
 @Module({
     imports: [
-        TypeOrmModule.forRoot(typeOrmOptions),
+        TypeOrmModule.forRoot(new ConfigModule().typeOrmOptions),
         TypeOrmModule.forFeature([
             MemberRepository,
             TokenRepository,
@@ -24,12 +24,17 @@ import {TodoGroupRepository} from "./modules/todoGroup/todoGroup.repository";
         MemberModule,
         TodoGroupModule,
     ],
+    providers:[
+        ConfigModule,
+        MemberUtils
+    ],
     exports: [
         TypeOrmModule.forFeature([
             MemberRepository,
             TokenRepository,
-            TodoGroupRepository,
         ]),
+        ConfigModule,
+        MemberUtils
     ]
 
 })

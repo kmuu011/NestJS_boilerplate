@@ -5,7 +5,7 @@ import {AuthGuard} from "guard/auth.guard";
 import {Member} from "../member/entities/member.entity";
 import {CreateTodoGroupDto} from "./dto/create-todoGroup-dto";
 import {SelectQueryDto} from "../../common/dto/select-query-dto";
-import {Message} from "libs/message";
+import {Message} from "utils/message";
 import {UpdateTodoGroupDto} from "./dto/update-todoGroup-dto";
 
 @Controller('/todoGroup')

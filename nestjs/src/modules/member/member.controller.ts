@@ -22,10 +22,10 @@ import {AuthGuard} from "guard/auth.guard";
 import {UpdateMemberDto} from "./dto/update-member.dto";
 import {FileInterceptor} from "@nestjs/platform-express";
 
-import {multerOptions} from "config/config";
-import * as validator from "libs/validator";
+import * as validator from "utils/validator";
 import {FileType} from "../../common/type/type";
-import {Message} from "libs/message";
+import {Message} from "utils/message";
+import {ConfigModule} from "../../../config/configModule";
 
 const duplicateCheckKeys = ['id', 'nickname', 'email'];
 
@@ -34,8 +34,8 @@ const duplicateCheckKeys = ['id', 'nickname', 'email'];
 export class MemberController {
     constructor(
         private readonly memberService: MemberService,
-    ) {
-    }
+        private readonly configModule: ConfigModule,
+    ) {}
 
     @Post('/auth')
     @UseGuards(AuthGuard)
@@ -110,7 +110,7 @@ export class MemberController {
 
     @Patch('img')
     @UseGuards(AuthGuard)
-    @UseInterceptors(FileInterceptor('file', multerOptions))
+    @UseInterceptors(FileInterceptor('file', new ConfigModule().multerOptions))
     async img(
         @Req() req: Request,
         @UploadedFile() file

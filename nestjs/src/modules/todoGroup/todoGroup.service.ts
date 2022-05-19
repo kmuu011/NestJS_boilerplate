@@ -5,7 +5,7 @@ import {Member} from "../member/entities/member.entity";
 import {CreateTodoGroupDto} from "./dto/create-todoGroup-dto";
 import {SelectObject} from "../../common/type/type";
 import {DeleteResult, UpdateResult} from "typeorm";
-import {Message} from "libs/message";
+import {Message} from "utils/message";
 import {UpdateTodoGroupDto} from "./dto/update-todoGroup-dto";
 
 @Injectable()

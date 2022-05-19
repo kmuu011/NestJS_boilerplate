@@ -2,7 +2,7 @@ import {All, Body, Controller, Delete, Get, Next, Param, Patch, Post, Query, Req
 import {AuthGuard} from "guard/auth.guard";
 import {NextFunction, Request} from "express";
 import {Member} from "../../member/entities/member.entity";
-import {Message} from "libs/message";
+import {Message} from "utils/message";
 import {TodoGroupService} from "../todoGroup.service";
 
 @Controller('/todoGroup/:todoGroupIdx(\\d+)/todo')

@@ -1,16 +1,19 @@
 import {Injectable, CanActivate, ExecutionContext} from '@nestjs/common';
 import {Member} from "src/modules/member/entities/member.entity";
 import {InjectRepository} from "@nestjs/typeorm";
-import {Message} from "../libs/message";
+import {Message} from "../utils/message";
 import {TokenRepository} from "../src/modules/member/token/token.repository";
-import * as utils from "../libs/utils";
+import * as utils from "../utils/utils";
 import {Request, Response} from "express";
-import { auth } from "config/config";
+import {MemberUtils} from "../utils/member";
+import {ConfigModule} from "../config/configModule";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
     constructor(
         @InjectRepository(TokenRepository) private tokenRepository: TokenRepository,
+        private readonly memberUtils: MemberUtils,
+        private readonly configModule: ConfigModule
     ) {}
 
     async canActivate(
@@ -43,14 +46,14 @@ export class AuthGuard implements CanActivate {
         member.tokenInfo = memberInfo;
         delete memberInfo.member;
 
-        const jwtPayload = await member.decodeToken();
+        const jwtPayload = await this.memberUtils.decodeToken(member.tokenInfo.token);
 
-        if(jwtPayload.keep_check === true && ((now-jwtPayload.time)/1000) > auth.tokenRefreshTime){
+        if(jwtPayload.keep_check === true && ((now-jwtPayload.time)/1000) > this.configModule.auth.tokenRefreshTime){
             member.dataMigration({
                 keep_check: jwtPayload.keep_check
             });
 
-            const newToken: string = member.createToken();
+            const newToken: string = this.memberUtils.createToken(member.getPayload());
             const code: string = await utils.createKey<TokenRepository>(this.tokenRepository, 'code', 40);
 
             member.tokenInfo = await this.tokenRepository.saveToken(member, newToken, code);
