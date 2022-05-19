@@ -18,6 +18,9 @@ const validationOptions = {
     whitelist: true,
     forbidNonWhitelisted: true,
     transform: true,
+    transformOptions: {
+        enableImplicitConversion: true
+    }
 };
 
 async function bootstrap() {

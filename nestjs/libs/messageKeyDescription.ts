@@ -1,0 +1,7 @@
+export const keyDescription = {
+    id: '아이디',
+    nickname: '닉네임',
+    email: '이메일',
+    originalPassword: '기존 비밀번호',
+    todoGroup: '할일 그룹'
+}

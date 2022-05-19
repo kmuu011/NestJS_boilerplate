@@ -9,8 +9,7 @@ import {
 } from 'typeorm';
 import {JwtPayload} from "jsonwebtoken";
 import {createToken, decodeToken, encryptPassword} from "libs/member";
-import {Todo} from "../../todo/entities/todo.entity";
-import {TodoGroup} from "../../todo/entities/todoGroup.entity";
+import {TodoGroup} from "../../todoGroup/entities/todoGroup.entity";
 
 @Entity({name: 'member'})
 export class Member extends BaseEntity {
@@ -99,6 +98,7 @@ export class Member extends BaseEntity {
     passwordEncrypt(): void {
         if (this.password_encrypted !== true) {
             this.password = encryptPassword(this.password)
+            this.password_encrypted = true;
         }
     }
 

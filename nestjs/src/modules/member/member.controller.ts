@@ -24,7 +24,7 @@ import {FileInterceptor} from "@nestjs/platform-express";
 
 import {multerOptions} from "config/config";
 import * as validator from "libs/validator";
-import {FileType} from "../../type/type";
+import {FileType} from "../../common/type/type";
 import {Message} from "libs/message";
 
 const duplicateCheckKeys = ['id', 'nickname', 'email'];
@@ -34,14 +34,15 @@ const duplicateCheckKeys = ['id', 'nickname', 'email'];
 export class MemberController {
     constructor(
         private readonly memberService: MemberService,
-    ) {}
+    ) {
+    }
 
     @Post('/auth')
     @UseGuards(AuthGuard)
     async auth(
         @Req() req: Request
     ) {
-        const memberInfo = req.body.memberInfo;
+        const memberInfo = req.locals.memberInfo;
 
         return {
             memberInfo
@@ -81,13 +82,13 @@ export class MemberController {
 
     @Patch('/')
     @UseGuards(AuthGuard)
-    async patch(
+    async updateMember(
         @Req() req: Request,
         @Body() updateMemberDto: UpdateMemberDto
-    ){
-        const memberInfo = req.res.locals.memberInfo;
+    ) {
+        const memberInfo = req.locals.memberInfo;
         for (const key of duplicateCheckKeys) {
-            if(key === 'id') continue;
+            if (key === 'id') continue;
 
             const usable = await this.memberService.duplicateCheck(key, updateMemberDto[key]);
 
@@ -96,7 +97,7 @@ export class MemberController {
             }
         }
 
-        if(memberInfo.auth_type === 0 && updateMemberDto.originalPassword === undefined){
+        if (memberInfo.auth_type === 0 && updateMemberDto.originalPassword === undefined) {
             throw Message.INVALID_PARAM('originalPassword');
         }
 
@@ -113,10 +114,10 @@ export class MemberController {
     async img(
         @Req() req: Request,
         @UploadedFile() file
-    ){
+    ) {
         const arrangedFile: FileType = (validator.file([file], 10, validator.type.img))[0];
 
-        await this.memberService.imgUpdate(arrangedFile, req.res.locals.memberInfo);
+        await this.memberService.imgUpdate(arrangedFile, req.locals.memberInfo);
 
         return {
             result: true
@@ -127,8 +128,8 @@ export class MemberController {
     @UseGuards(AuthGuard)
     async deleteImg(
         @Req() req: Request,
-    ){
-        await this.memberService.imgDelete(req.res.locals.memberInfo);
+    ) {
+        await this.memberService.imgDelete(req.locals.memberInfo);
 
         return {
             result: true
@@ -140,9 +141,9 @@ export class MemberController {
     @UseGuards(AuthGuard)
     async getImg(
         @Req() req: Request,
-        @Res() res:Response
-    ){
-        const member: Member = req.res.locals.memberInfo;
+        @Res() res: Response
+    ) {
+        const member: Member = req.locals.memberInfo;
         const profileImgKey = member.profile_img_key;
 
         res.download(global.filePath + profileImgKey, 'test.jpg');
@@ -152,7 +153,7 @@ export class MemberController {
     async duplicateCheck(
         @Body() duplicateCheckDto: DuplicateCheckMemberDto
     ) {
-        const { type, value } = duplicateCheckDto;
+        const {type, value} = duplicateCheckDto;
 
         return {
             usable: await this.memberService.duplicateCheck(duplicateCheckKeys[type], value)

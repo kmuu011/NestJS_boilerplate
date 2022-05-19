@@ -6,7 +6,7 @@ import {
     Entity, JoinColumn, ManyToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm';
-import {TodoGroup} from "./todoGroup.entity";
+import {TodoGroup} from "../../entities/todoGroup.entity";
 
 @Entity({name: 'todo'})
 export class Todo extends BaseEntity {

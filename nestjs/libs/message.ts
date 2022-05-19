@@ -1,11 +1,5 @@
 import {HttpException, HttpStatus} from "@nestjs/common";
-
-const keyDescription = {
-    id: '아이디',
-    nickname: '닉네임',
-    email: '이메일',
-    originalPassword: '기존 비밀번호'
-}
+import {keyDescription} from "./messageKeyDescription";
 
 export class Message extends HttpException {
     static INVALID_PARAM(name) {

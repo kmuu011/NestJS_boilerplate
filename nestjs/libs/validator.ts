@@ -1,5 +1,5 @@
 import {Message} from "./message";
-import {FileType, ValidatorType, ValidatorTypeObj} from "src/type/type";
+import {FileType, ValidatorType, ValidatorTypeObj} from "src/common/type/type";
 
 export const type: ValidatorTypeObj = {
     img : {

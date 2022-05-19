@@ -1,6 +1,6 @@
-import {MiddlewareConsumer, Module, NestModule} from '@nestjs/common';
+import {Global, MiddlewareConsumer, Module, NestModule} from '@nestjs/common';
 
-import {TodoModule} from './modules/todo/todo.module';
+import {TodoGroupModule} from './modules/todoGroup/todoGroup.module';
 import {MemberModule} from "./modules/member/member.module";
 
 import {PrefixMiddleware} from "middleware/prefix.middleware";
@@ -8,12 +8,27 @@ import {LoggerMiddleware} from "middleware/logger.middleware";
 
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {typeOrmOptions} from "config/config";
+import {MemberRepository} from "./modules/member/member.repository";
+import {TokenRepository} from "./modules/member/token/token.repository";
+import {TodoGroupRepository} from "./modules/todoGroup/todoGroup.repository";
 
+@Global()
 @Module({
     imports: [
         TypeOrmModule.forRoot(typeOrmOptions),
+        TypeOrmModule.forFeature([
+            MemberRepository,
+            TokenRepository,
+        ]),
         MemberModule,
-        TodoModule,
+        TodoGroupModule,
+    ],
+    exports: [
+        TypeOrmModule.forFeature([
+            MemberRepository,
+            TokenRepository,
+            TodoGroupRepository,
+        ]),
     ]
 })
 

@@ -7,7 +7,7 @@ import {
     Entity, JoinColumn, ManyToOne, OneToMany,
     PrimaryGeneratedColumn,
 } from 'typeorm';
-import {Todo} from "./todo.entity";
+import {Todo} from "../todo/entities/todo.entity";
 
 @Entity({name: 'todo_group'})
 export class TodoGroup extends BaseEntity {
@@ -28,6 +28,10 @@ export class TodoGroup extends BaseEntity {
     @Column({type: 'varchar', length: 100, comment: '할일 그룹 제목'})
     title: string = undefined;
 
+    @IsNumber()
+    @Column({type: "tinyint", default: 1, comment: "순서"})
+    order: number = undefined;
+
     @OneToMany(() => Todo, todo => todo.todoGroup, {
         onDelete: "CASCADE",
         onUpdate: "CASCADE"
@@ -42,5 +46,12 @@ export class TodoGroup extends BaseEntity {
     @IsDateString()
     @Column({type: "timestamp", default: () => "now", comment: "수정 일자"})
     updated_at: string = undefined;
+
+    dataMigration(object): void {
+        for (let k in new TodoGroup()) {
+            if (object[k] === undefined) continue;
+            this[k] = object[k];
+        }
+    }
 
 }
