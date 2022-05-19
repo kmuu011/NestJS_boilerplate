@@ -8,7 +8,7 @@ import {SelectQueryDto} from "../../common/dto/select-query-dto";
 import {Message} from "libs/message";
 import {UpdateTodoGroupDto} from "./dto/update-todoGroup-dto";
 import {TodoGroup} from "./entities/todoGroup.entity";
-import { SelectListResponseType} from "../../common/type/type";
+import {ResponseBooleanType, SelectListResponseType} from "../../common/type/type";
 
 @Controller('/todoGroup')
 export class TodoGroupController {
@@ -68,7 +68,7 @@ export class TodoGroupController {
     async updateTodoGroup(
         @Req() req: Request,
         @Body() body: UpdateTodoGroupDto
-    ) {
+    ): Promise<ResponseBooleanType> {
         const {memberInfo, todoGroupInfo} = req.res.locals;
 
         await this.todoGroupService.update(memberInfo, todoGroupInfo, body);
@@ -79,7 +79,7 @@ export class TodoGroupController {
     @Delete('/:todoGroupIdx(\\d+)')
     async deleteTodoGroup(
         @Req() req: Request,
-    ) {
+    ): Promise<ResponseBooleanType> {
         const {memberInfo, todoGroupInfo} = req.res.locals;
 
         await this.todoGroupService.delete(memberInfo, todoGroupInfo);

@@ -10,7 +10,7 @@ import {TodoGroup} from "../entities/todoGroup.entity";
 import {CreateTodoDto} from "./dto/create-todo-dto";
 import {Todo} from "./entities/todo.entity";
 import {UpdateTodoDto} from "./dto/update-todo-dto";
-import {SelectListResponseType} from "../../../common/type/type";
+import {ResponseBooleanType, SelectListResponseType} from "../../../common/type/type";
 
 @Controller('/todoGroup/:todoGroupIdx(\\d+)/todo')
 export class TodoController {
@@ -19,7 +19,7 @@ export class TodoController {
         private readonly todoService: TodoService
     ) {}
 
-    @All('*')
+    @All(['*', '/'])
     @UseGuards(AuthGuard)
     async selectTodoGroup(
         @Req() req: Request,
@@ -74,6 +74,8 @@ export class TodoController {
             throw Message.NOT_EXIST('todo');
         }
 
+        req.locals.todoInfo = todo;
+
         next();
     }
 
@@ -81,8 +83,12 @@ export class TodoController {
     async updateTodo(
         @Req() req: Request,
         @Body() body: UpdateTodoDto
-    ) {
+    ): Promise<ResponseBooleanType> {
+        const todoInfo: Todo = req.locals.todoInfo;
 
+        await this.todoService.update(todoInfo, body);
+
+        return {result: true};
     }
 
 }

@@ -4,6 +4,9 @@ import {TodoRepository} from "./todo.repository";
 import {Todo} from "./entities/todo.entity";
 import {TodoGroup} from "../entities/todoGroup.entity";
 import {CreateTodoDto} from "./dto/create-todo-dto";
+import {UpdateTodoDto} from "./dto/update-todo-dto";
+import {UpdateResult} from "typeorm";
+import {Message} from "libs/message";
 
 @Injectable()
 export class TodoService {
@@ -27,13 +30,23 @@ export class TodoService {
         };
     }
 
-    async create(todoGroup: TodoGroup, createTodoDto: CreateTodoDto) {
+    async create(todoGroup: TodoGroup, createTodoDto: CreateTodoDto): Promise<Todo> {
         const todo: Todo = new Todo();
 
         todo.dataMigration(createTodoDto);
         todo.todoGroup = todoGroup;
 
         return this.todoRepository.createTodo(todo)
+    }
+
+    async update(todo: Todo, updateTodoDto: UpdateTodoDto): Promise<void> {
+        todo.dataMigration(updateTodoDto);
+
+        const updateResult: UpdateResult = await this.todoRepository.updateTodo(todo, updateTodoDto);
+
+        if(updateResult.affected !== 1){
+            throw Message.SERVER_ERROR;
+        }
     }
 
 }
