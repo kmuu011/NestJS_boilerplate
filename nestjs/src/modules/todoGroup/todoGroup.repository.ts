@@ -27,7 +27,7 @@ export class TodoGroupRepository extends Repository<TodoGroup> {
             .getManyAndCount();
     }
 
-    async saveTodoGroup(todoGroup: TodoGroup): Promise<TodoGroup> {
+    async createTodoGroup(todoGroup: TodoGroup): Promise<TodoGroup> {
         return await this.save(todoGroup);
     }
 

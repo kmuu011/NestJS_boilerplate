@@ -15,7 +15,7 @@ import * as fs from "fs";
 import {FileType} from "../../common/type/type";
 import {UpdateMemberDto} from "./dto/update-member.dto";
 import {encryptPassword} from "libs/member";
-import {filePath} from "config/config";
+import {basePath, filePath} from "config/config";
 
 @Injectable()
 export class MemberService {
@@ -24,7 +24,7 @@ export class MemberService {
         @InjectRepository(TokenRepository) private tokenRepository: TokenRepository,
     ) {}
 
-    async auth(headers) {
+    async auth(headers): Promise<void> {
         const member: Member = new Member();
         member.dataMigration({
             user_agent: headers["user_agent"],
@@ -106,7 +106,7 @@ export class MemberService {
         }
     }
 
-    async imgUpdate(file: FileType, member: Member) {
+    async imgUpdate(file: FileType, member: Member): Promise<void> {
         const originalProfileImgKey = member.profile_img_key;
         const profileImgKey = filePath.profileImg + await createKey(this.memberRepository, 'profile_img_key', 16) + '_' + Date.now() + '.' + file.fileType;
 
@@ -118,14 +118,14 @@ export class MemberService {
             throw Message.SERVER_ERROR;
         }
 
-        writeFileSync(global.filePath + profileImgKey, file.fileBuffer);
+        writeFileSync(basePath + profileImgKey, file.fileBuffer);
 
-        if(originalProfileImgKey !== undefined && fs.existsSync(global.filePath + originalProfileImgKey)){
-            fs.unlinkSync(global.filePath + originalProfileImgKey);
+        if(originalProfileImgKey !== undefined && fs.existsSync(basePath + originalProfileImgKey)){
+            fs.unlinkSync(basePath + originalProfileImgKey);
         }
     }
 
-    async imgDelete(member: Member) {
+    async imgDelete(member: Member): Promise<void> {
         const originalProfileImgKey = member.profile_img_key;
 
         member.dataMigration({profile_img_key: null});
@@ -136,8 +136,8 @@ export class MemberService {
             throw Message.SERVER_ERROR;
         }
 
-        if(originalProfileImgKey !== undefined && fs.existsSync(global.filePath + originalProfileImgKey)){
-            fs.unlinkSync(global.filePath + originalProfileImgKey);
+        if(originalProfileImgKey !== undefined && fs.existsSync(basePath + originalProfileImgKey)){
+            fs.unlinkSync(basePath + originalProfileImgKey);
         }
     }
 

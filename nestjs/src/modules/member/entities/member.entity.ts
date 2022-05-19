@@ -123,7 +123,7 @@ export class Member extends BaseEntity {
         return decodeToken(this.tokenInfo.token);
     }
 
-    dataMigration(object): void {
+    dataMigration(object: object) : void {
         for (let k in new Member()) {
             if (object[k] === undefined) continue;
             this[k] = object[k];

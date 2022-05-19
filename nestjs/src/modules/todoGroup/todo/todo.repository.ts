@@ -1,6 +1,5 @@
 import {DeleteResult, EntityRepository, Repository, UpdateResult} from "typeorm";
 import {Todo} from "./entities/todo.entity";
-import {Member} from "../../member/entities/member.entity";
 import {TodoGroup} from "../entities/todoGroup.entity";
 
 @EntityRepository(Todo)
@@ -25,6 +24,10 @@ export class TodoRepository extends Repository<Todo> {
             .where({todoGroup})
             .orderBy('created_at')
             .getManyAndCount();
+    }
+
+    async createTodo(todo: Todo): Promise<Todo> {
+        return await this.save(todo)
     }
 
 

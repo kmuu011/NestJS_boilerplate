@@ -1,9 +1,9 @@
 import {Injectable} from '@nestjs/common';
-import {Member} from "../../member/entities/member.entity";
-import {SelectObject} from "../../../common/type/type";
+import {SelectListResponseType} from "../../../common/type/type";
 import {TodoRepository} from "./todo.repository";
 import {Todo} from "./entities/todo.entity";
 import {TodoGroup} from "../entities/todoGroup.entity";
+import {CreateTodoDto} from "./dto/create-todo-dto";
 
 @Injectable()
 export class TodoService {
@@ -15,7 +15,7 @@ export class TodoService {
         return await this.todoRepository.selectOne(todoGroup, todoIdx);
     }
 
-    async selectList(todoGroup: TodoGroup, page: number, count: number): Promise<SelectObject<Todo>> {
+    async selectList(todoGroup: TodoGroup, page: number, count: number): Promise<SelectListResponseType<Todo>> {
         const result = await this.todoRepository.selectList(todoGroup, page, count);
 
         return {
@@ -26,4 +26,14 @@ export class TodoService {
             last: Math.ceil(result[1] / count) || 1
         };
     }
+
+    async create(todoGroup: TodoGroup, createTodoDto: CreateTodoDto) {
+        const todo: Todo = new Todo();
+
+        todo.dataMigration(createTodoDto);
+        todo.todoGroup = todoGroup;
+
+        return this.todoRepository.createTodo(todo)
+    }
+
 }

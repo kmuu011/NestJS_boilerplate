@@ -5,14 +5,14 @@ import {Member} from "../entities/member.entity";
 @EntityRepository(Token)
 export class TokenRepository extends Repository<Token> {
 
-    async select(tokenCode: string) {
+    async select(tokenCode: string): Promise<Token> {
         return await this.findOne({
             relations: ["member"],
             where:{code: tokenCode},
         })
     }
 
-    async saveToken(member: Member, token: string, code: string) {
+    async saveToken(member: Member, token: string, code: string): Promise<Token> {
         const tokenInfo: Token = (await this.findOne({
             where: {member: member.idx}
         })) || new Token();

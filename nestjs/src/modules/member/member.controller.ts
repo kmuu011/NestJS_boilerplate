@@ -22,9 +22,9 @@ import {AuthGuard} from "guard/auth.guard";
 import {UpdateMemberDto} from "./dto/update-member.dto";
 import {FileInterceptor} from "@nestjs/platform-express";
 
-import {multerOptions} from "config/config";
+import {basePath, multerOptions} from "config/config";
 import * as validator from "libs/validator";
-import {FileType} from "../../common/type/type";
+import {FileType, LoginResponseType, ResponseBooleanType} from "../../common/type/type";
 import {Message} from "libs/message";
 
 const duplicateCheckKeys = ['id', 'nickname', 'email'];
@@ -34,26 +34,25 @@ const duplicateCheckKeys = ['id', 'nickname', 'email'];
 export class MemberController {
     constructor(
         private readonly memberService: MemberService,
-    ) {
-    }
+    ) {}
 
     @Post('/auth')
     @UseGuards(AuthGuard)
     async auth(
         @Req() req: Request
-    ) {
+    ): Promise<Member> {
         const memberInfo = req.locals.memberInfo;
 
-        return {
-            memberInfo
-        };
+        console.log(memberInfo)
+
+        return memberInfo;
     }
 
     @Post('/login')
     async login(
         @Req() req: Request,
         @Body() loginMemberDto: LoginMemberDto
-    ) {
+    ): Promise<LoginResponseType> {
         const member: Member = await this.memberService.login(loginMemberDto, req.headers);
 
         return {
@@ -64,7 +63,7 @@ export class MemberController {
     @Post('/signUp')
     async signUp(
         @Body() createMemberDto: CreateMemberDto
-    ) {
+    ): Promise<ResponseBooleanType> {
         for (const key of duplicateCheckKeys) {
             const usable = await this.memberService.duplicateCheck(key, createMemberDto[key]);
 
@@ -85,7 +84,7 @@ export class MemberController {
     async updateMember(
         @Req() req: Request,
         @Body() updateMemberDto: UpdateMemberDto
-    ) {
+    ): Promise<ResponseBooleanType> {
         const memberInfo = req.locals.memberInfo;
         for (const key of duplicateCheckKeys) {
             if (key === 'id') continue;
@@ -114,7 +113,7 @@ export class MemberController {
     async img(
         @Req() req: Request,
         @UploadedFile() file
-    ) {
+    ): Promise<ResponseBooleanType> {
         const arrangedFile: FileType = (validator.file([file], 10, validator.type.img))[0];
 
         await this.memberService.imgUpdate(arrangedFile, req.locals.memberInfo);
@@ -128,7 +127,7 @@ export class MemberController {
     @UseGuards(AuthGuard)
     async deleteImg(
         @Req() req: Request,
-    ) {
+    ): Promise<ResponseBooleanType> {
         await this.memberService.imgDelete(req.locals.memberInfo);
 
         return {
@@ -142,17 +141,17 @@ export class MemberController {
     async getImg(
         @Req() req: Request,
         @Res() res: Response
-    ) {
+    ): Promise<void> {
         const member: Member = req.locals.memberInfo;
         const profileImgKey = member.profile_img_key;
 
-        res.download(global.filePath + profileImgKey, 'test.jpg');
+        res.download(basePath + profileImgKey, 'test.jpg');
     }
 
     @Get('/duplicateCheck')
     async duplicateCheck(
         @Body() duplicateCheckDto: DuplicateCheckMemberDto
-    ) {
+    ): Promise<ResponseBooleanType> {
         const {type, value} = duplicateCheckDto;
 
         return {

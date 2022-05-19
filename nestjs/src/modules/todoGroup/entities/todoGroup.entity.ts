@@ -47,7 +47,7 @@ export class TodoGroup extends BaseEntity {
     @Column({type: "timestamp", default: () => "now", comment: "수정 일자"})
     updated_at: string = undefined;
 
-    dataMigration(object): void {
+    dataMigration(object: object): void {
         for (let k in new TodoGroup()) {
             if (object[k] === undefined) continue;
             this[k] = object[k];

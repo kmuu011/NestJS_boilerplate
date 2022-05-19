@@ -38,4 +38,11 @@ export class Todo extends BaseEntity {
     @IsDateString()
     @Column({type: "timestamp", nullable: true, comment: "완료 일자"})
     completed_at: string = undefined;
+
+    dataMigration(object: object): void {
+        for (let k in new Todo()) {
+            if (object[k] === undefined) continue;
+            this[k] = object[k];
+        }
+    }
 }
