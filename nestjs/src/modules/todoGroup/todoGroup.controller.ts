@@ -10,38 +10,40 @@ import {UpdateTodoGroupDto} from "./dto/update-todoGroup-dto";
 import {TodoGroup} from "./entities/todoGroup.entity";
 
 @Controller('/todoGroup')
-@UseGuards(AuthGuard)
 export class TodoGroupController {
     constructor(private readonly todoGroupService: TodoGroupService) {}
 
     @Get()
+    @UseGuards(AuthGuard)
     async getTodoGroupList(
         @Req() req: Request,
         @Query() query: SelectQueryDto
     ){
         const { page, count } = query;
-        const member: Member = req.res.locals.memberInfo;
+        const member: Member = req.locals.memberInfo;
 
         return await this.todoGroupService.selectList(member, page, count);
     }
 
     @Post()
+    @UseGuards(AuthGuard)
     async createGroup(
         @Req() req: Request,
         @Body() body: CreateTodoGroupDto
     ){
-        const member: Member = req.res.locals.memberInfo;
+        const member: Member = req.locals.memberInfo;
 
         return await this.todoGroupService.create(member, body);
     }
 
     @All('/:todoGroupIdx(\\d+)')
+    @UseGuards(AuthGuard)
     async selectTodoGroup(
         @Req() req: Request,
         @Next() next: NextFunction,
         @Param('todoGroupIdx') todoGroupIdx: number
     ){
-        const member: Member = req.res.locals.memberInfo;
+        const member: Member = req.locals.memberInfo;
 
         const todoGroupInfo = await this.todoGroupService.selectOne(member, todoGroupIdx);
 
@@ -49,7 +51,7 @@ export class TodoGroupController {
             throw Message.NOT_EXIST('todoGroup');
         }
 
-        req.res.locals.todoGroupInfo = todoGroupInfo;
+        req.locals.todoGroupInfo = todoGroupInfo;
 
         next();
     }
@@ -58,7 +60,7 @@ export class TodoGroupController {
     async selectOneTodoGroup(
         @Req() req: Request,
     ){
-        return req.res.locals.todoGroupInfo;
+        return req.locals.todoGroupInfo;
     }
 
     @Patch('/:todoGroupIdx(\\d+)')

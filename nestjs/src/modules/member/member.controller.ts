@@ -42,7 +42,7 @@ export class MemberController {
     async auth(
         @Req() req: Request
     ) {
-        const memberInfo = req.res.locals.memberInfo;
+        const memberInfo = req.locals.memberInfo;
 
         return {
             memberInfo
@@ -86,7 +86,7 @@ export class MemberController {
         @Req() req: Request,
         @Body() updateMemberDto: UpdateMemberDto
     ) {
-        const memberInfo = req.res.locals.memberInfo;
+        const memberInfo = req.locals.memberInfo;
         for (const key of duplicateCheckKeys) {
             if (key === 'id') continue;
 
@@ -117,7 +117,7 @@ export class MemberController {
     ) {
         const arrangedFile: FileType = (validator.file([file], 10, validator.type.img))[0];
 
-        await this.memberService.imgUpdate(arrangedFile, req.res.locals.memberInfo);
+        await this.memberService.imgUpdate(arrangedFile, req.locals.memberInfo);
 
         return {
             result: true
@@ -129,7 +129,7 @@ export class MemberController {
     async deleteImg(
         @Req() req: Request,
     ) {
-        await this.memberService.imgDelete(req.res.locals.memberInfo);
+        await this.memberService.imgDelete(req.locals.memberInfo);
 
         return {
             result: true
@@ -143,7 +143,7 @@ export class MemberController {
         @Req() req: Request,
         @Res() res: Response
     ) {
-        const member: Member = req.res.locals.memberInfo;
+        const member: Member = req.locals.memberInfo;
         const profileImgKey = member.profile_img_key;
 
         res.download(global.filePath + profileImgKey, 'test.jpg');

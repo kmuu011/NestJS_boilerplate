@@ -8,6 +8,8 @@ export class PrefixMiddleware implements NestMiddleware {
         xss.check(req.body);
         xss.check(req.query);
 
+        req.locals = {};
+
         next();
     }
 }

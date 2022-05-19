@@ -12,7 +12,6 @@ import {MemberRepository} from "./modules/member/member.repository";
 import {TokenRepository} from "./modules/member/token/token.repository";
 import {TodoGroupRepository} from "./modules/todoGroup/todoGroup.repository";
 
-
 @Global()
 @Module({
     imports: [
@@ -31,7 +30,6 @@ import {TodoGroupRepository} from "./modules/todoGroup/todoGroup.repository";
             TodoGroupRepository,
         ]),
     ]
-
 })
 
 export class AppModule implements NestModule {

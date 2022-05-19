@@ -9,7 +9,6 @@ import {SelectQueryDto} from "../../../common/dto/select-query-dto";
 import {TodoGroup} from "../entities/todoGroup.entity";
 
 @Controller('/todoGroup/:todoGroupIdx(\\d+)/todo')
-@UseGuards(AuthGuard)
 export class TodoController {
     constructor(
         private readonly todoGroupService: TodoGroupService,
@@ -17,12 +16,13 @@ export class TodoController {
     ) {}
 
     @All('/')
+    @UseGuards(AuthGuard)
     async selectTodoGroup(
         @Req() req: Request,
         @Next() next: NextFunction,
         @Param('todoGroupIdx') todoGroupIdx: number
     ) {
-        const member: Member = req.res.locals.memberInfo;
+        const member: Member = req.locals.memberInfo;
 
         const todoGroupInfo: TodoGroup = await this.todoGroupService.selectOne(member, todoGroupIdx);
 
@@ -30,7 +30,7 @@ export class TodoController {
             throw Message.NOT_EXIST('todoGroup');
         }
 
-        req.res.locals.todoGroupInfo = todoGroupInfo;
+        req.locals.todoGroupInfo = todoGroupInfo;
 
         next();
     }
@@ -41,7 +41,7 @@ export class TodoController {
         @Query() query: SelectQueryDto
     ) {
         const { page, count } = query;
-        const todoGroupInfo: TodoGroup = req.res.locals.todoGroupInfo;
+        const todoGroupInfo: TodoGroup = req.locals.todoGroupInfo;
 
         return await this.todoService.selectList(todoGroupInfo, page, count);
     }
