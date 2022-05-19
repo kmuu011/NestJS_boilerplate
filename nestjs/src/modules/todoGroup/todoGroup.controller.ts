@@ -7,6 +7,7 @@ import {CreateTodoGroupDto} from "./dto/create-todoGroup-dto";
 import {SelectQueryDto} from "../../common/dto/select-query-dto";
 import {Message} from "libs/message";
 import {UpdateTodoGroupDto} from "./dto/update-todoGroup-dto";
+import {TodoGroup} from "./entities/todoGroup.entity";
 
 @Controller('/todoGroup')
 @UseGuards(AuthGuard)

@@ -6,7 +6,7 @@ import {getUpdateObject} from "libs/utils";
 @EntityRepository(TodoGroup)
 export class TodoGroupRepository extends Repository<TodoGroup> {
 
-    async selectOne(member: Member, todoGroupIdx: number) {
+    async selectOne(member: Member, todoGroupIdx: number): Promise<TodoGroup> {
         return await this.findOne({
             where: {member, idx: todoGroupIdx}
         });

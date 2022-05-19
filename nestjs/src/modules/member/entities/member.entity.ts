@@ -98,6 +98,7 @@ export class Member extends BaseEntity {
     passwordEncrypt(): void {
         if (this.password_encrypted !== true) {
             this.password = encryptPassword(this.password)
+            this.password_encrypted = true;
         }
     }
 

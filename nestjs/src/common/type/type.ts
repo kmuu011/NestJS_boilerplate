@@ -1,5 +1,4 @@
 import Buffer from "buffer";
-import {BaseEntity} from "typeorm";
 
 export interface FileType {
     fileType: string
@@ -24,3 +23,14 @@ export interface SelectObject<T> {
     totalCount: number;
     last: number
 }
+
+// export interface LocalsType<T> {
+//     memberInfo: T,
+//     todoGroupInfo: T
+// }
+//
+// declare module 'express' {
+//     export interface Response{
+//         locals: LocalsType<T>
+//     }
+// }
