@@ -5,14 +5,15 @@ import {Todo} from "./entities/todo.entity";
 import {TodoGroup} from "../entities/todoGroup.entity";
 import {CreateTodoDto} from "./dto/create-todo-dto";
 import {UpdateTodoDto} from "./dto/update-todo-dto";
-import {UpdateResult} from "typeorm";
+import {DeleteResult, UpdateResult} from "typeorm";
 import {Message} from "libs/message";
 
 @Injectable()
 export class TodoService {
     constructor(
-       private readonly todoRepository: TodoRepository
-    ) {}
+        private readonly todoRepository: TodoRepository
+    ) {
+    }
 
     async selectOne(todoGroup: TodoGroup, todoIdx: number): Promise<Todo> {
         return await this.todoRepository.selectOne(todoGroup, todoIdx);
@@ -44,7 +45,15 @@ export class TodoService {
 
         const updateResult: UpdateResult = await this.todoRepository.updateTodo(todo, updateTodoDto);
 
-        if(updateResult.affected !== 1){
+        if (updateResult.affected !== 1) {
+            throw Message.SERVER_ERROR;
+        }
+    }
+
+    async delete(todo: Todo): Promise<void> {
+        const deleteResult: DeleteResult = await this.todoRepository.deleteTodo(todo);
+
+        if (deleteResult.affected !== 1) {
             throw Message.SERVER_ERROR;
         }
     }

@@ -91,4 +91,15 @@ export class TodoController {
         return {result: true};
     }
 
+    @Delete('/:todoIdx(\\d+)')
+    async deleteTodo(
+        @Req() req: Request
+    ): Promise<ResponseBooleanType> {
+        const todoInfo: Todo = req.locals.todoInfo;
+
+        await this.todoService.delete(todoInfo);
+
+        return {result: true};
+    }
+
 }
