@@ -8,8 +8,6 @@ import {
 import {port} from 'config/config';
 import {ValidationPipe} from "@nestjs/common";
 
-require('../global');
-
 const appOptions = {
     cors: true
 };

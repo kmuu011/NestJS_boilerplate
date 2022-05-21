@@ -1,21 +1,25 @@
 import {Injectable} from '@nestjs/common';
-import {Member} from "../../member/entities/member.entity";
-import {SelectObject} from "../../../common/type/type";
+import {SelectListResponseType} from "../../../common/type/type";
 import {TodoRepository} from "./todo.repository";
 import {Todo} from "./entities/todo.entity";
 import {TodoGroup} from "../entities/todoGroup.entity";
+import {CreateTodoDto} from "./dto/create-todo-dto";
+import {UpdateTodoDto} from "./dto/update-todo-dto";
+import {DeleteResult, UpdateResult} from "typeorm";
+import {Message} from "libs/message";
 
 @Injectable()
 export class TodoService {
     constructor(
-       private readonly todoRepository: TodoRepository
-    ) {}
+        private readonly todoRepository: TodoRepository
+    ) {
+    }
 
     async selectOne(todoGroup: TodoGroup, todoIdx: number): Promise<Todo> {
         return await this.todoRepository.selectOne(todoGroup, todoIdx);
     }
 
-    async selectList(todoGroup: TodoGroup, page: number, count: number): Promise<SelectObject<Todo>> {
+    async selectList(todoGroup: TodoGroup, page: number, count: number): Promise<SelectListResponseType<Todo>> {
         const result = await this.todoRepository.selectList(todoGroup, page, count);
 
         return {
@@ -26,4 +30,32 @@ export class TodoService {
             last: Math.ceil(result[1] / count) || 1
         };
     }
+
+    async create(todoGroup: TodoGroup, createTodoDto: CreateTodoDto): Promise<Todo> {
+        const todo: Todo = new Todo();
+
+        todo.dataMigration(createTodoDto);
+        todo.todoGroup = todoGroup;
+
+        return this.todoRepository.createTodo(todo)
+    }
+
+    async update(todo: Todo, updateTodoDto: UpdateTodoDto): Promise<void> {
+        todo.dataMigration(updateTodoDto);
+
+        const updateResult: UpdateResult = await this.todoRepository.updateTodo(todo, updateTodoDto);
+
+        if (updateResult.affected !== 1) {
+            throw Message.SERVER_ERROR;
+        }
+    }
+
+    async delete(todo: Todo): Promise<void> {
+        const deleteResult: DeleteResult = await this.todoRepository.deleteTodo(todo);
+
+        if (deleteResult.affected !== 1) {
+            throw Message.SERVER_ERROR;
+        }
+    }
+
 }

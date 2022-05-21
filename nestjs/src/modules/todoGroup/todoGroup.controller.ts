@@ -8,6 +8,7 @@ import {SelectQueryDto} from "../../common/dto/select-query-dto";
 import {Message} from "libs/message";
 import {UpdateTodoGroupDto} from "./dto/update-todoGroup-dto";
 import {TodoGroup} from "./entities/todoGroup.entity";
+import {ResponseBooleanType, SelectListResponseType} from "../../common/type/type";
 
 @Controller('/todoGroup')
 export class TodoGroupController {
@@ -18,8 +19,8 @@ export class TodoGroupController {
     async getTodoGroupList(
         @Req() req: Request,
         @Query() query: SelectQueryDto
-    ){
-        const { page, count } = query;
+    ): Promise<SelectListResponseType<TodoGroup>> {
+        const {page, count} = query;
         const member: Member = req.locals.memberInfo;
 
         return await this.todoGroupService.selectList(member, page, count);
@@ -30,7 +31,7 @@ export class TodoGroupController {
     async createGroup(
         @Req() req: Request,
         @Body() body: CreateTodoGroupDto
-    ){
+    ): Promise<TodoGroup> {
         const member: Member = req.locals.memberInfo;
 
         return await this.todoGroupService.create(member, body);
@@ -42,12 +43,12 @@ export class TodoGroupController {
         @Req() req: Request,
         @Next() next: NextFunction,
         @Param('todoGroupIdx') todoGroupIdx: number
-    ){
+    ): Promise<void> {
         const member: Member = req.locals.memberInfo;
 
         const todoGroupInfo = await this.todoGroupService.selectOne(member, todoGroupIdx);
 
-        if(!todoGroupInfo){
+        if (!todoGroupInfo) {
             throw Message.NOT_EXIST('todoGroup');
         }
 
@@ -59,7 +60,7 @@ export class TodoGroupController {
     @Get('/:todoGroupIdx(\\d+)')
     async selectOneTodoGroup(
         @Req() req: Request,
-    ){
+    ): Promise<TodoGroup> {
         return req.locals.todoGroupInfo;
     }
 
@@ -67,7 +68,7 @@ export class TodoGroupController {
     async updateTodoGroup(
         @Req() req: Request,
         @Body() body: UpdateTodoGroupDto
-    ){
+    ): Promise<ResponseBooleanType> {
         const {memberInfo, todoGroupInfo} = req.res.locals;
 
         await this.todoGroupService.update(memberInfo, todoGroupInfo, body);
@@ -78,7 +79,7 @@ export class TodoGroupController {
     @Delete('/:todoGroupIdx(\\d+)')
     async deleteTodoGroup(
         @Req() req: Request,
-    ){
+    ): Promise<ResponseBooleanType> {
         const {memberInfo, todoGroupInfo} = req.res.locals;
 
         await this.todoGroupService.delete(memberInfo, todoGroupInfo);

@@ -74,7 +74,5 @@ export const getUpdateObject = <T>(keys: string[], entity: T, includeUpdateAt: b
     }
 
     return obj;
-
 }
-
 

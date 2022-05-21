@@ -1,7 +1,8 @@
 import {DeleteResult, EntityRepository, Repository, UpdateResult} from "typeorm";
 import {Todo} from "./entities/todo.entity";
-import {Member} from "../../member/entities/member.entity";
 import {TodoGroup} from "../entities/todoGroup.entity";
+import {getUpdateObject} from "libs/utils";
+import {UpdateTodoDto} from "./dto/update-todo-dto";
 
 @EntityRepository(Todo)
 export class TodoRepository extends Repository<Todo> {
@@ -12,12 +13,12 @@ export class TodoRepository extends Repository<Todo> {
         });
     }
 
-    async selectList(todoGroup: TodoGroup, page?: number, count?: number) {
+    async selectList(todoGroup: TodoGroup, page?: number, count?: number): Promise<[Todo[], number]> {
         let query = this.createQueryBuilder('t');
 
-        if(page && count){
+        if (page && count) {
             query = query
-                .skip(page-1)
+                .skip(page - 1)
                 .take(count);
         }
 
@@ -25,6 +26,29 @@ export class TodoRepository extends Repository<Todo> {
             .where({todoGroup})
             .orderBy('created_at')
             .getManyAndCount();
+    }
+
+    async createTodo(todo: Todo): Promise<Todo> {
+        return await this.save(todo)
+    }
+
+    async updateTodo(todo: Todo, updateTodoDto: UpdateTodoDto): Promise<UpdateResult> {
+        const obj = getUpdateObject(["content"], todo, true);
+
+        if (updateTodoDto.complete !== undefined) {
+            if (updateTodoDto.complete === true && !todo.completed_at) {
+                obj.completed_at = () => "now()";
+            } else if(updateTodoDto.complete === false && todo.completed_at){
+                obj.completed_at = undefined;
+            }
+        }
+
+        return await this.update(todo.idx, obj);
+    }
+
+    async deleteTodo(todo: Todo): Promise<DeleteResult> {
+
+        return await this.delete(todo.idx);
     }
 
 

@@ -3,10 +3,10 @@ import {TodoGroupRepository} from "./todoGroup.repository";
 import {TodoGroup} from "./entities/todoGroup.entity";
 import {Member} from "../member/entities/member.entity";
 import {CreateTodoGroupDto} from "./dto/create-todoGroup-dto";
-import {SelectObject} from "../../common/type/type";
 import {DeleteResult, UpdateResult} from "typeorm";
 import {Message} from "libs/message";
 import {UpdateTodoGroupDto} from "./dto/update-todoGroup-dto";
+import {SelectListResponseType} from "../../common/type/type";
 
 @Injectable()
 export class TodoGroupService {
@@ -45,7 +45,7 @@ export class TodoGroupService {
         return await this.todoGroupRepository.selectOne(member, todoGroupIdx);
     }
 
-    async selectList(member: Member, page: number, count: number): Promise<SelectObject<TodoGroup>> {
+    async selectList(member: Member, page: number, count: number): Promise<SelectListResponseType<TodoGroup>> {
         const result = await this.todoGroupRepository.selectList(member, page, count);
 
         return {
@@ -68,7 +68,7 @@ export class TodoGroupService {
 
         await this.arrangeOrder(member);
 
-        return await this.todoGroupRepository.saveTodoGroup(todoGroup);
+        return await this.todoGroupRepository.createTodoGroup(todoGroup);
     }
 
     async update(member: Member, todoGroup: TodoGroup, body: UpdateTodoGroupDto): Promise<void> {
