@@ -1,5 +1,18 @@
 import {ArgumentsHost, Catch, ExceptionFilter, HttpException} from '@nestjs/common';
 import {Request, Response} from 'express';
+import * as Sentry from '@sentry/node';
+import * as Tracing from '@sentry/tracing';
+import {sentry} from "../config/config";
+
+Sentry.init({
+    dsn: sentry.dsn,
+
+    // Set tracesSampleRate to 1.0 to capture 100%
+    // of transactions for performance monitoring.
+    // We recommend adjusting this value in production
+    tracesSampleRate: 1.0,
+});
+
 
 @Catch(HttpException)
 export class ControllableExceptionFilter implements ExceptionFilter {
@@ -15,6 +28,15 @@ export class ControllableExceptionFilter implements ExceptionFilter {
 
         console.log('HttpExceptionFilter log');
         console.log(exception)
+
+        const transaction = Sentry.startTransaction({
+            op: "test",
+            name: "My First Test Transaction",
+        });
+
+        if(status >= 500){
+            Sentry.captureException(exception);
+        }
 
         res
             .status(status)
@@ -36,6 +58,8 @@ export class OutOfControlExceptionFilter implements ExceptionFilter {
 
         console.log('OutOfControlException log');
         console.log(exception);
+
+        Sentry.captureException(exception);
 
         res
             .status(500)
