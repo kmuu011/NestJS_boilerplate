@@ -5,8 +5,9 @@ import {
     OutOfControlExceptionFilter
   } from 'filter/exception.filter';
 
-import {port} from 'config/config';
+import {port, sentry} from 'config/config';
 import {ValidationPipe} from "@nestjs/common";
+import * as Sentry from "@sentry/node";
 
 const appOptions = {
     cors: true
@@ -20,6 +21,13 @@ const validationOptions = {
         enableImplicitConversion: true
     }
 };
+
+Sentry.init({
+    ...sentry,
+    integrations: [
+        new Sentry.Integrations.Http({tracing: true})
+    ]
+});
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, appOptions);

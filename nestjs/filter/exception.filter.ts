@@ -1,18 +1,40 @@
 import {ArgumentsHost, Catch, ExceptionFilter, HttpException} from '@nestjs/common';
 import {Request, Response} from 'express';
 import * as Sentry from '@sentry/node';
-import * as Tracing from '@sentry/tracing';
-import {sentry} from "../config/config";
+import {IncomingWebhook} from "@slack/client";
+import {slack} from "../config/config";
 
-Sentry.init({
-    dsn: sentry.dsn,
+const webhook = new IncomingWebhook(
+    slack.apiLogHook //slack hook url
+);
 
-    // Set tracesSampleRate to 1.0 to capture 100%
-    // of transactions for performance monitoring.
-    // We recommend adjusting this value in production
-    tracesSampleRate: 1.0,
-});
+function captureSentry (status: number, api: string, exception: HttpException, req: Request) {
+    const { query, params, body, headers } = req;
 
+    Sentry.setContext("desc", {
+        status, api, exception,
+        query, params, body, headers
+    });
+
+    Sentry.captureException(exception);
+
+    webhook.send({
+        attachments: [
+            {
+                color: "danger",
+                text: `🚨${api} 에러 발생`,
+                fields: [
+                    {
+                        title: `ㅡ${api}ㅡ`,
+                        value: exception?.stack,
+                        short: false
+                    }
+                ],
+                ts: new Date().toString()
+            }
+        ]
+    });
+}
 
 @Catch(HttpException)
 export class ControllableExceptionFilter implements ExceptionFilter {
@@ -22,20 +44,12 @@ export class ControllableExceptionFilter implements ExceptionFilter {
         const req = ctx.getRequest<Request>();
         const status = exception.getStatus();
         const response: any = exception.getResponse();
-        const stack = exception?.stack.toString() || '';
-
+        // const stack = exception?.stack.toString() || '';
+        const api = req.originalUrl;
         const {error, message} = response;
 
-        console.log('HttpExceptionFilter log');
-        console.log(exception)
-
-        const transaction = Sentry.startTransaction({
-            op: "test",
-            name: "My First Test Transaction",
-        });
-
         if(status >= 500){
-            Sentry.captureException(exception);
+            captureSentry(status, api, exception, req);
         }
 
         res
@@ -54,12 +68,10 @@ export class OutOfControlExceptionFilter implements ExceptionFilter {
         const ctx = host.switchToHttp();
         const res = ctx.getResponse<Response>();
         const req = ctx.getRequest<Request>();
-        const stack = exception?.stack?.toString() || '';
+        // const stack = exception?.stack?.toString() || '';
+        const api = req.originalUrl;
 
-        console.log('OutOfControlException log');
-        console.log(exception);
-
-        Sentry.captureException(exception);
+        captureSentry(500, api, exception, req);
 
         res
             .status(500)
