@@ -9,11 +9,11 @@ const webhook = new IncomingWebhook(
 );
 
 function captureSentry (status: number, api: string, exception: HttpException, req: Request) {
-    const { query, params, body, headers } = req;
+    const { query, params } = req;
 
     Sentry.setContext("desc", {
-        status, api, exception,
-        query, params, body, headers
+        exception,
+        query, params
     });
 
     Sentry.captureException(exception);
@@ -70,13 +70,14 @@ export class OutOfControlExceptionFilter implements ExceptionFilter {
         const req = ctx.getRequest<Request>();
         // const stack = exception?.stack?.toString() || '';
         const api = req.originalUrl;
+        const status = 500;
 
-        captureSentry(500, api, exception, req);
+        captureSentry(status, api, exception, req);
 
         res
-            .status(500)
+            .status(status)
             .json({
-                statusCode: 500,
+                statusCode: status,
                 code: 'out_of_control_serve_error',
                 message: '지정되지 않은 오류가 발생했습니다.' +
                     '\n빠른 시일 내에 수정 될 예정입니다.' +
