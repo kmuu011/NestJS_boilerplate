@@ -1,21 +1,32 @@
-import {All, Body, Controller, Delete, Get, Next, Param, Patch, Post, Query, Req, UseGuards} from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Patch,
+    Post,
+    Query,
+    Req,
+    UseGuards,
+} from '@nestjs/common';
 import {TodoGroupService} from './todoGroup.service';
-import {NextFunction, Request} from "express";
-import {AuthGuard} from "guard/auth.guard";
+import {Request} from "express";
+import {AuthGuard} from "src/common/guard/auth.guard";
 import {Member} from "../member/entities/member.entity";
 import {CreateTodoGroupDto} from "./dto/create-todoGroup-dto";
 import {SelectQueryDto} from "../../common/dto/select-query-dto";
-import {Message} from "libs/message";
 import {UpdateTodoGroupDto} from "./dto/update-todoGroup-dto";
 import {TodoGroup} from "./entities/todoGroup.entity";
 import {ResponseBooleanType, SelectListResponseType} from "../../common/type/type";
+import {TodoGroupGuard} from "./todoGroup.guard";
 
 @Controller('/todoGroup')
+@UseGuards(AuthGuard)
 export class TodoGroupController {
     constructor(private readonly todoGroupService: TodoGroupService) {}
 
     @Get()
-    @UseGuards(AuthGuard)
     async getTodoGroupList(
         @Req() req: Request,
         @Query() query: SelectQueryDto
@@ -27,7 +38,6 @@ export class TodoGroupController {
     }
 
     @Post()
-    @UseGuards(AuthGuard)
     async createGroup(
         @Req() req: Request,
         @Body() body: CreateTodoGroupDto
@@ -37,37 +47,21 @@ export class TodoGroupController {
         return await this.todoGroupService.create(member, body);
     }
 
-    @All('/:todoGroupIdx(\\d+)')
-    @UseGuards(AuthGuard)
-    async selectTodoGroup(
-        @Req() req: Request,
-        @Next() next: NextFunction,
-        @Param('todoGroupIdx') todoGroupIdx: number
-    ): Promise<void> {
-        const member: Member = req.locals.memberInfo;
-
-        const todoGroupInfo = await this.todoGroupService.selectOne(member, todoGroupIdx);
-
-        if (!todoGroupInfo) {
-            throw Message.NOT_EXIST('todoGroup');
-        }
-
-        req.locals.todoGroupInfo = todoGroupInfo;
-
-        next();
-    }
-
     @Get('/:todoGroupIdx(\\d+)')
+    @UseGuards(TodoGroupGuard)
     async selectOneTodoGroup(
         @Req() req: Request,
+        @Param('todoGroupIdx') todoGroupIdx: number,
     ): Promise<TodoGroup> {
         return req.locals.todoGroupInfo;
     }
 
     @Patch('/:todoGroupIdx(\\d+)')
+    @UseGuards(TodoGroupGuard)
     async updateTodoGroup(
         @Req() req: Request,
-        @Body() body: UpdateTodoGroupDto
+        @Body() body: UpdateTodoGroupDto,
+        @Param('todoGroupIdx') todoGroupIdx: number,
     ): Promise<ResponseBooleanType> {
         const {memberInfo, todoGroupInfo} = req.res.locals;
 
@@ -77,8 +71,10 @@ export class TodoGroupController {
     }
 
     @Delete('/:todoGroupIdx(\\d+)')
+    @UseGuards(TodoGroupGuard)
     async deleteTodoGroup(
         @Req() req: Request,
+        @Param('todoGroupIdx') todoGroupIdx: number,
     ): Promise<ResponseBooleanType> {
         const {memberInfo, todoGroupInfo} = req.res.locals;
 

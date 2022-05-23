@@ -3,8 +3,8 @@ import {Global, MiddlewareConsumer, Module, NestModule, RequestMethod} from '@ne
 import {TodoGroupModule} from './modules/todoGroup/todoGroup.module';
 import {MemberModule} from "./modules/member/member.module";
 
-import {PrefixMiddleware} from "middleware/prefix.middleware";
-import {LoggerMiddleware} from "../middleware/logger.middleware";
+import {PrefixMiddleware} from "src/common/middleware/prefix.middleware";
+import {LoggerMiddleware} from "./common/middleware/logger.middleware";
 
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {sentry, typeOrmOptions} from "config/config";
