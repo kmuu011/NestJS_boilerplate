@@ -25,7 +25,8 @@ const validationOptions = {
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, appOptions);
 
-    app.useGlobalInterceptors(new TestInterceptor());
+    // 인터셉터 사용 방법
+    // app.useGlobalInterceptors(new TestInterceptor());
 
     app.useGlobalPipes(new ValidationPipe(validationOptions));
 
