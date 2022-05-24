@@ -44,6 +44,7 @@ export class MemberController {
 
         console.log(memberInfo);
 
+        throw Message.SERVER_ERROR;
 
         return memberInfo;
     }
