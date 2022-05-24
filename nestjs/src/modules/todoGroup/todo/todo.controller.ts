@@ -1,8 +1,16 @@
-import {All, Body, Controller, Delete, Get, Next, Param, Patch, Post, Query, Req, UseGuards} from '@nestjs/common';
-import {AuthGuard} from "guard/auth.guard";
-import {NextFunction, Request} from "express";
-import {Member} from "../../member/entities/member.entity";
-import {Message} from "libs/message";
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Patch,
+    Post,
+    Query,
+    Req,
+    UseGuards,
+} from '@nestjs/common';
+import {AuthGuard} from "src/common/guard/auth.guard";
+import {Request} from "express";
 import {TodoGroupService} from "../todoGroup.service";
 import {TodoService} from "./todo.service";
 import {SelectQueryDto} from "../../../common/dto/select-query-dto";
@@ -11,33 +19,17 @@ import {CreateTodoDto} from "./dto/create-todo-dto";
 import {Todo} from "./entities/todo.entity";
 import {UpdateTodoDto} from "./dto/update-todo-dto";
 import {ResponseBooleanType, SelectListResponseType} from "../../../common/type/type";
+import {TodoGroupGuard} from "../todoGroup.guard";
+import {TodoGuard} from "./todo.guard";
 
 @Controller('/todoGroup/:todoGroupIdx(\\d+)/todo')
+@UseGuards(TodoGroupGuard)
+@UseGuards(AuthGuard)
 export class TodoController {
     constructor(
         private readonly todoGroupService: TodoGroupService,
         private readonly todoService: TodoService
     ) {}
-
-    @All(['*', '/'])
-    @UseGuards(AuthGuard)
-    async selectTodoGroup(
-        @Req() req: Request,
-        @Next() next: NextFunction,
-        @Param('todoGroupIdx') todoGroupIdx: number
-    ): Promise<void> {
-        const member: Member = req.locals.memberInfo;
-
-        const todoGroupInfo: TodoGroup = await this.todoGroupService.selectOne(member, todoGroupIdx);
-
-        if (!todoGroupInfo) {
-            throw Message.NOT_EXIST('todoGroup');
-        }
-
-        req.locals.todoGroupInfo = todoGroupInfo;
-
-        next();
-    }
 
     @Get('/')
     async selectList(
@@ -60,26 +52,8 @@ export class TodoController {
         return await this.todoService.create(todoGroup, body);
     }
 
-    @All('/:todoIdx(\\d+)')
-    async selectTodo(
-        @Req() req: Request,
-        @Next() next: NextFunction,
-        @Param('todoIdx') todoIdx: number
-    ): Promise<void> {
-        const todoGroupInfo: TodoGroup = req.locals.todoGroupInfo;
-
-        const todo: Todo = await this.todoService.selectOne(todoGroupInfo, todoIdx);
-
-        if (!todo) {
-            throw Message.NOT_EXIST('todo');
-        }
-
-        req.locals.todoInfo = todo;
-
-        next();
-    }
-
     @Patch('/:todoIdx(\\d+)')
+    @UseGuards(TodoGuard)
     async updateTodo(
         @Req() req: Request,
         @Body() body: UpdateTodoDto
@@ -92,6 +66,7 @@ export class TodoController {
     }
 
     @Delete('/:todoIdx(\\d+)')
+    @UseGuards(TodoGuard)
     async deleteTodo(
         @Req() req: Request
     ): Promise<ResponseBooleanType> {

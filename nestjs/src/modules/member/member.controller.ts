@@ -18,7 +18,7 @@ import {CreateMemberDto} from "./dto/create-member-dto";
 import {DuplicateCheckMemberDto} from "./dto/duplicate-check-member.dto";
 import {Member} from "./entities/member.entity"
 
-import {AuthGuard} from "guard/auth.guard";
+import {AuthGuard} from "src/common/guard/auth.guard";
 import {UpdateMemberDto} from "./dto/update-member.dto";
 import {FileInterceptor} from "@nestjs/platform-express";
 
@@ -28,7 +28,6 @@ import {FileType, LoginResponseType, ResponseBooleanType} from "../../common/typ
 import {Message} from "libs/message";
 
 const duplicateCheckKeys = ['id', 'nickname', 'email'];
-
 
 @Controller('/member')
 export class MemberController {
@@ -44,6 +43,9 @@ export class MemberController {
         const memberInfo = req.locals.memberInfo;
 
         console.log(memberInfo);
+
+
+        throw Message.SERVER_ERROR;
 
         return memberInfo;
     }

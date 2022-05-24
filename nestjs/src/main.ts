@@ -3,10 +3,11 @@ import {AppModule} from './app.module';
 import {
     ControllableExceptionFilter,
     OutOfControlExceptionFilter
-  } from 'filter/exception.filter';
+  } from 'src/common/filter/exception.filter';
 
 import {port} from 'config/config';
 import {ValidationPipe} from "@nestjs/common";
+import {TestInterceptor} from "./common/interceptor/test.interceptor";
 
 const appOptions = {
     cors: true
@@ -23,6 +24,9 @@ const validationOptions = {
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, appOptions);
+
+    // 인터셉터 사용 방법
+    // app.useGlobalInterceptors(new TestInterceptor());
 
     app.useGlobalPipes(new ValidationPipe(validationOptions));
 

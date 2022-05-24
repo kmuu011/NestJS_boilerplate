@@ -1,9 +1,9 @@
 import {Injectable, CanActivate, ExecutionContext} from '@nestjs/common';
 import {Member} from "src/modules/member/entities/member.entity";
 import {InjectRepository} from "@nestjs/typeorm";
-import {Message} from "../libs/message";
-import {TokenRepository} from "../src/modules/member/token/token.repository";
-import * as utils from "../libs/utils";
+import {Message} from "../../../libs/message";
+import {TokenRepository} from "../../modules/member/token/token.repository";
+import * as utils from "../../../libs/utils";
 import {Request, Response} from "express";
 import { auth } from "config/config";
 
@@ -15,7 +15,7 @@ export class AuthGuard implements CanActivate {
 
     async canActivate(
         context: ExecutionContext
-    ) {
+    ): Promise<boolean> {
         const now: number = Date.now();
         const req: Request = context.switchToHttp().getRequest();
         const res: Response = context.switchToHttp().getResponse();

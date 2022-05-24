@@ -2,13 +2,13 @@ import {ArgumentsHost, Catch, ExceptionFilter, HttpException} from '@nestjs/comm
 import {Request, Response} from 'express';
 import * as Sentry from '@sentry/node';
 import {IncomingWebhook} from "@slack/client";
-import {slack} from "../config/config";
+import {slack} from "../../../config/config";
 
 const webhook = new IncomingWebhook(
     slack.apiLogHook //slack hook url
 );
 
-function captureSentry (status: number, api: string, exception: HttpException, req: Request) {
+function captureSentry (status: number, api: string, exception: HttpException, req: Request): void {
     const { query, params } = req;
 
     Sentry.setContext("desc", {
@@ -18,22 +18,24 @@ function captureSentry (status: number, api: string, exception: HttpException, r
 
     Sentry.captureException(exception);
 
-    webhook.send({
-        attachments: [
-            {
-                color: "danger",
-                text: `🚨${api} 에러 발생`,
-                fields: [
-                    {
-                        title: `ㅡ${api}ㅡ`,
-                        value: exception?.stack,
-                        short: false
-                    }
-                ],
-                ts: new Date().toString()
-            }
-        ]
-    });
+    if(status >= 500) {
+        webhook.send({
+            attachments: [
+                {
+                    color: "danger",
+                    text: `🚨${api} 에러 발생`,
+                    fields: [
+                        {
+                            title: `ㅡ${api}ㅡ`,
+                            value: exception?.stack,
+                            short: false
+                        }
+                    ],
+                    ts: new Date().toString()
+                }
+            ]
+        });
+    }
 }
 
 @Catch(HttpException)
@@ -48,9 +50,7 @@ export class ControllableExceptionFilter implements ExceptionFilter {
         const api = req.originalUrl;
         const {error, message} = response;
 
-        if(status >= 500){
-            captureSentry(status, api, exception, req);
-        }
+        captureSentry(status, api, exception, req);
 
         res
             .status(status)
