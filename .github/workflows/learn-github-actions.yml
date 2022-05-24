@@ -1,0 +1,19 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Sentry Release
+        uses: getsentry/action-release@v1.0.0
+        env:
+          SENTRY_AUTH_TOKEN: 070498ceeaf543c6b3c6a3e3f218ea677d0c16773904472496bc2f41f031bc50
+          SENTRY_ORG: test_org
+          SENTRY_PROJECT: nestjs_boilerplate
+        with:
+          environment: production
