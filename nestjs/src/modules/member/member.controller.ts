@@ -63,7 +63,7 @@ export class MemberController {
         @Req() req: Request
     ): Promise<Member> {
 
-        throw Message.SERVER_ERROR;
+        throw {"test": "애반대;;"};
     }
 
     @Post('/fuck')
