@@ -49,20 +49,6 @@ export class MemberController {
         return memberInfo;
     }
 
-    @Post('/test')
-    @UseGuards(AuthGuard)
-    async test(
-        @Req() req: Request
-    ): Promise<Member> {
-        const memberInfo = req.locals.memberInfo;
-
-        console.log(memberInfo);
-        throw Message.SERVER_ERROR;
-
-
-        return memberInfo;
-    }
-
     @Post('/login')
     async login(
         @Req() req: Request,
