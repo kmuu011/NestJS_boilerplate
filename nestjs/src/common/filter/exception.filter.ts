@@ -52,6 +52,8 @@ export class ControllableExceptionFilter implements ExceptionFilter {
 
         captureSentry(status, api, exception, req);
 
+        console.log(exception);
+
         res
             .status(status)
             .json({
@@ -71,6 +73,8 @@ export class OutOfControlExceptionFilter implements ExceptionFilter {
         // const stack = exception?.stack?.toString() || '';
         const api = req.originalUrl;
         const status = 500;
+
+        console.log(exception);
 
         captureSentry(status, api, exception, req);
 
