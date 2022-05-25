@@ -48,32 +48,14 @@ export class MemberController {
         return memberInfo;
     }
 
-    @Post('/error')
-    @UseGuards(AuthGuard)
+    @Get('/error')
     async error(
         @Req() req: Request
-    ): Promise<Member> {
+    ): Promise<void> {
 
-        throw Message.SERVER_ERROR;
+        throw {"test" : "뭐징"}
     }
 
-    @Post('/error2')
-    @UseGuards(AuthGuard)
-    async error2(
-        @Req() req: Request
-    ): Promise<Member> {
-
-        throw {"test": "애반대;;"};
-    }
-
-    @Post('/fuck')
-    @UseGuards(AuthGuard)
-    async fuck(
-        @Req() req: Request
-    ): Promise<Member> {
-
-        throw Message.SERVER_ERROR;
-    }
 
     @Post('/login')
     async login(
