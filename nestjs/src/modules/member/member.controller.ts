@@ -49,6 +49,15 @@ export class MemberController {
         return memberInfo;
     }
 
+    @Post('/error')
+    @UseGuards(AuthGuard)
+    async error(
+        @Req() req: Request
+    ): Promise<Member> {
+
+        throw Message.SERVER_ERROR;
+    }
+
     @Post('/login')
     async login(
         @Req() req: Request,
