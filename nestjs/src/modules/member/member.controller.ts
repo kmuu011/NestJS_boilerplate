@@ -47,22 +47,6 @@ export class MemberController {
         return memberInfo;
     }
 
-    @Post('/error')
-    async error(
-        @Req() req: Request
-    ): Promise<Member> {
-
-        throw Message.SERVER_ERROR;
-    }
-
-    @Post('/err')
-    async err(
-        @Req() req: Request
-    ): Promise<Member> {
-
-        throw {"test": "머지"}
-    }
-
     @Post('/login')
     async login(
         @Req() req: Request,
