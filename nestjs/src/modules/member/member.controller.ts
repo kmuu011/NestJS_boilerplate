@@ -45,7 +45,6 @@ export class MemberController {
         console.log(memberInfo);
         throw Message.SERVER_ERROR;
 
-
         return memberInfo;
     }
 
@@ -58,9 +57,9 @@ export class MemberController {
         throw Message.SERVER_ERROR;
     }
 
-    @Post('/error1')
+    @Post('/error2')
     @UseGuards(AuthGuard)
-    async error1(
+    async error2(
         @Req() req: Request
     ): Promise<Member> {
 
