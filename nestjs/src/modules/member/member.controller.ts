@@ -56,6 +56,14 @@ export class MemberController {
         throw {"test" : "뭐징"}
     }
 
+    @Get('/error1')
+    async error1(
+        @Req() req: Request
+    ): Promise<void> {
+
+        throw {"test" : "뭐징"}
+    }
+
 
     @Post('/login')
     async login(
