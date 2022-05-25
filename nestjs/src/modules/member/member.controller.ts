@@ -46,12 +46,13 @@ export class MemberController {
 
         return memberInfo;
     }
+
     @Post('/error')
     async error(
         @Req() req: Request
     ): Promise<Member> {
 
-        throw {"TTT": "ASDa"};
+        throw Message.SERVER_ERROR;
     }
 
     @Post('/login')
