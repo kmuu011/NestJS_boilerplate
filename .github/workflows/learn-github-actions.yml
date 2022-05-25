@@ -16,4 +16,4 @@ jobs:
           SENTRY_ORG: kang-ma
           SENTRY_PROJECT: nestjs_boilerplate
         with:
-          environment: production
+          environment: development
