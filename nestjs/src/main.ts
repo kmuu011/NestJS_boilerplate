@@ -14,7 +14,6 @@ const appOptions = {
     cors: true
 };
 
-
 const validationOptions = {
     whitelist: true,
     forbidNonWhitelisted: true,

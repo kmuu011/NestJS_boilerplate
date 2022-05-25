@@ -42,26 +42,9 @@ export class MemberController {
     ): Promise<Member> {
         const memberInfo = req.locals.memberInfo;
 
-        console.log(memberInfo);
-        throw Message.SERVER_ERROR;
+        console.log(memberInfo)
 
         return memberInfo;
-    }
-
-    @Get('/error')
-    async error(
-        @Req() req: Request
-    ): Promise<void> {
-
-        throw {"test" : "뭐징"}
-    }
-
-    @Get('/error1')
-    async error1(
-        @Req() req: Request
-    ): Promise<void> {
-
-        throw {"test" : "뭐징"}
     }
 
 
