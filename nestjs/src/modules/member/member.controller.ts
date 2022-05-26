@@ -43,7 +43,6 @@ export class MemberController {
         const memberInfo = req.locals.memberInfo;
 
         console.log(memberInfo)
-        throw Message.SERVER_ERROR;
 
         return memberInfo;
     }
