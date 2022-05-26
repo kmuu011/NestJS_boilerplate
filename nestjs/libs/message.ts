@@ -27,7 +27,7 @@ export class Message extends HttpException {
         return new HttpException({
             error: `not_exist_${name}`,
             message: `${keyDescription[name]}이(가) 존재하지 않습니다.`
-        }, HttpStatus.NOT_FOUND);
+        }, HttpStatus.BAD_REQUEST);
     }
 
     static CUSTOM_ERROR(message) {
