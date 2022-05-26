@@ -33,6 +33,7 @@ export class SentryService {
 
     // setup context of newly created transaction
     Sentry.getCurrentHub().configureScope((scope) => {
+      scope.setLevel(Sentry.Severity.Info);
       scope.setSpan(transaction);
 
       // customize your context here

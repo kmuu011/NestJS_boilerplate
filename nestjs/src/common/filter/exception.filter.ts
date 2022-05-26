@@ -8,12 +8,30 @@ const webhook = new IncomingWebhook(
     slack.apiLogHook //slack hook url
 );
 
+const errorLevelObject = {
+    ...Sentry.Severity
+}
+
 function captureSentry (status: number, api: string, exception: HttpException, req: Request): void {
     const { query, params } = req;
 
     Sentry.setContext("desc", {
         exception,
-        query, params
+        query, params, status
+    });
+
+    let errorLevel;
+
+    if(status >= 500){
+        errorLevel = errorLevelObject.Error;
+    }else if(!status){
+        errorLevel = errorLevelObject.Critical;
+    }else{
+        errorLevel = errorLevelObject.Info
+    }
+
+    Sentry.configureScope(function(scope){
+        scope.setLevel(errorLevel);
     });
 
     Sentry.captureException(exception);

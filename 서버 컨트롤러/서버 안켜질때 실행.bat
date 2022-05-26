@@ -6,6 +6,6 @@ mkdir logs
 cd ..
 
 cd nestjs
-npm install -g win-node-env & npm install
+npm install -g win-node-env @sentry/cli & npm install
 
 
