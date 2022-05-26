@@ -42,9 +42,7 @@ export class MemberController {
     ): Promise<Member> {
         const memberInfo = req.locals.memberInfo;
 
-        console.log(memberInfo);
-
-        throw Message.SERVER_ERROR;
+        console.log(memberInfo)
 
         return memberInfo;
     }

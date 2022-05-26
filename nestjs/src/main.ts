@@ -8,11 +8,11 @@ import {
 import {port} from 'config/config';
 import {ValidationPipe} from "@nestjs/common";
 import {Handlers} from "@sentry/node";
+import {sentrySettingRun} from "./sentry/cli/create-release";
 
 const appOptions = {
     cors: true
 };
-
 
 const validationOptions = {
     whitelist: true,
@@ -25,6 +25,8 @@ const validationOptions = {
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, appOptions);
+
+    await sentrySettingRun();
 
     app.use(Handlers.requestHandler());
 
