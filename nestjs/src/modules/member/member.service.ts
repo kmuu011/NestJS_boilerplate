@@ -15,7 +15,7 @@ import * as fs from "fs";
 import {FileType} from "../../common/type/type";
 import {UpdateMemberDto} from "./dto/update-member.dto";
 import {encryptPassword} from "libs/member";
-import {basePath, filePath} from "config/config";
+import {staticPath, filePath} from "config/config";
 
 @Injectable()
 export class MemberService {
@@ -118,10 +118,10 @@ export class MemberService {
             throw Message.SERVER_ERROR;
         }
 
-        writeFileSync(basePath + profileImgKey, file.fileBuffer);
+        writeFileSync(staticPath + profileImgKey, file.fileBuffer);
 
-        if(originalProfileImgKey !== undefined && fs.existsSync(basePath + originalProfileImgKey)){
-            fs.unlinkSync(basePath + originalProfileImgKey);
+        if(originalProfileImgKey !== undefined && fs.existsSync(staticPath + originalProfileImgKey)){
+            fs.unlinkSync(staticPath + originalProfileImgKey);
         }
     }
 
@@ -136,8 +136,8 @@ export class MemberService {
             throw Message.SERVER_ERROR;
         }
 
-        if(originalProfileImgKey !== undefined && fs.existsSync(basePath + originalProfileImgKey)){
-            fs.unlinkSync(basePath + originalProfileImgKey);
+        if(originalProfileImgKey !== undefined && fs.existsSync(staticPath + originalProfileImgKey)){
+            fs.unlinkSync(staticPath + originalProfileImgKey);
         }
     }
 

@@ -5,7 +5,7 @@ import {
     OutOfControlExceptionFilter
   } from 'src/common/filter/exception.filter';
 
-import {port} from 'config/config';
+import {port, rootPath} from 'config/config';
 import {ValidationPipe} from "@nestjs/common";
 import {Handlers} from "@sentry/node";
 import {sentrySettingRun} from "./sentry/cli/create-release";
