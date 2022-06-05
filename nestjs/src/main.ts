@@ -8,7 +8,7 @@ import {
 import {port} from 'config/config';
 import {ValidationPipe} from "@nestjs/common";
 import {Handlers} from "@sentry/node";
-import {sentrySettingRun} from "./sentry/cli/create-release";
+import {sentrySettingRun} from "./sentry/cli/createRelease";
 
 const appOptions = {
     cors: true

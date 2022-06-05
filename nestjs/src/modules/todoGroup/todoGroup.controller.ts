@@ -8,7 +8,7 @@ import {
     Post,
     Query,
     Req,
-    UseGuards,
+    UseGuards, UseInterceptors,
 } from '@nestjs/common';
 import {TodoGroupService} from './todoGroup.service';
 import {Request} from "express";
@@ -19,7 +19,7 @@ import {SelectQueryDto} from "../../common/dto/select-query-dto";
 import {UpdateTodoGroupDto} from "./dto/update-todoGroup-dto";
 import {TodoGroup} from "./entities/todoGroup.entity";
 import {ResponseBooleanType, SelectListResponseType} from "../../common/type/type";
-import {TodoGroupGuard} from "./todoGroup.guard";
+import {TodoGroupInterceptor} from "./todoGroup.interceptor";
 
 @Controller('/todoGroup')
 @UseGuards(AuthGuard)
@@ -44,11 +44,15 @@ export class TodoGroupController {
     ): Promise<TodoGroup> {
         const member: Member = req.locals.memberInfo;
 
-        return await this.todoGroupService.create(member, body);
+        const todoGroup: TodoGroup = await this.todoGroupService.create(member, body);
+
+        delete todoGroup.member;
+
+        return todoGroup;
     }
 
     @Get('/:todoGroupIdx(\\d+)')
-    @UseGuards(TodoGroupGuard)
+    @UseInterceptors(TodoGroupInterceptor)
     async selectOneTodoGroup(
         @Req() req: Request,
         @Param('todoGroupIdx') todoGroupIdx: number,
@@ -57,13 +61,13 @@ export class TodoGroupController {
     }
 
     @Patch('/:todoGroupIdx(\\d+)')
-    @UseGuards(TodoGroupGuard)
+    @UseInterceptors(TodoGroupInterceptor)
     async updateTodoGroup(
         @Req() req: Request,
         @Body() body: UpdateTodoGroupDto,
         @Param('todoGroupIdx') todoGroupIdx: number,
     ): Promise<ResponseBooleanType> {
-        const {memberInfo, todoGroupInfo} = req.res.locals;
+        const {memberInfo, todoGroupInfo} = req.locals;
 
         await this.todoGroupService.update(memberInfo, todoGroupInfo, body);
 
@@ -71,12 +75,12 @@ export class TodoGroupController {
     }
 
     @Delete('/:todoGroupIdx(\\d+)')
-    @UseGuards(TodoGroupGuard)
+    @UseInterceptors(TodoGroupInterceptor)
     async deleteTodoGroup(
         @Req() req: Request,
         @Param('todoGroupIdx') todoGroupIdx: number,
     ): Promise<ResponseBooleanType> {
-        const {memberInfo, todoGroupInfo} = req.res.locals;
+        const {memberInfo, todoGroupInfo} = req.locals;
 
         await this.todoGroupService.delete(memberInfo, todoGroupInfo);
 

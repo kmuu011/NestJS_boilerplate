@@ -1,20 +1,18 @@
-import {Injectable, CanActivate, ExecutionContext} from '@nestjs/common';
+import {Injectable, ExecutionContext, NestInterceptor, CallHandler} from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
 import {Message} from "libs/message";
-import {Request} from "express";
+import {Request,} from "express";
 import {TodoGroupRepository} from "./todoGroup.repository";
 import {Member} from "../member/entities/member.entity";
 import {TodoGroup} from "./entities/todoGroup.entity";
 
 @Injectable()
-export class TodoGroupGuard implements CanActivate {
+export class TodoGroupInterceptor implements NestInterceptor {
     constructor(
         @InjectRepository(TodoGroupRepository) private todoGroupRepository: TodoGroupRepository,
     ) {}
 
-    async canActivate(
-        context: ExecutionContext
-    ): Promise<boolean> {
+    async intercept(context: ExecutionContext, next: CallHandler): Promise<any> {
         const req: Request = context.switchToHttp().getRequest();
         const memberInfo: Member = req.locals.memberInfo;
         const todoGroupIdx: number = Number(req.params.todoGroupIdx)
@@ -27,6 +25,6 @@ export class TodoGroupGuard implements CanActivate {
 
         req.locals.todoGroupInfo = todoGroupInfo;
 
-        return true;
+        return next.handle();
     }
 }

@@ -7,7 +7,7 @@ import {
     Post,
     Query,
     Req,
-    UseGuards,
+    UseGuards, UseInterceptors,
 } from '@nestjs/common';
 import {AuthGuard} from "src/common/guard/auth.guard";
 import {Request} from "express";
@@ -19,11 +19,12 @@ import {CreateTodoDto} from "./dto/create-todo-dto";
 import {Todo} from "./entities/todo.entity";
 import {UpdateTodoDto} from "./dto/update-todo-dto";
 import {ResponseBooleanType, SelectListResponseType} from "../../../common/type/type";
-import {TodoGroupGuard} from "../todoGroup.guard";
-import {TodoGuard} from "./todo.guard";
+
+import {TodoInterceptor} from "./todo.interceptor";
+import {TodoGroupInterceptor} from "../todoGroup.interceptor";
 
 @Controller('/todoGroup/:todoGroupIdx(\\d+)/todo')
-@UseGuards(TodoGroupGuard)
+@UseInterceptors(TodoGroupInterceptor)
 @UseGuards(AuthGuard)
 export class TodoController {
     constructor(
@@ -53,7 +54,7 @@ export class TodoController {
     }
 
     @Patch('/:todoIdx(\\d+)')
-    @UseGuards(TodoGuard)
+    @UseInterceptors(TodoInterceptor)
     async updateTodo(
         @Req() req: Request,
         @Body() body: UpdateTodoDto
@@ -66,7 +67,7 @@ export class TodoController {
     }
 
     @Delete('/:todoIdx(\\d+)')
-    @UseGuards(TodoGuard)
+    @UseInterceptors(TodoInterceptor)
     async deleteTodo(
         @Req() req: Request
     ): Promise<ResponseBooleanType> {
