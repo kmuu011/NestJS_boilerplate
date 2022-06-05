@@ -8,9 +8,7 @@ import {LoginMemberDto} from "./dto/login-member.dto";
 import {TokenRepository} from "./token/token.repository";
 import {createKey} from "libs/utils";
 
-import {writeFileSync} from "fs";
-
-import * as fs from "fs";
+import {writeFileSync, existsSync, unlinkSync} from "fs";
 
 import {FileType} from "../../common/type/type";
 import {UpdateMemberDto} from "./dto/update-member.dto";
@@ -120,8 +118,8 @@ export class MemberService {
 
         writeFileSync(staticPath + profileImgKey, file.fileBuffer);
 
-        if(originalProfileImgKey !== undefined && fs.existsSync(staticPath + originalProfileImgKey)){
-            fs.unlinkSync(staticPath + originalProfileImgKey);
+        if(originalProfileImgKey !== undefined && existsSync(staticPath + originalProfileImgKey)){
+            unlinkSync(staticPath + originalProfileImgKey);
         }
     }
 
@@ -136,8 +134,8 @@ export class MemberService {
             throw Message.SERVER_ERROR;
         }
 
-        if(originalProfileImgKey !== undefined && fs.existsSync(staticPath + originalProfileImgKey)){
-            fs.unlinkSync(staticPath + originalProfileImgKey);
+        if(originalProfileImgKey !== undefined && existsSync(staticPath + originalProfileImgKey)){
+            unlinkSync(staticPath + originalProfileImgKey);
         }
     }
 
