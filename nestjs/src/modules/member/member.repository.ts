@@ -1,5 +1,5 @@
 import {Member} from "./entities/member.entity";
-import {EntityRepository, Repository, UpdateResult} from "typeorm";
+import {EntityRepository, QueryRunner, Repository, UpdateResult} from "typeorm";
 import {getUpdateObject} from "libs/utils";
 
 const memberSelectKeys: any = ["idx", "id", "nickname", "email", "admin", "profile_img_key", "auth_type", "ip", "user_agent", "created_at"];
@@ -40,15 +40,8 @@ export class MemberRepository extends Repository<Member> {
         });
     }
 
-    async signUp(member: Member): Promise<Member> {
-        const {id, password, nickname, email} = member;
-
-        return await this.save({
-            id,
-            password,
-            nickname,
-            email
-        });
+    async signUp(queryRunner: QueryRunner, member: Member): Promise<Member> {
+        return await queryRunner.manager.save(member);
     }
 
     async updateMember(member: Member): Promise<UpdateResult> {

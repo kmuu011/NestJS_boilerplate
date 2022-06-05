@@ -36,7 +36,7 @@ function captureSentry (status: number, api: string, exception: HttpException, r
 
     Sentry.captureException(exception);
 
-    if(status >= 500) {
+    if(status >= 500 || !status) {
         webhook.send({
             attachments: [
                 {

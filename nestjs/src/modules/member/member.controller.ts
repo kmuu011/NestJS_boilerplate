@@ -42,7 +42,7 @@ export class MemberController {
     ): Promise<Member> {
         const memberInfo = req.locals.memberInfo;
 
-        console.log(memberInfo)
+        console.log(memberInfo);
 
         return memberInfo;
     }

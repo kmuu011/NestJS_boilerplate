@@ -1,4 +1,4 @@
-import {DeleteResult, EntityRepository, Repository, UpdateResult} from "typeorm";
+import {DeleteResult, EntityRepository, QueryRunner, Repository, UpdateResult} from "typeorm";
 import {TodoGroup} from "./entities/todoGroup.entity";
 import {Member} from "../member/entities/member.entity";
 import {getUpdateObject} from "libs/utils";
@@ -27,8 +27,12 @@ export class TodoGroupRepository extends Repository<TodoGroup> {
             .getManyAndCount();
     }
 
-    async createTodoGroup(todoGroup: TodoGroup): Promise<TodoGroup> {
-        return await this.save(todoGroup);
+    async createTodoGroup(queryRunner: QueryRunner, todoGroup: TodoGroup): Promise<TodoGroup> {
+        if(queryRunner){
+            return await queryRunner.manager.save(todoGroup);
+        }else {
+            return await this.save(todoGroup);
+        }
     }
 
     async updateTodoGroup(todoGroup: TodoGroup): Promise<UpdateResult> {

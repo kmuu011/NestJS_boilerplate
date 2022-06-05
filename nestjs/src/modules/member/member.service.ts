@@ -8,20 +8,23 @@ import {LoginMemberDto} from "./dto/login-member.dto";
 import {TokenRepository} from "./token/token.repository";
 import {createKey} from "libs/utils";
 
-import {writeFileSync} from "fs";
-
-import * as fs from "fs";
+import {writeFileSync, existsSync, unlinkSync} from "fs";
 
 import {FileType} from "../../common/type/type";
 import {UpdateMemberDto} from "./dto/update-member.dto";
 import {encryptPassword} from "libs/member";
 import {staticPath, filePath} from "config/config";
+import {Connection} from "typeorm";
+import {TodoGroup} from "../todoGroup/entities/todoGroup.entity";
+import {TodoGroupRepository} from "../todoGroup/todoGroup.repository";
 
 @Injectable()
 export class MemberService {
     constructor(
-        @InjectRepository(MemberRepository) private memberRepository: MemberRepository,
-        @InjectRepository(TokenRepository) private tokenRepository: TokenRepository,
+        @InjectRepository(MemberRepository) private readonly memberRepository: MemberRepository,
+        @InjectRepository(TokenRepository) private readonly tokenRepository: TokenRepository,
+        @InjectRepository(TodoGroupRepository) private readonly todoGroupRepository: TodoGroupRepository,
+        private readonly connection: Connection
     ) {}
 
     async auth(headers): Promise<void> {
@@ -67,14 +70,40 @@ export class MemberService {
     };
 
     async signUp(createMemberDto: CreateMemberDto): Promise<void> {
+        const queryRunner = this.connection.createQueryRunner();
         const member = new Member();
         member.dataMigration(createMemberDto);
         member.passwordEncrypt();
 
-        const result: Member = await this.memberRepository.signUp(member);
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
 
-        if (!result) {
-            throw Message.SERVER_ERROR;
+        try {
+            const resultMember: Member = await this.memberRepository.signUp(queryRunner, member);
+
+            if (!resultMember) {
+                throw Message.SERVER_ERROR;
+            }
+
+            const todoGroup: TodoGroup = new TodoGroup();
+
+            todoGroup.dataMigration({
+                title: "기본그룹",
+                member: resultMember
+            });
+
+            const resultTodoGroup: TodoGroup = await this.todoGroupRepository.createTodoGroup(queryRunner, todoGroup);
+
+            if(!resultTodoGroup){
+                throw Message.SERVER_ERROR;
+            }
+
+            await queryRunner.commitTransaction();
+        } catch (e) {
+            await queryRunner.rollbackTransaction();
+            throw e;
+        } finally {
+            await queryRunner.release();
         }
     }
 
@@ -120,8 +149,8 @@ export class MemberService {
 
         writeFileSync(staticPath + profileImgKey, file.fileBuffer);
 
-        if(originalProfileImgKey !== undefined && fs.existsSync(staticPath + originalProfileImgKey)){
-            fs.unlinkSync(staticPath + originalProfileImgKey);
+        if(originalProfileImgKey !== undefined && existsSync(staticPath + originalProfileImgKey)){
+            unlinkSync(staticPath + originalProfileImgKey);
         }
     }
 
@@ -136,8 +165,8 @@ export class MemberService {
             throw Message.SERVER_ERROR;
         }
 
-        if(originalProfileImgKey !== undefined && fs.existsSync(staticPath + originalProfileImgKey)){
-            fs.unlinkSync(staticPath + originalProfileImgKey);
+        if(originalProfileImgKey !== undefined && existsSync(staticPath + originalProfileImgKey)){
+            unlinkSync(staticPath + originalProfileImgKey);
         }
     }
 
