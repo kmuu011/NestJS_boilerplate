@@ -7,13 +7,13 @@ import {CreateTodoDto} from "./dto/create-todo-dto";
 import {UpdateTodoDto} from "./dto/update-todo-dto";
 import {DeleteResult, UpdateResult} from "typeorm";
 import {Message} from "libs/message";
+import {InjectRepository} from "@nestjs/typeorm";
 
 @Injectable()
 export class TodoService {
     constructor(
-        private readonly todoRepository: TodoRepository
-    ) {
-    }
+        @InjectRepository(TodoRepository) private readonly todoRepository: TodoRepository
+    ) {}
 
     async selectOne(todoGroup: TodoGroup, todoIdx: number): Promise<Todo> {
         return await this.todoRepository.selectOne(todoGroup, todoIdx);
