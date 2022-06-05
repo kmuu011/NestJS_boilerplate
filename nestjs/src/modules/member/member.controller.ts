@@ -22,7 +22,7 @@ import {AuthGuard} from "src/common/guard/auth.guard";
 import {UpdateMemberDto} from "./dto/update-member.dto";
 import {FileInterceptor} from "@nestjs/platform-express";
 
-import {basePath, multerOptions} from "config/config";
+import {staticPath, multerOptions} from "config/config";
 import * as validator from "libs/validator";
 import {FileType, LoginResponseType, ResponseBooleanType} from "../../common/type/type";
 import {Message} from "libs/message";
@@ -144,7 +144,7 @@ export class MemberController {
         const member: Member = req.locals.memberInfo;
         const profileImgKey = member.profile_img_key;
 
-        res.download(basePath + profileImgKey, 'test.jpg');
+        res.download(staticPath + profileImgKey, 'test.jpg');
     }
 
     @Get('/duplicateCheck')

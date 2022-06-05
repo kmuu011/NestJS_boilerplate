@@ -23,5 +23,4 @@ import {TodoGroupRepository} from "./todoGroup.repository";
     ]
 })
 
-export class TodoGroupModule {
-}
+export class TodoGroupModule {}
