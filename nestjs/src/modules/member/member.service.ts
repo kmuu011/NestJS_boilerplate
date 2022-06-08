@@ -3,17 +3,17 @@ import {MemberRepository} from "./member.repository";
 import {Member} from "./entities/member.entity";
 import {CreateMemberDto} from "./dto/create-member-dto";
 import {InjectRepository} from "@nestjs/typeorm";
-import {Message} from "libs/message";
+import {Message} from "../../../libs/message";
 import {LoginMemberDto} from "./dto/login-member.dto";
 import {TokenRepository} from "./token/token.repository";
-import {createKey} from "libs/utils";
+import {createKey} from "../../../libs/utils";
 
 import {writeFileSync, existsSync, unlinkSync} from "fs";
 
 import {FileType} from "../../common/type/type";
 import {UpdateMemberDto} from "./dto/update-member.dto";
-import {encryptPassword} from "libs/member";
-import {staticPath, filePath} from "config/config";
+import {encryptPassword} from "../../../libs/member";
+import {staticPath, filePath} from "../../../config/config";
 import {Connection} from "typeorm";
 import {TodoGroup} from "../todoGroup/entities/todoGroup.entity";
 import {TodoGroupRepository} from "../todoGroup/todoGroup.repository";

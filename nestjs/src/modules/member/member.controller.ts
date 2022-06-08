@@ -18,14 +18,14 @@ import {CreateMemberDto} from "./dto/create-member-dto";
 import {DuplicateCheckMemberDto} from "./dto/duplicate-check-member.dto";
 import {Member} from "./entities/member.entity"
 
-import {AuthGuard} from "src/common/guard/auth.guard";
+import {AuthGuard} from "../../common/guard/auth.guard";
 import {UpdateMemberDto} from "./dto/update-member.dto";
 import {FileInterceptor} from "@nestjs/platform-express";
 
-import {staticPath, multerOptions} from "config/config";
-import * as validator from "libs/validator";
+import {staticPath, multerOptions} from "../../../config/config";
+import * as validator from "../../../libs/validator";
 import {FileType, LoginResponseType, ResponseBooleanType} from "../../common/type/type";
-import {Message} from "libs/message";
+import {Message} from "../../../libs/message";
 
 const duplicateCheckKeys = ['id', 'nickname', 'email'];
 

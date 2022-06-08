@@ -2,7 +2,7 @@ import {ArgumentsHost, Catch, ExceptionFilter, HttpException} from '@nestjs/comm
 import {Request, Response} from 'express';
 import * as Sentry from '@sentry/node';
 import {IncomingWebhook} from "@slack/client";
-import {slack} from "config/config";
+import {slack} from "../../../config/config";
 
 const webhook = new IncomingWebhook(
     slack.apiLogHook //slack hook url

@@ -1,7 +1,7 @@
 import {DeleteResult, EntityRepository, QueryRunner, Repository, UpdateResult} from "typeorm";
 import {TodoGroup} from "./entities/todoGroup.entity";
 import {Member} from "../member/entities/member.entity";
-import {getUpdateObject} from "libs/utils";
+import {getUpdateObject} from "../../../libs/utils";
 
 @EntityRepository(TodoGroup)
 export class TodoGroupRepository extends Repository<TodoGroup> {

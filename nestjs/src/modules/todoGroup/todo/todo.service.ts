@@ -6,7 +6,7 @@ import {TodoGroup} from "../entities/todoGroup.entity";
 import {CreateTodoDto} from "./dto/create-todo-dto";
 import {UpdateTodoDto} from "./dto/update-todo-dto";
 import {DeleteResult, UpdateResult} from "typeorm";
-import {Message} from "libs/message";
+import {Message} from "../../../../libs/message";
 import {InjectRepository} from "@nestjs/typeorm";
 
 @Injectable()

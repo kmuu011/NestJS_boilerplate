@@ -4,7 +4,7 @@ import {TodoGroup} from "./entities/todoGroup.entity";
 import {Member} from "../member/entities/member.entity";
 import {CreateTodoGroupDto} from "./dto/create-todoGroup-dto";
 import {DeleteResult, UpdateResult} from "typeorm";
-import {Message} from "libs/message";
+import {Message} from "../../../libs/message";
 import {UpdateTodoGroupDto} from "./dto/update-todoGroup-dto";
 import {SelectListResponseType} from "../../common/type/type";
 import {InjectRepository} from "@nestjs/typeorm";

@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import {TodoGroupService} from './todoGroup.service';
 import {Request} from "express";
-import {AuthGuard} from "src/common/guard/auth.guard";
+import {AuthGuard} from "../../common/guard/auth.guard";
 import {Member} from "../member/entities/member.entity";
 import {CreateTodoGroupDto} from "./dto/create-todoGroup-dto";
 import {SelectQueryDto} from "../../common/dto/select-query-dto";

@@ -8,7 +8,7 @@ import {
     PrimaryGeneratedColumn,
 } from 'typeorm';
 import {JwtPayload} from "jsonwebtoken";
-import {createToken, decodeToken, encryptPassword} from "libs/member";
+import {createToken, decodeToken, encryptPassword} from "../../../../libs/member";
 import {TodoGroup} from "../../todoGroup/entities/todoGroup.entity";
 
 @Entity({name: 'member'})

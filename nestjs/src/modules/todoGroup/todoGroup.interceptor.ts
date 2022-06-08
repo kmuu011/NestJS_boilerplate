@@ -1,6 +1,6 @@
 import {Injectable, ExecutionContext, NestInterceptor, CallHandler} from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
-import {Message} from "libs/message";
+import {Message} from "../../../libs/message";
 import {Request,} from "express";
 import {TodoGroupRepository} from "./todoGroup.repository";
 import {Member} from "../member/entities/member.entity";
