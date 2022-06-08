@@ -4,7 +4,7 @@ import {Request} from "express";
 import {TodoRepository} from "./todo.repository";
 import {Todo} from "./entities/todo.entity";
 import {TodoGroup} from "../entities/todoGroup.entity";
-import {Message} from "libs/message";
+import {Message} from "../../../../libs/message";
 
 @Injectable()
 export class TodoInterceptor implements NestInterceptor {

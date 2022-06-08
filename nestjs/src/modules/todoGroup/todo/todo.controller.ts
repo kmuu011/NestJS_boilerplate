@@ -9,7 +9,7 @@ import {
     Req,
     UseGuards, UseInterceptors,
 } from '@nestjs/common';
-import {AuthGuard} from "src/common/guard/auth.guard";
+import {AuthGuard} from "../../../common/guard/auth.guard";
 import {Request} from "express";
 import {TodoGroupService} from "../todoGroup.service";
 import {TodoService} from "./todo.service";

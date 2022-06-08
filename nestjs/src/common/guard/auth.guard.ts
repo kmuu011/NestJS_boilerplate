@@ -1,11 +1,11 @@
 import {Injectable, CanActivate, ExecutionContext} from '@nestjs/common';
-import {Member} from "src/modules/member/entities/member.entity";
+import {Member} from "../../modules/member/entities/member.entity";
 import {InjectRepository} from "@nestjs/typeorm";
 import {Message} from "../../../libs/message";
 import {TokenRepository} from "../../modules/member/token/token.repository";
 import * as utils from "../../../libs/utils";
 import {Request, Response} from "express";
-import { auth } from "config/config";
+import { auth } from "../../../config/config";
 
 @Injectable()
 export class AuthGuard implements CanActivate {

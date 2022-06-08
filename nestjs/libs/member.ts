@@ -14,7 +14,6 @@ export const encryptPassword = (password: string): string => {
         .digest('hex');
 }
 
-
 export const createToken = (payloadObj): string => {
     return jwt.sign(payloadObj, jwtSecret, {expiresIn: expireTime});
 }

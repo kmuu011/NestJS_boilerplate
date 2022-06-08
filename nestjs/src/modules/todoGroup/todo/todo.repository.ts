@@ -1,7 +1,7 @@
 import {DeleteResult, EntityRepository, Repository, UpdateResult} from "typeorm";
 import {Todo} from "./entities/todo.entity";
 import {TodoGroup} from "../entities/todoGroup.entity";
-import {getUpdateObject} from "libs/utils";
+import {getUpdateObject} from "../../../../libs/utils";
 import {UpdateTodoDto} from "./dto/update-todo-dto";
 
 @EntityRepository(Todo)
