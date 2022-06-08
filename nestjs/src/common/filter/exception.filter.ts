@@ -2,7 +2,7 @@ import {ArgumentsHost, Catch, ExceptionFilter, HttpException} from '@nestjs/comm
 import {Request, Response} from 'express';
 import * as Sentry from '@sentry/node';
 import {IncomingWebhook} from "@slack/client";
-import {slack} from "../../../config/config";
+import {slack} from "config/config";
 
 const webhook = new IncomingWebhook(
     slack.apiLogHook //slack hook url
@@ -14,6 +14,8 @@ const errorLevelObject = {
 
 function captureSentry (status: number, api: string, exception: HttpException, req: Request): void {
     const { query, params } = req;
+
+    console.log(exception)
 
     Sentry.setContext("desc", {
         exception,
@@ -70,8 +72,6 @@ export class ControllableExceptionFilter implements ExceptionFilter {
 
         captureSentry(status, api, exception, req);
 
-        console.log(exception);
-
         res
             .status(status)
             .json({
@@ -91,8 +91,6 @@ export class OutOfControlExceptionFilter implements ExceptionFilter {
         // const stack = exception?.stack?.toString() || '';
         const api = req.originalUrl;
         const status = 500;
-
-        console.log(exception);
 
         captureSentry(status, api, exception, req);
 
