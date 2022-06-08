@@ -19,26 +19,26 @@ export class TodoGroupService {
         const todoGroupList = (await this.todoGroupRepository.selectList(member))[0];
         let splicedTodoGroupList = [...todoGroupList];
 
-        if(todoGroup) {
+        if (todoGroup) {
             splicedTodoGroupList.splice(todoGroupList.findIndex(v => v.idx === todoGroup.idx), 1);
 
-            if(order === 1){
+            if (order === 1) {
                 splicedTodoGroupList.push(todoGroup);
-            }else if(order === todoGroupList.length){
+            } else if (order === todoGroupList.length) {
                 splicedTodoGroupList.unshift(todoGroup);
-            }else {
+            } else {
                 const targetIdx = todoGroupList.findIndex(v => v.order === order);
 
-                splicedTodoGroupList = [ ...splicedTodoGroupList.slice(0, targetIdx), todoGroup, ...splicedTodoGroupList.slice(targetIdx, splicedTodoGroupList.length)];
+                splicedTodoGroupList = [...splicedTodoGroupList.slice(0, targetIdx), todoGroup, ...splicedTodoGroupList.slice(targetIdx, splicedTodoGroupList.length)];
             }
         }
 
-        for (let i=0 ; i<splicedTodoGroupList.length ; i ++) {
-            splicedTodoGroupList[i].order = splicedTodoGroupList.length-i;
+        for (let i = 0; i < splicedTodoGroupList.length; i++) {
+            splicedTodoGroupList[i].order = splicedTodoGroupList.length - i;
 
             const updateResult: UpdateResult = await this.todoGroupRepository.updateTodoGroup(splicedTodoGroupList[i]);
 
-            if(updateResult.affected !== 1){
+            if (updateResult.affected !== 1) {
                 throw Message.SERVER_ERROR;
             }
         }
@@ -79,11 +79,11 @@ export class TodoGroupService {
 
         const updateResult: UpdateResult = await this.todoGroupRepository.updateTodoGroup(todoGroup);
 
-        if(updateResult.affected !== 1){
+        if (updateResult.affected !== 1) {
             throw Message.SERVER_ERROR;
         }
 
-        if(todoGroup.order !== body.order && body.order !== undefined){
+        if (todoGroup.order !== body.order && body.order !== undefined) {
             await this.arrangeOrder(member, todoGroup, body.order);
         }
     }
