@@ -65,7 +65,6 @@ export class MemberController {
     ): Promise<ResponseBooleanType> {
         for (const key of duplicateCheckKeys) {
             const usable = await this.memberService.duplicateCheck(key, createMemberDto[key]);
-
             if (!usable) {
                 throw Message.ALREADY_EXIST(key);
             }

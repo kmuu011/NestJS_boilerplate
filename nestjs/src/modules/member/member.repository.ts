@@ -24,24 +24,18 @@ export class MemberRepository extends Repository<Member> {
         }
 
         return await this.findOne({
-            select: [...memberSelectKeys, ... additionalKeys],
+            select: [...memberSelectKeys, ...additionalKeys],
             relations: ["tokenInfo"],
             where
         });
     }
 
-    async login(member: Member): Promise<Member> {
-        const {id, password} = member;
-
-        return await this.findOne({
-            select: memberSelectKeys,
-            relations: ["tokenInfo"],
-            where: {id, password}
-        });
-    }
-
     async signUp(queryRunner: QueryRunner, member: Member): Promise<Member> {
-        return await queryRunner.manager.save(member);
+        if(queryRunner) {
+            return await queryRunner.manager.save(member);
+        }else{
+            return await this.save(member);
+        }
     }
 
     async updateMember(member: Member): Promise<UpdateResult> {
@@ -55,5 +49,4 @@ export class MemberRepository extends Repository<Member> {
             [type]: value
         });
     }
-
 }
