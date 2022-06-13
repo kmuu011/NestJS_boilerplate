@@ -47,7 +47,6 @@ export class TodoRepository extends Repository<Todo> {
     }
 
     async deleteTodo(todo: Todo): Promise<DeleteResult> {
-
         return await this.delete(todo.idx);
     }
 
