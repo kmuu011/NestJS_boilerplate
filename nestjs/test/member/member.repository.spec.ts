@@ -1,9 +1,6 @@
 import {MemberRepository} from "../../src/modules/member/member.repository";
 import {Test, TestingModule} from "@nestjs/testing";
-import {getRepositoryToken, TypeOrmModule} from "@nestjs/typeorm";
-import {typeOrmOptions} from "../../config/config";
-import {TokenRepository} from "../../src/modules/member/token/token.repository";
-import {TodoGroupRepository} from "../../src/modules/todoGroup/todoGroup.repository";
+import {getRepositoryToken} from "@nestjs/typeorm";
 import {Repository} from "typeorm";
 import {Member} from "../../src/modules/member/entities/member.entity";
 import {createMemberDto, createMemberResult, loginMemberDto, loginMemberResult} from "./member";

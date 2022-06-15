@@ -1,5 +1,5 @@
 import {Member} from "./entities/member.entity";
-import {EntityRepository, QueryRunner, Repository, UpdateResult} from "typeorm";
+import {DeleteResult, EntityRepository, QueryRunner, Repository, UpdateResult} from "typeorm";
 import {getUpdateObject} from "../../../libs/utils";
 
 const memberSelectKeys: any = ["idx", "id", "nickname", "email", "admin", "profile_img_key", "auth_type", "ip", "user_agent", "created_at"];
@@ -48,5 +48,9 @@ export class MemberRepository extends Repository<Member> {
         return await this.findOne({
             [type]: value
         });
+    }
+
+    async signOut(member: Member): Promise<DeleteResult> {
+        return await this.delete(member.idx);
     }
 }
