@@ -1,11 +1,11 @@
-import {IsBoolean, IsDateString, IsEmail, IsNumber, IsString, Length, NotContains} from "class-validator";
+import {IsBoolean, IsEmail, IsNumber, IsString, Length, NotContains} from "class-validator";
 import {Token} from "./token.entity";
 
 import {
     BaseEntity,
-    Column,
+    Column, CreateDateColumn,
     Entity, OneToMany, OneToOne,
-    PrimaryGeneratedColumn,
+    PrimaryGeneratedColumn, UpdateDateColumn,
 } from 'typeorm';
 import {JwtPayload} from "jsonwebtoken";
 import {createToken, decodeToken, encryptPassword} from "../../../../libs/member";
@@ -62,11 +62,11 @@ export class Member extends BaseEntity {
     @Column({type: 'tinyint', default: 0, unsigned: true, comment: '관리자 유무'})
     admin: number = undefined;
 
-    @IsDateString()
+    @CreateDateColumn()
     @Column({type: 'timestamp', default: () => "now", comment: '회원가입 일자'})
     created_at: string = undefined;
 
-    @IsDateString()
+    @UpdateDateColumn()
     @Column({type: 'timestamp', default: () => "now", comment: '수정 일자'})
     updated_at: string = undefined;
 

@@ -1,25 +1,10 @@
-import {CreateMemberDto} from "../../src/modules/member/dto/create-member-dto";
 import {Member} from "../../src/modules/member/entities/member.entity";
 import {LoginMemberDto} from "../../src/modules/member/dto/login-member.dto";
 import {createRandomString} from "../../libs/utils";
 
-let createdMemberInfo: Member, loginMemberInfo: Member;
-
-export const saveLoginMember = (member: Member): void => {
-    loginMemberInfo = member;
-}
-
-export const getLoginMember = (): Member => {
-    return loginMemberInfo
-}
-
-export const saveCreatedMemberInfo = (member: Member): void => {
-    createdMemberInfo = member;
+export const savedMemberInfo = {
+    id: 'tts1', password: 'tts1', nickname: 'tts1', email: 'tts1@email.com'
 };
-
-export const getCreatedMemberInfo = (): Member => {
-    return createdMemberInfo;
-}
 
 export const loginMemberDto = (keepCheck): Member => {
     const member = new Member();
@@ -64,14 +49,15 @@ export const createMemberDto = (): Member => {
     const key = createRandomString(12);
 
     const member = new Member();
-    const createMemberDto: CreateMemberDto = {
+
+    member.dataMigration({
+        idx: 120,
         id: key,
         password: key,
         nickname: key,
         email: key + "@naver.com"
-    }
+    });
 
-    member.dataMigration(createMemberDto);
     member.passwordEncrypt();
 
     return member;
@@ -80,7 +66,7 @@ export const createMemberDto = (): Member => {
 export const createMemberResult = (): Member => {
     const member = new Member();
     member.dataMigration({
-        idx: 10,
+        idx: 120,
         id: 'tts2',
         password: '26c648ea97630ca3924d985efbb3f76f8f9f657dce9e5a76d4869e26f076a0a49e0fd2956629559589d65ed8b6dcc8ad91bb12dbbd66d07927db0305fe293cc5',
         password_encrypted: true,

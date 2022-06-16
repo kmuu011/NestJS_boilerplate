@@ -2,12 +2,18 @@ import {MemberRepository} from "../../src/modules/member/member.repository";
 import {Member} from "../../src/modules/member/entities/member.entity";
 import {Test, TestingModule} from "@nestjs/testing";
 import {getRepositoryToken, TypeOrmModule} from "@nestjs/typeorm";
-import {DeleteResult} from "typeorm";
+import {DeleteResult, UpdateResult} from "typeorm";
 import {typeOrmOptions} from "../../config/config";
-import {createMemberDto, getCreatedMemberInfo, getLoginMember, saveCreatedMemberInfo, saveLoginMember} from "./member";
+import {
+    createMemberDto,
+    savedMemberInfo,
+} from "./member";
+import {createRandomString} from "../../libs/utils";
 
 describe('Member Real Repository', () => {
     let memberRepository: MemberRepository;
+    let loginMemberInfo: Member;
+    let signUpMemberInfo: Member;
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -30,47 +36,54 @@ describe('Member Real Repository', () => {
     });
 
     describe('signUp()', () => {
-        it('회원가입 돼야함', async () => {
+        it('회원가입 기능', async () => {
             const memberDto: Member = createMemberDto();
 
             const signUpResult: Member = await memberRepository.signUp(undefined, memberDto);
 
             expect(true).toBe(true);
 
-            saveCreatedMemberInfo(signUpResult);
+            signUpMemberInfo = signUpResult;
 
             // 로그인용 계정 체크 및 생성 하는부분
             const loginMember: Member = new Member();
-            loginMember.dataMigration({id: 'tts1', password: 'tts1', nickname: 'tts1', email: 'tts1@email.com'});
+            loginMember.dataMigration(savedMemberInfo);
             loginMember.passwordEncrypt();
 
-            const memberInfo: Member = await memberRepository.select(loginMember, 'id, password', true);
+            const selectResult: Member = await memberRepository.select(loginMember, 'id, password', true);
 
-            if(!memberInfo) {
+            if(!selectResult) {
                 const loginMemberSignUpResult: Member = await memberRepository.signUp(undefined, loginMember);
                 expect(loginMemberSignUpResult instanceof Member).toBe(true);
-                saveLoginMember(loginMemberSignUpResult);
+                loginMemberInfo = loginMemberSignUpResult;
             } else {
-                saveLoginMember(memberInfo);
+                loginMemberInfo = selectResult;
             }
         });
     })
 
     describe('login()', () => {
-        it('로그인이 돼야함', async () => {
-            const member: Member = getLoginMember();
-
-            const loginResult = await memberRepository.select(member, 'id, password');
+        it('로그인 기능', async () => {
+            const loginResult: Member = await memberRepository.select(loginMemberInfo, 'id, password');
 
             expect(loginResult instanceof Member).toBe(true);
         });
     })
 
+    describe('updateMember()', () => {
+        it('멤버 수정', async () => {
+            loginMemberInfo.nickname = createRandomString(12);
+
+            const updateResult: UpdateResult = await memberRepository.updateMember(loginMemberInfo);
+
+            expect(updateResult instanceof UpdateResult).toBe(true);
+            expect(updateResult.affected).toBe(1);
+        });
+    })
+
     describe('signOut()', () => {
         it('회원 탈퇴', async () => {
-            const member: Member = getCreatedMemberInfo();
-
-            const deleteResult: DeleteResult = await memberRepository.signOut(member);
+            const deleteResult: DeleteResult = await memberRepository.signOut(signUpMemberInfo);
 
             expect(deleteResult.affected).toBe(1);
         });
