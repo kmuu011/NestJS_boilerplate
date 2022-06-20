@@ -17,6 +17,7 @@ import {staticPath, filePath} from "../../../config/config";
 import {Connection} from "typeorm";
 import {TodoGroup} from "../todoGroup/entities/todoGroup.entity";
 import {TodoGroupRepository} from "../todoGroup/todoGroup.repository";
+import {Token} from "./entities/token.entity";
 
 @Injectable()
 export class MemberService {
@@ -43,7 +44,7 @@ export class MemberService {
 
     async login(loginMemberDto: LoginMemberDto, headers): Promise<Member> {
         const member = new Member();
-        const {ip, "user-agent": user_agent} = headers
+        const {ip, "user-agent": user_agent} = headers;
         member.dataMigration(loginMemberDto);
 
         member.passwordEncrypt();
@@ -62,7 +63,11 @@ export class MemberService {
         const newToken: string = member.createToken();
         const code: string = await createKey<TokenRepository>(this.tokenRepository, 'code', 40);
 
-        member.tokenInfo = await this.tokenRepository.saveToken(member, newToken, code);
+        const token: Token = (await this.tokenRepository.select(undefined, member)) ?? new Token();
+
+        token.dataMigration({member, code, token: newToken});
+
+        member.tokenInfo = await this.tokenRepository.saveToken(token);
 
         await this.memberRepository.updateMember(member);
 

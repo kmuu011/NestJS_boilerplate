@@ -31,4 +31,11 @@ export class Token extends BaseEntity {
     @Column({type: "varchar", unique: true, length: 50, comment: "유니크 코드"})
     code: string = undefined;
 
+    dataMigration(object: object) : void {
+        for (let k in new Token()) {
+            if (object[k] === undefined) continue;
+            this[k] = object[k];
+        }
+    }
+
 }
