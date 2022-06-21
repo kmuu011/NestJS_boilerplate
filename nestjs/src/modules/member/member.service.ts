@@ -14,7 +14,7 @@ import {FileType} from "../../common/type/type";
 import {UpdateMemberDto} from "./dto/update-member.dto";
 import {encryptPassword} from "../../../libs/member";
 import {staticPath, filePath} from "../../../config/config";
-import {Connection} from "typeorm";
+import {Connection, DeleteResult} from "typeorm";
 import {TodoGroup} from "../todoGroup/entities/todoGroup.entity";
 import {TodoGroupRepository} from "../todoGroup/todoGroup.repository";
 import {Token} from "./entities/token.entity";
@@ -74,7 +74,7 @@ export class MemberService {
         return member;
     };
 
-    async signUp(createMemberDto: CreateMemberDto): Promise<void> {
+    async signUp(createMemberDto: CreateMemberDto): Promise<Member> {
         const queryRunner = this.connection.createQueryRunner();
         const member = new Member();
         member.dataMigration(createMemberDto);
@@ -83,8 +83,10 @@ export class MemberService {
         await queryRunner.connect();
         await queryRunner.startTransaction();
 
+        let resultMember: Member;
+
         try {
-            const resultMember: Member = await this.memberRepository.signUp(queryRunner, member);
+            resultMember = await this.memberRepository.signUp(queryRunner, member);
 
             if (!resultMember) {
                 throw Message.SERVER_ERROR;
@@ -110,6 +112,8 @@ export class MemberService {
         } finally {
             await queryRunner.release();
         }
+
+        return resultMember;
     }
 
     async duplicateCheck(key: string, value: string): Promise<boolean> {
@@ -138,6 +142,10 @@ export class MemberService {
         if(updateResult.affected !== 1){
             throw Message.SERVER_ERROR;
         }
+    }
+
+    async signOut(member: Member): Promise<DeleteResult> {
+        return await this.memberRepository.signOut(member);
     }
 
     async imgUpdate(file: FileType, member: Member): Promise<string> {
@@ -176,6 +184,5 @@ export class MemberService {
             unlinkSync(staticPath + originalProfileImgKey);
         }
     }
-
 
 }

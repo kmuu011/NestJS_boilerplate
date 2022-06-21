@@ -14,15 +14,16 @@ import {TodoGroupRepository} from "../../src/modules/todoGroup/todoGroup.reposit
 import {LoginMemberDto} from "../../src/modules/member/dto/login-member.dto";
 import {CreateMemberDto} from "../../src/modules/member/dto/create-member-dto";
 import {createRandomString} from "../../libs/utils";
-import {UpdateResult} from "typeorm";
 import {UpdateMemberDto} from "../../src/modules/member/dto/update-member.dto";
 import {FileType} from "../../src/common/type/type";
 import Buffer from "buffer";
 import {existsSync, readFileSync} from "fs";
+import {DeleteResult} from "typeorm";
 
 describe('Member Service', () => {
     let memberService: MemberService;
     let loginMemberInfo: Member;
+    let createdMemberInfo: Member;
     let profileImgKey: string;
 
     beforeAll(async () => {
@@ -61,7 +62,11 @@ describe('Member Service', () => {
         it('회원가입', async () => {
             const createMemberDto: CreateMemberDto = createMemberData();
 
-            await memberService.signUp(createMemberDto);
+            createdMemberInfo = await memberService.signUp(createMemberDto);
+
+            console.log(createdMemberInfo);
+
+            expect(createdMemberInfo instanceof Member).toBe(true);
         });
     });
 
@@ -101,6 +106,14 @@ describe('Member Service', () => {
             };
 
             await memberService.updateMember(updateMemberData, member);
+        });
+    });
+
+    describe('signOut()', () => {
+        it('회원 탈퇴', async () => {
+            const deleteResult: DeleteResult = await memberService.signOut(createdMemberInfo);
+
+            expect(deleteResult.affected).toBe(1);
         });
     });
 
