@@ -35,6 +35,18 @@ export const deActiveQuestionMark = (data): void => {
     dataSortForTextReplace(data, /\?/g, '？');
 }
 
+export const createRandomString = (length?: number) => {
+    length = length || 32;
+
+    let ranString = '';
+
+    for (let i=0 ; i<length ; i++){
+        ranString += ranStr[Math.floor(Math.random() * ranStr.length)];
+    }
+
+    return ranString;
+};
+
 export const createKey = async <T extends Repository<BaseEntity>>(repository: T, key: string, length: number) => {
     length = length || 32;
 

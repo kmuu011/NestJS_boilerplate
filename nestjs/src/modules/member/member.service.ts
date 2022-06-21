@@ -8,15 +8,16 @@ import {LoginMemberDto} from "./dto/login-member.dto";
 import {TokenRepository} from "./token/token.repository";
 import {createKey} from "../../../libs/utils";
 
-import {writeFileSync, existsSync, unlinkSync} from "fs";
+import {writeFileSync, existsSync, unlinkSync, readFileSync} from "fs";
 
 import {FileType} from "../../common/type/type";
 import {UpdateMemberDto} from "./dto/update-member.dto";
 import {encryptPassword} from "../../../libs/member";
 import {staticPath, filePath} from "../../../config/config";
-import {Connection} from "typeorm";
+import {Connection, DeleteResult} from "typeorm";
 import {TodoGroup} from "../todoGroup/entities/todoGroup.entity";
 import {TodoGroupRepository} from "../todoGroup/todoGroup.repository";
+import {Token} from "./entities/token.entity";
 
 @Injectable()
 export class MemberService {
@@ -42,8 +43,8 @@ export class MemberService {
     }
 
     async login(loginMemberDto: LoginMemberDto, headers): Promise<Member> {
-        const member = new Member();
-        const {ip, "user-agent": user_agent} = headers
+        const member: Member = new Member();
+        const {ip, "user-agent": user_agent} = headers;
         member.dataMigration(loginMemberDto);
 
         member.passwordEncrypt();
@@ -62,14 +63,18 @@ export class MemberService {
         const newToken: string = member.createToken();
         const code: string = await createKey<TokenRepository>(this.tokenRepository, 'code', 40);
 
-        member.tokenInfo = await this.tokenRepository.saveToken(member, newToken, code);
+        const token: Token = (await this.tokenRepository.select(undefined, member)) ?? new Token();
+
+        token.dataMigration({member, code, token: newToken});
+
+        member.tokenInfo = await this.tokenRepository.saveToken(token);
 
         await this.memberRepository.updateMember(member);
 
         return member;
     };
 
-    async signUp(createMemberDto: CreateMemberDto): Promise<void> {
+    async signUp(createMemberDto: CreateMemberDto): Promise<Member> {
         const queryRunner = this.connection.createQueryRunner();
         const member = new Member();
         member.dataMigration(createMemberDto);
@@ -78,8 +83,10 @@ export class MemberService {
         await queryRunner.connect();
         await queryRunner.startTransaction();
 
+        let resultMember: Member;
+
         try {
-            const resultMember: Member = await this.memberRepository.signUp(queryRunner, member);
+            resultMember = await this.memberRepository.signUp(queryRunner, member);
 
             if (!resultMember) {
                 throw Message.SERVER_ERROR;
@@ -105,6 +112,8 @@ export class MemberService {
         } finally {
             await queryRunner.release();
         }
+
+        return resultMember;
     }
 
     async duplicateCheck(key: string, value: string): Promise<boolean> {
@@ -135,7 +144,11 @@ export class MemberService {
         }
     }
 
-    async imgUpdate(file: FileType, member: Member): Promise<void> {
+    async signOut(member: Member): Promise<DeleteResult> {
+        return await this.memberRepository.signOut(member);
+    }
+
+    async imgUpdate(file: FileType, member: Member): Promise<string> {
         const originalProfileImgKey = member.profile_img_key;
         const profileImgKey = filePath.profileImg + await createKey(this.memberRepository, 'profile_img_key', 16) + '_' + Date.now() + '.' + file.fileType;
 
@@ -143,15 +156,17 @@ export class MemberService {
 
         const updateResult = await this.memberRepository.updateMember(member);
 
-        if(updateResult.affected !== 1){
+        if(updateResult.affected !== 1) {
             throw Message.SERVER_ERROR;
         }
 
         writeFileSync(staticPath + profileImgKey, file.fileBuffer);
 
-        if(originalProfileImgKey !== undefined && existsSync(staticPath + originalProfileImgKey)){
+        if(originalProfileImgKey !== undefined && existsSync(staticPath + originalProfileImgKey)) {
             unlinkSync(staticPath + originalProfileImgKey);
         }
+
+        return profileImgKey;
     }
 
     async imgDelete(member: Member): Promise<void> {
@@ -169,6 +184,5 @@ export class MemberService {
             unlinkSync(staticPath + originalProfileImgKey);
         }
     }
-
 
 }

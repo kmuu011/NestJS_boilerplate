@@ -1,10 +1,10 @@
-import {auth} from "../config/config";
+import {auth, serverType} from "../config/config";
 import {Message} from "./message";
 import {JwtPayload} from "jsonwebtoken";
 
 const jwt = require('jsonwebtoken')
 const crypto = require('crypto');
-const expireTime = auth.expireTime;
+const expireTime = serverType === 'test' ? 60*60*24*365*100 : auth.expireTime;
 const jwtSecret = auth.jwtSecret;
 
 export const encryptPassword = (password: string): string => {

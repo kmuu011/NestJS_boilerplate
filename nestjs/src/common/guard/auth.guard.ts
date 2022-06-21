@@ -6,6 +6,7 @@ import {TokenRepository} from "../../modules/member/token/token.repository";
 import * as utils from "../../../libs/utils";
 import {Request, Response} from "express";
 import { auth } from "../../../config/config";
+import {Token} from "../../modules/member/entities/token.entity";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -50,10 +51,14 @@ export class AuthGuard implements CanActivate {
                 keep_check: jwtPayload.keep_check
             });
 
+            const token: Token = await this.tokenRepository.select(undefined, member);
+
             const newToken: string = member.createToken();
             const code: string = await utils.createKey<TokenRepository>(this.tokenRepository, 'code', 40);
 
-            member.tokenInfo = await this.tokenRepository.saveToken(member, newToken, code);
+            token.dataMigration({code, token: newToken});
+
+            member.tokenInfo = await this.tokenRepository.saveToken(token);
 
             res.header('new-token-code', code);
         }
