@@ -13,7 +13,7 @@ import {createRandomString} from "../../libs/utils";
 describe('Member Repository', () => {
     let memberRepository: MemberRepository;
     let savedMemberInfo: Member;
-    let signUpMemberInfo: Member;
+    let createdMemberInfo: Member;
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -43,7 +43,7 @@ describe('Member Repository', () => {
 
             expect(true).toBe(true);
 
-            signUpMemberInfo = signUpResult;
+            createdMemberInfo = signUpResult;
 
             // 로그인용 계정 체크 및 생성 하는부분
             const loginMember: Member = new Member();
@@ -105,7 +105,7 @@ describe('Member Repository', () => {
 
     describe('signOut()', () => {
         it('회원 탈퇴', async () => {
-            const deleteResult: DeleteResult = await memberRepository.signOut(signUpMemberInfo);
+            const deleteResult: DeleteResult = await memberRepository.signOut(createdMemberInfo);
 
             expect(deleteResult.affected).toBe(1);
         });
