@@ -1,7 +1,11 @@
 import {Member} from "../../src/modules/member/entities/member.entity";
 import {createRandomString} from "../../libs/utils";
+import {FileType} from "../../src/common/type/type";
+import {readFileSync} from "fs";
+import {basePath} from "../../config/config";
+import Buffer from "buffer";
 
-export const savedMemberInfo = {
+export const savedMemberData = {
     idx: 112,
     id: 'tts1',
     password: 'tts1',
@@ -9,7 +13,12 @@ export const savedMemberInfo = {
     email: 'tts1@email.com'
 };
 
-export const createMemberDto = (): Member => {
+export const loginHeader = {
+    ip: "127.0.0.1",
+    "user-agent": "test-agent"
+};
+
+export const createMemberData = (): Member => {
     const key = createRandomString(12);
 
     const member = new Member();
@@ -26,3 +35,13 @@ export const createMemberDto = (): Member => {
 
     return member;
 };
+
+export const getProfileImageData = () => {
+    const fileBuffer: Buffer = readFileSync(basePath + '/test/static/img/cute.jpg');
+    return {
+        fileBuffer,
+        fileType: 'jpg',
+        fileName: 'cute',
+        fileSize: fileBuffer.length
+    }
+}

@@ -5,14 +5,14 @@ import {getRepositoryToken, TypeOrmModule} from "@nestjs/typeorm";
 import {DeleteResult, UpdateResult} from "typeorm";
 import {typeOrmOptions} from "../../config/config";
 import {
-    createMemberDto,
-    savedMemberInfo,
+    createMemberData,
+    savedMemberData,
 } from "./member";
 import {createRandomString} from "../../libs/utils";
 
 describe('Member Repository', () => {
     let memberRepository: MemberRepository;
-    let loginMemberInfo: Member;
+    let savedMemberInfo: Member;
     let signUpMemberInfo: Member;
 
     beforeAll(async () => {
@@ -37,7 +37,7 @@ describe('Member Repository', () => {
 
     describe('signUp()', () => {
         it('회원가입 기능', async () => {
-            const memberDto: Member = createMemberDto();
+            const memberDto: Member = createMemberData();
 
             const signUpResult: Member = await memberRepository.signUp(undefined, memberDto);
 
@@ -47,7 +47,7 @@ describe('Member Repository', () => {
 
             // 로그인용 계정 체크 및 생성 하는부분
             const loginMember: Member = new Member();
-            loginMember.dataMigration(savedMemberInfo);
+            loginMember.dataMigration(savedMemberData);
             loginMember.passwordEncrypt();
 
             const selectResult: Member = await memberRepository.select(loginMember, 'id, password', true);
@@ -55,16 +55,16 @@ describe('Member Repository', () => {
             if(!selectResult) {
                 const loginMemberSignUpResult: Member = await memberRepository.signUp(undefined, loginMember);
                 expect(loginMemberSignUpResult instanceof Member).toBe(true);
-                loginMemberInfo = loginMemberSignUpResult;
+                savedMemberInfo = loginMemberSignUpResult;
             } else {
-                loginMemberInfo = selectResult;
+                savedMemberInfo = selectResult;
             }
         });
     })
 
     describe('login()', () => {
         it('로그인 기능', async () => {
-            const loginResult: Member = await memberRepository.select(loginMemberInfo, 'id, password');
+            const loginResult: Member = await memberRepository.select(savedMemberInfo, 'id, password');
 
             expect(loginResult instanceof Member).toBe(true);
         });
@@ -72,7 +72,7 @@ describe('Member Repository', () => {
 
     describe('updateMember()', () => {
         it('멤버 수정', async () => {
-            const updateResult: UpdateResult = await memberRepository.updateMember(loginMemberInfo);
+            const updateResult: UpdateResult = await memberRepository.updateMember(savedMemberInfo);
 
             expect(updateResult instanceof UpdateResult).toBe(true);
             expect(updateResult.affected).toBe(1);
@@ -82,7 +82,7 @@ describe('Member Repository', () => {
 
     describe('duplicateCheck()', () => {
         it('중복 체크', async () => {
-            const { id, nickname, email } = loginMemberInfo;
+            const { id, nickname, email } = savedMemberInfo;
 
             const idCheckResult = await memberRepository.duplicateCheck('id', id);
             const nicknameCheckResult = await memberRepository.duplicateCheck('nickname', nickname);

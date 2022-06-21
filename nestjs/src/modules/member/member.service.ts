@@ -8,7 +8,7 @@ import {LoginMemberDto} from "./dto/login-member.dto";
 import {TokenRepository} from "./token/token.repository";
 import {createKey} from "../../../libs/utils";
 
-import {writeFileSync, existsSync, unlinkSync} from "fs";
+import {writeFileSync, existsSync, unlinkSync, readFileSync} from "fs";
 
 import {FileType} from "../../common/type/type";
 import {UpdateMemberDto} from "./dto/update-member.dto";
@@ -43,7 +43,7 @@ export class MemberService {
     }
 
     async login(loginMemberDto: LoginMemberDto, headers): Promise<Member> {
-        const member = new Member();
+        const member: Member = new Member();
         const {ip, "user-agent": user_agent} = headers;
         member.dataMigration(loginMemberDto);
 
@@ -140,7 +140,7 @@ export class MemberService {
         }
     }
 
-    async imgUpdate(file: FileType, member: Member): Promise<void> {
+    async imgUpdate(file: FileType, member: Member): Promise<string> {
         const originalProfileImgKey = member.profile_img_key;
         const profileImgKey = filePath.profileImg + await createKey(this.memberRepository, 'profile_img_key', 16) + '_' + Date.now() + '.' + file.fileType;
 
@@ -148,15 +148,17 @@ export class MemberService {
 
         const updateResult = await this.memberRepository.updateMember(member);
 
-        if(updateResult.affected !== 1){
+        if(updateResult.affected !== 1) {
             throw Message.SERVER_ERROR;
         }
 
         writeFileSync(staticPath + profileImgKey, file.fileBuffer);
 
-        if(originalProfileImgKey !== undefined && existsSync(staticPath + originalProfileImgKey)){
+        if(originalProfileImgKey !== undefined && existsSync(staticPath + originalProfileImgKey)) {
             unlinkSync(staticPath + originalProfileImgKey);
         }
+
+        return profileImgKey;
     }
 
     async imgDelete(member: Member): Promise<void> {

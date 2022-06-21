@@ -4,7 +4,7 @@ import {Test, TestingModule} from "@nestjs/testing";
 import {getRepositoryToken, TypeOrmModule} from "@nestjs/typeorm";
 import {typeOrmOptions} from "../../../config/config";
 import {Token} from "../../../src/modules/member/entities/token.entity";
-import {savedMemberInfo} from "../member";
+import {savedMemberData} from "../member";
 import {savedTokenInfo} from "./token";
 
 describe('Token Repository', () => {
@@ -30,7 +30,7 @@ describe('Token Repository', () => {
 
         tokenRepository = module.get<TokenRepository>(TokenRepository);
         loginMemberInfo = new Member();
-        loginMemberInfo.dataMigration(savedMemberInfo);
+        loginMemberInfo.dataMigration(savedMemberData);
         loginMemberInfo.passwordEncrypt();
     });
     
