@@ -5,7 +5,7 @@ import {getRepositoryToken, TypeOrmModule} from "@nestjs/typeorm";
 import {DeleteResult, UpdateResult} from "typeorm";
 import {typeOrmOptions} from "../../config/config";
 import {
-    createMemberData,
+    getCreateMemberData,
     savedMemberData,
 } from "./member";
 import {createRandomString} from "../../libs/utils";
@@ -37,11 +37,11 @@ describe('Member Repository', () => {
 
     describe('signUp()', () => {
         it('회원가입 기능', async () => {
-            const memberDto: Member = createMemberData();
+            const memberDto: Member = getCreateMemberData(true);
 
             const signUpResult: Member = await memberRepository.signUp(undefined, memberDto);
 
-            expect(true).toBe(true);
+            expect(signUpResult instanceof Member).toBeTruthy();
 
             createdMemberInfo = signUpResult;
 
@@ -54,7 +54,7 @@ describe('Member Repository', () => {
 
             if(!selectResult) {
                 const loginMemberSignUpResult: Member = await memberRepository.signUp(undefined, loginMember);
-                expect(loginMemberSignUpResult instanceof Member).toBe(true);
+                expect(loginMemberSignUpResult instanceof Member).toBeTruthy();
                 savedMemberInfo = loginMemberSignUpResult;
             } else {
                 savedMemberInfo = selectResult;
@@ -66,7 +66,7 @@ describe('Member Repository', () => {
         it('로그인 기능', async () => {
             const loginResult: Member = await memberRepository.select(savedMemberInfo, 'id, password');
 
-            expect(loginResult instanceof Member).toBe(true);
+            expect(loginResult instanceof Member).toBeTruthy();
         });
     })
 
@@ -74,7 +74,7 @@ describe('Member Repository', () => {
         it('멤버 수정', async () => {
             const updateResult: UpdateResult = await memberRepository.updateMember(savedMemberInfo);
 
-            expect(updateResult instanceof UpdateResult).toBe(true);
+            expect(updateResult instanceof UpdateResult).toBeTruthy();
             expect(updateResult.affected).toBe(1);
         });
     })
@@ -88,18 +88,18 @@ describe('Member Repository', () => {
             const nicknameCheckResult = await memberRepository.duplicateCheck('nickname', nickname);
             const emailCheckResult = await memberRepository.duplicateCheck('email', email);
 
-            expect(!idCheckResult).toBe(false);
-            expect(!nicknameCheckResult).toBe(false);
-            expect(!emailCheckResult).toBe(false);
+            expect(!idCheckResult).toBeFalsy();
+            expect(!nicknameCheckResult).toBeFalsy();
+            expect(!emailCheckResult).toBeFalsy();
 
             const randomString = createRandomString(12);
             const idCheckResultTrue = await memberRepository.duplicateCheck('id', randomString);
             const nicknameCheckResultTrue = await memberRepository.duplicateCheck('nickname', randomString);
             const emailCheckResultTrue = await memberRepository.duplicateCheck('email', randomString);
 
-            expect(!idCheckResultTrue).toBe(true);
-            expect(!nicknameCheckResultTrue).toBe(true);
-            expect(!emailCheckResultTrue).toBe(true);
+            expect(!idCheckResultTrue).toBeTruthy();
+            expect(!nicknameCheckResultTrue).toBeTruthy();
+            expect(!emailCheckResultTrue).toBeTruthy();
         });
     })
 

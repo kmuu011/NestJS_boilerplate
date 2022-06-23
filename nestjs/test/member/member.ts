@@ -1,9 +1,9 @@
 import {Member} from "../../src/modules/member/entities/member.entity";
 import {createRandomString} from "../../libs/utils";
-import {FileType} from "../../src/common/type/type";
 import {readFileSync} from "fs";
 import {basePath} from "../../config/config";
 import Buffer from "buffer";
+import {UpdateMemberDto} from "../../src/modules/member/dto/update-member.dto";
 
 export const savedMemberData = {
     idx: 112,
@@ -18,7 +18,7 @@ export const loginHeader = {
     "user-agent": "test-agent"
 };
 
-export const createMemberData = (): Member => {
+export const getCreateMemberData = (encryptPassword): Member => {
     const key = createRandomString(12);
 
     const member = new Member();
@@ -31,10 +31,24 @@ export const createMemberData = (): Member => {
         email: key + "@naver.com"
     });
 
-    member.passwordEncrypt();
+    if(encryptPassword) {
+        member.passwordEncrypt();
+    }
 
     return member;
 };
+
+export const getUpdateMemberData = (): UpdateMemberDto => {
+    const member: Member = new Member();
+    member.dataMigration(savedMemberData);
+
+    return {
+        nickname: savedMemberData.nickname,
+        email: savedMemberData.email,
+        password: savedMemberData.password,
+        originalPassword: savedMemberData.password
+    };
+}
 
 export const getProfileImageData = () => {
     const fileBuffer: Buffer = readFileSync(basePath + '/test/static/img/cute.jpg');

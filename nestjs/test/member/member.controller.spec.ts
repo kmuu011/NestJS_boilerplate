@@ -3,6 +3,7 @@ import {Test, TestingModule} from "@nestjs/testing";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {typeOrmOptions} from "../../config/config";
 import {
+    getCreateMemberData, getUpdateMemberData,
     loginHeader,
     savedMemberData,
 } from "./member";
@@ -15,11 +16,12 @@ import {MemberService} from "../../src/modules/member/member.service";
 
 import {createRequest} from "node-mocks-http";
 import {Request} from "express";
-import {LoginResponseType} from "../../src/common/type/type";
+import {LoginResponseType, ResponseBooleanType} from "../../src/common/type/type";
+import {CreateMemberDto} from "../../src/modules/member/dto/create-member-dto";
+import {UpdateMemberDto} from "../../src/modules/member/dto/update-member.dto";
 
 describe('Member Controller', () => {
     let memberController: MemberController;
-    let loginMemberInfo: Member;
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -50,6 +52,35 @@ describe('Member Controller', () => {
             const loginResponseType: LoginResponseType = await memberController.login(req, loginMemberDto);
 
             expect(loginResponseType.tokenCode !== undefined).toBeTruthy();
+        });
+    });
+
+    describe('signUp()', () => {
+        it('회원가입', async () => {
+            const createMemberDto: CreateMemberDto = getCreateMemberData(false);
+
+            const signUpResponse: ResponseBooleanType = await memberController.signUp(createMemberDto);
+
+            expect(signUpResponse.result).toBeTruthy();
+        });
+    });
+
+
+    describe('updateMember()', () => {
+        it('멤버 수정', async () => {
+            const req: Request = createRequest();
+            const member: Member = new Member();
+            member.dataMigration(savedMemberData);
+
+            req.locals = {
+                memberInfo: member
+            };
+
+            const updateMemberDto: UpdateMemberDto = getUpdateMemberData();
+
+            const updateResponse: ResponseBooleanType = await memberController.updateMember(req, updateMemberDto);
+
+            expect(updateResponse.result).toBeTruthy();
         });
     });
 
