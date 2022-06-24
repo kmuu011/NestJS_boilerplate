@@ -148,7 +148,7 @@ export class MemberService {
         return await this.memberRepository.signOut(member);
     }
 
-    async imgUpdate(file: FileType, member: Member): Promise<string> {
+    async updateImg(file: FileType, member: Member): Promise<string> {
         const originalProfileImgKey = member.profile_img_key;
         const profileImgKey = filePath.profileImg + await createKey(this.memberRepository, 'profile_img_key', 16) + '_' + Date.now() + '.' + file.fileType;
 
@@ -169,7 +169,7 @@ export class MemberService {
         return profileImgKey;
     }
 
-    async imgDelete(member: Member): Promise<void> {
+    async deleteImg(member: Member): Promise<void> {
         const originalProfileImgKey = member.profile_img_key;
 
         member.dataMigration({profile_img_key: null});

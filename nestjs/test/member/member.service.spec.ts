@@ -19,6 +19,7 @@ import {FileType} from "../../src/common/type/type";
 import Buffer from "buffer";
 import {existsSync, readFileSync} from "fs";
 import {DeleteResult} from "typeorm";
+import exp from "constants";
 
 describe('Member Service', () => {
     let memberService: MemberService;
@@ -70,24 +71,17 @@ describe('Member Service', () => {
 
     describe('duplicateCheck()', () => {
         it('중복 체크', async () => {
-            const { id, nickname, email } = savedMemberData;
-
-            const idCheckResult = await memberService.duplicateCheck('id', id);
-            const nicknameCheckResult = await memberService.duplicateCheck('nickname', nickname);
-            const emailCheckResult = await memberService.duplicateCheck('email', email);
-
-            expect(!idCheckResult).toBeTruthy();
-            expect(!nicknameCheckResult).toBeTruthy();
-            expect(!emailCheckResult).toBeTruthy();
+            const checkKeyList = ['id', 'nickname', 'email'];
 
             const randomString = createRandomString(12);
-            const idCheckResultTrue = await memberService.duplicateCheck('id', randomString);
-            const nicknameCheckResultTrue = await memberService.duplicateCheck('nickname', randomString);
-            const emailCheckResultTrue = await memberService.duplicateCheck('email', randomString);
 
-            expect(!idCheckResultTrue).toBeFalsy();
-            expect(!nicknameCheckResultTrue).toBeFalsy();
-            expect(!emailCheckResultTrue).toBeFalsy();
+            for(const key of checkKeyList){
+                const dupCheckFalse = await memberService.duplicateCheck(key, savedMemberData[key]);
+                expect(!dupCheckFalse).toBeTruthy();
+
+                const dupCheckTrue = await memberService.duplicateCheck(key, randomString);
+                expect(!dupCheckTrue).toBeFalsy()
+            }
         });
     });
 
@@ -110,11 +104,11 @@ describe('Member Service', () => {
         });
     });
 
-    describe('imgUpdate()', () => {
+    describe('updateImg()', () => {
         it('프로필 사진 수정', async () => {
             const imgData: FileType = getProfileImageData();
 
-            profileImgKey = await memberService.imgUpdate(imgData, loginMemberInfo);
+            profileImgKey = await memberService.updateImg(imgData, loginMemberInfo);
 
             const fileBuffer: Buffer = readFileSync(staticPath + profileImgKey);
 
@@ -128,7 +122,7 @@ describe('Member Service', () => {
 
             expect(existsSync(profileImgPath)).toBeTruthy();
 
-            await memberService.imgDelete(loginMemberInfo);
+            await memberService.deleteImg(loginMemberInfo);
 
             expect(existsSync(profileImgPath)).toBeFalsy();
         });

@@ -3,7 +3,7 @@ import {Test, TestingModule} from "@nestjs/testing";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {typeOrmOptions} from "../../config/config";
 import {
-    getCreateMemberData, getUpdateMemberData,
+    getCreateMemberData, getProfileImageData, getUpdateMemberData,
     loginHeader,
     savedMemberData,
 } from "./member";
@@ -16,12 +16,15 @@ import {MemberService} from "../../src/modules/member/member.service";
 
 import {createRequest} from "node-mocks-http";
 import {Request} from "express";
-import {LoginResponseType, ResponseBooleanType} from "../../src/common/type/type";
+import {FileType, LoginResponseType, ResponseBooleanType} from "../../src/common/type/type";
 import {CreateMemberDto} from "../../src/modules/member/dto/create-member-dto";
 import {UpdateMemberDto} from "../../src/modules/member/dto/update-member.dto";
+import {createRandomString} from "../../libs/utils";
+import {DuplicateCheckMemberDto} from "../../src/modules/member/dto/duplicate-check-member.dto";
 
 describe('Member Controller', () => {
     let memberController: MemberController;
+    let memberService: MemberService;
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -40,6 +43,7 @@ describe('Member Controller', () => {
         }).compile();
 
         memberController = module.get<MemberController>(MemberController);
+        memberService = module.get<MemberService>(MemberService);
     });
 
     describe('login()', () => {
@@ -71,6 +75,7 @@ describe('Member Controller', () => {
             const req: Request = createRequest();
             const member: Member = new Member();
             member.dataMigration(savedMemberData);
+            member.password = undefined;
 
             req.locals = {
                 memberInfo: member
@@ -81,6 +86,91 @@ describe('Member Controller', () => {
             const updateResponse: ResponseBooleanType = await memberController.updateMember(req, updateMemberDto);
 
             expect(updateResponse.result).toBeTruthy();
+        });
+    });
+
+    describe('duplicateCheck()', () => {
+        it('중복 체크', async () => {
+            const checkKeyList = ['id', 'nickname', 'email'];
+
+            const randomString = createRandomString(12);
+
+            for(let i=0 ; i<checkKeyList.length ; i++){
+                let duplicateCheckDto: DuplicateCheckMemberDto = {type: i, value: savedMemberData[checkKeyList[i]]}
+
+                const dupCheckFalse: ResponseBooleanType = await memberController.duplicateCheck(duplicateCheckDto);
+
+                expect(!dupCheckFalse.usable).toBeTruthy();
+
+                duplicateCheckDto = {type: i, value: randomString};
+
+                const dupCheckTrue: ResponseBooleanType = await memberController.duplicateCheck(duplicateCheckDto);
+
+                expect(!dupCheckTrue.usable).toBeFalsy();
+            }
+        });
+    });
+
+    describe('signOut()', () => {
+        it('회원 탈퇴', async () => {
+            const createMemberDto: Member = getCreateMemberData(false);
+
+            const req: Request = createRequest();
+            const member: Member = new Member();
+            member.idx = createMemberDto.idx;
+
+            req.locals = {
+                memberInfo: member
+            };
+
+            const signOutResponse: ResponseBooleanType = await memberController.signOut(req);
+
+            expect(signOutResponse.result).toBeTruthy();
+        });
+    });
+
+    describe('updateImg()', () => {
+        it('프로필 사진 수정', async () => {
+            const imgData: FileType = getProfileImageData();
+            const req: Request = createRequest();
+            const member: Member = new Member();
+            member.dataMigration(savedMemberData);
+            member.password = undefined;
+
+            req.locals = {
+                memberInfo: member
+            };
+
+            const file = {
+                fieldname: 'file',
+                originalname: imgData.fileName + '.' + imgData.fileType,
+                encoding: '7bit',
+                mimetype: 'image/jpeg',
+                buffer: imgData.fileBuffer,
+                size: imgData.fileSize
+            }
+
+            const updateImgResponse: ResponseBooleanType = await memberController.updateImg(req, file);
+
+            expect(updateImgResponse.result).toBeTruthy();
+        });
+    });
+
+    describe('deleteImg()', () => {
+        it('프로필 사진 삭제', async () => {
+            const req: Request = createRequest();
+            const member: Member = new Member();
+            member.dataMigration(savedMemberData);
+
+            const savedMember: Member = await memberService.select(member)
+
+            req.locals = {
+                memberInfo: savedMember
+            };
+
+            const deleteImgResponse: ResponseBooleanType = await memberController.deleteImg(req);
+
+            expect(deleteImgResponse.result).toBeTruthy();
         });
     });
 

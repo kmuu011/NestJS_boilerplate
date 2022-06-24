@@ -39,9 +39,6 @@ export const getCreateMemberData = (encryptPassword): Member => {
 };
 
 export const getUpdateMemberData = (): UpdateMemberDto => {
-    const member: Member = new Member();
-    member.dataMigration(savedMemberData);
-
     return {
         nickname: savedMemberData.nickname,
         email: savedMemberData.email,
