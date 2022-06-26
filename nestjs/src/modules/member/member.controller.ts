@@ -105,28 +105,53 @@ export class MemberController {
         }
     }
 
-    @Patch('img')
-    @UseGuards(AuthGuard)
-    @UseInterceptors(FileInterceptor('file', multerOptions))
-    async img(
-        @Req() req: Request,
-        @UploadedFile() file
+    @Get('/duplicateCheck')
+    async duplicateCheck(
+        @Body() duplicateCheckDto: DuplicateCheckMemberDto
     ): Promise<ResponseBooleanType> {
-        const arrangedFile: FileType = (validator.file([file], 10, validator.type.img))[0];
+        const {type, value} = duplicateCheckDto;
 
-        await this.memberService.imgUpdate(arrangedFile, req.locals.memberInfo);
+        return {
+            usable: await this.memberService.duplicateCheck(duplicateCheckKeys[type], value)
+        };
+    }
+
+    @Delete('/signOut')
+    @UseGuards(AuthGuard)
+    async signOut(
+        @Req() req: Request,
+    ): Promise<ResponseBooleanType> {
+        await this.memberService.signOut(req.locals.memberInfo);
 
         return {
             result: true
         }
     }
 
+    @Patch('img')
+    @UseGuards(AuthGuard)
+    @UseInterceptors(FileInterceptor('file', multerOptions))
+    async updateImg(
+        @Req() req: Request,
+        @UploadedFile() file
+    ): Promise<ResponseBooleanType> {
+        const arrangedFile: FileType = (validator.file([file], 10, validator.type.img))[0];
+
+        await this.memberService.updateImg(arrangedFile, req.locals.memberInfo);
+
+        return {
+            result: true
+        }
+    }
+
+
+
     @Delete('img')
     @UseGuards(AuthGuard)
     async deleteImg(
         @Req() req: Request,
     ): Promise<ResponseBooleanType> {
-        await this.memberService.imgDelete(req.locals.memberInfo);
+        await this.memberService.deleteImg(req.locals.memberInfo);
 
         return {
             result: true
@@ -146,16 +171,6 @@ export class MemberController {
         res.download(staticPath + profileImgKey, 'test.jpg');
     }
 
-    @Get('/duplicateCheck')
-    async duplicateCheck(
-        @Body() duplicateCheckDto: DuplicateCheckMemberDto
-    ): Promise<ResponseBooleanType> {
-        const {type, value} = duplicateCheckDto;
-
-        return {
-            usable: await this.memberService.duplicateCheck(duplicateCheckKeys[type], value)
-        };
-    }
 
 
 }

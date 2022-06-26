@@ -11,12 +11,12 @@ export const type: ValidatorTypeObj = {
 export const file = (files: any[], maxSize: number, type: ValidatorType): FileType[] => {
     const fileList: FileType[] = [];
 
-    if(files === undefined){
-        throw Message.INVALID_PARAM('file');
-    }
-
     for(let i=0 ; i<files.length ; i++){
         const f = files[i];
+
+        if(f === undefined){
+            throw Message.INVALID_PARAM('file');
+        }
 
         let fileType = f.originalname.substring(f.originalname.lastIndexOf('.')+1);
         fileType = fileType.toLowerCase();

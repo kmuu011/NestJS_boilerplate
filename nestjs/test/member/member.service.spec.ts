@@ -3,7 +3,7 @@ import {Test, TestingModule} from "@nestjs/testing";
 import {getRepositoryToken, TypeOrmModule} from "@nestjs/typeorm";
 import {staticPath, typeOrmOptions} from "../../config/config";
 import {
-    createMemberData, getProfileImageData,
+    getCreateMemberData, getProfileImageData, getUpdateMemberData,
     loginHeader,
     savedMemberData,
 } from "./member";
@@ -19,6 +19,7 @@ import {FileType} from "../../src/common/type/type";
 import Buffer from "buffer";
 import {existsSync, readFileSync} from "fs";
 import {DeleteResult} from "typeorm";
+import exp from "constants";
 
 describe('Member Service', () => {
     let memberService: MemberService;
@@ -54,42 +55,33 @@ describe('Member Service', () => {
 
             loginMemberInfo = await memberService.login(loginMemberDto, loginHeader);
 
-            expect(loginMemberInfo instanceof Member).toBe(true);
+            expect(loginMemberInfo instanceof Member).toBeTruthy();
         });
     });
 
     describe('signUp()', () => {
         it('회원가입', async () => {
-            const createMemberDto: CreateMemberDto = createMemberData();
+            const createMemberDto: CreateMemberDto = getCreateMemberData(true);
 
             createdMemberInfo = await memberService.signUp(createMemberDto);
 
-            console.log(createdMemberInfo);
-
-            expect(createdMemberInfo instanceof Member).toBe(true);
+            expect(createdMemberInfo instanceof Member).toBeTruthy();
         });
     });
 
     describe('duplicateCheck()', () => {
         it('중복 체크', async () => {
-            const { id, nickname, email } = savedMemberData;
-
-            const idCheckResult = await memberService.duplicateCheck('id', id);
-            const nicknameCheckResult = await memberService.duplicateCheck('nickname', nickname);
-            const emailCheckResult = await memberService.duplicateCheck('email', email);
-
-            expect(!idCheckResult).toBe(true);
-            expect(!nicknameCheckResult).toBe(true);
-            expect(!emailCheckResult).toBe(true);
+            const checkKeyList = ['id', 'nickname', 'email'];
 
             const randomString = createRandomString(12);
-            const idCheckResultTrue = await memberService.duplicateCheck('id', randomString);
-            const nicknameCheckResultTrue = await memberService.duplicateCheck('nickname', randomString);
-            const emailCheckResultTrue = await memberService.duplicateCheck('email', randomString);
 
-            expect(!idCheckResultTrue).toBe(false);
-            expect(!nicknameCheckResultTrue).toBe(false);
-            expect(!emailCheckResultTrue).toBe(false);
+            for(const key of checkKeyList){
+                const dupCheckFalse = await memberService.duplicateCheck(key, savedMemberData[key]);
+                expect(!dupCheckFalse).toBeTruthy();
+
+                const dupCheckTrue = await memberService.duplicateCheck(key, randomString);
+                expect(!dupCheckTrue).toBeFalsy()
+            }
         });
     });
 
@@ -98,12 +90,7 @@ describe('Member Service', () => {
             const member: Member = new Member();
             member.dataMigration(savedMemberData);
 
-            const updateMemberData: UpdateMemberDto = {
-                nickname: savedMemberData.nickname,
-                email: savedMemberData.email,
-                password: savedMemberData.password,
-                originalPassword: savedMemberData.password
-            };
+            const updateMemberData: UpdateMemberDto = getUpdateMemberData();
 
             await memberService.updateMember(updateMemberData, member);
         });
@@ -117,15 +104,15 @@ describe('Member Service', () => {
         });
     });
 
-    describe('imgUpdate()', () => {
+    describe('updateImg()', () => {
         it('프로필 사진 수정', async () => {
             const imgData: FileType = getProfileImageData();
 
-            profileImgKey = await memberService.imgUpdate(imgData, loginMemberInfo);
+            profileImgKey = await memberService.updateImg(imgData, loginMemberInfo);
 
             const fileBuffer: Buffer = readFileSync(staticPath + profileImgKey);
 
-            expect(fileBuffer.buffer instanceof ArrayBuffer).toBe(true);
+            expect(fileBuffer.buffer instanceof ArrayBuffer).toBeTruthy();
         });
     });
 
@@ -133,11 +120,11 @@ describe('Member Service', () => {
         it('프로필 사진 삭제', async () => {
             const profileImgPath = staticPath + profileImgKey;
 
-            expect(existsSync(profileImgPath)).toBe(true);
+            expect(existsSync(profileImgPath)).toBeTruthy();
 
-            await memberService.imgDelete(loginMemberInfo);
+            await memberService.deleteImg(loginMemberInfo);
 
-            expect(existsSync(profileImgPath)).toBe(false);
+            expect(existsSync(profileImgPath)).toBeFalsy();
         });
     });
 
