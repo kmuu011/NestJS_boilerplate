@@ -4,6 +4,8 @@ import {readFileSync} from "fs";
 import {basePath} from "../../config/config";
 import Buffer from "buffer";
 import {UpdateMemberDto} from "../../src/modules/member/dto/update-member.dto";
+import {savedTokenInfo} from "./token/token";
+import {getUpdateResult} from "../common/const";
 
 export const savedMemberData = {
     idx: 112,
@@ -11,6 +13,12 @@ export const savedMemberData = {
     password: 'tts1',
     nickname: 'tts1',
     email: 'tts1@email.com'
+};
+
+export const getMockMember = (): Member => {
+    const member = new Member();
+    member.dataMigration({ ...savedMemberData, tokenInfo: savedTokenInfo });
+    return member;
 };
 
 export const loginHeader = {
@@ -55,4 +63,11 @@ export const getProfileImageData = () => {
         fileName: 'cute',
         fileSize: fileBuffer.length
     }
+}
+
+export const mockMemberRepository = {
+    select: jest.fn().mockImplementation(() => Promise.resolve(getMockMember())),
+    findOne: jest.fn().mockImplementation(() => Promise.resolve(getMockMember())),
+    updateMember: jest.fn().mockImplementation(() => Promise.resolve(getUpdateResult())),
+    signUp: jest.fn().mockImplementation(() => Promise.resolve(getUpdateResult())),
 }
