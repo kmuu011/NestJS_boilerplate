@@ -1,6 +1,7 @@
 #!/bin/sh
 cd ..
 
+
 cd nestjs
 
 del /s /q "config\*.js"
