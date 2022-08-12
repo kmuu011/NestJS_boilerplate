@@ -3,6 +3,6 @@ cd ..
 
 cd nestjs
 
-sudo npm install -g npm install
+npm install -g npm install
 
 
