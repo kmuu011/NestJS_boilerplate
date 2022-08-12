@@ -1,12 +1,12 @@
 #!/bin/sh
-cd ..
 
+cd ..
 
 cd nestjs
 
-del /s /q "config\*.js"
-del /s /q "libs\*.js"
-del /s /q "src\*.js"
-del /s /q "test\*.js"
+find ./config -type f -name "*.js" -exec rm {} \;
+find ./libs -type f -name "*.js" -exec rm {} \;
+find ./src -type f -name "*.js" -exec rm {} \;
+find ./test -type f -name "*.js" -exec rm {} \;
 
 sudo npm run build
