@@ -37,5 +37,6 @@ nestjs/!.vscode/extensions.json
 # more_ignore
 nestjs/config/config*
 nginx_window/logs/*
+nestjs/**/*.js
 
 coverage/

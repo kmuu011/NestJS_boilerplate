@@ -26,6 +26,7 @@ import {staticPath, multerOptions} from "../../../config/config";
 import * as validator from "../../../libs/validator";
 import {FileType, LoginResponseType, ResponseBooleanType} from "../../common/type/type";
 import {Message} from "../../../libs/message";
+import {DeleteResult} from "typeorm";
 
 const duplicateCheckKeys = ['id', 'nickname', 'email'];
 
@@ -121,7 +122,7 @@ export class MemberController {
     async signOut(
         @Req() req: Request,
     ): Promise<ResponseBooleanType> {
-        await this.memberService.signOut(req.locals.memberInfo);
+        const deleteResult: DeleteResult = await this.memberService.signOut(req.locals.memberInfo);
 
         return {
             result: true
