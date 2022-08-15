@@ -14,7 +14,7 @@ import {FileType} from "../../common/type/type";
 import {UpdateMemberDto} from "./dto/update-member.dto";
 import {encryptPassword} from "../../../libs/member";
 import {staticPath, filePath} from "../../../config/config";
-import {Connection, DeleteResult} from "typeorm";
+import {Connection, DeleteResult, UpdateResult} from "typeorm";
 import {TodoGroup} from "../todoGroup/entities/todoGroup.entity";
 import {TodoGroupRepository} from "../todoGroup/todoGroup.repository";
 import {Token} from "./entities/token.entity";
@@ -121,7 +121,7 @@ export class MemberService {
     }
 
     async updateMember(updateMemberDto: UpdateMemberDto, member: Member): Promise<void> {
-        const memberInfo = await this.memberRepository.select(member, undefined,true);
+        const memberInfo: Member = await this.memberRepository.select(member, undefined,true);
 
         if(memberInfo.auth_type === 0) {
             updateMemberDto.originalPassword = encryptPassword(updateMemberDto.originalPassword);
@@ -137,7 +137,7 @@ export class MemberService {
 
         memberInfo.dataMigration(updateMemberDto);
 
-        const updateResult = await this.memberRepository.updateMember(memberInfo);
+        const updateResult: UpdateResult = await this.memberRepository.updateMember(memberInfo);
 
         if(updateResult.affected !== 1){
             throw Message.SERVER_ERROR;
@@ -150,7 +150,8 @@ export class MemberService {
 
     async updateImg(file: FileType, member: Member): Promise<string> {
         const originalProfileImgKey = member.profile_img_key;
-        const profileImgKey = filePath.profileImg + await createKey(this.memberRepository, 'profile_img_key', 16) + '_' + Date.now() + '.' + file.fileType;
+
+        const profileImgKey = filePath.profileImg + await createKey<MemberRepository>(this.memberRepository, 'profile_img_key', 16) + '_' + Date.now() + '.' + file.fileType;
 
         member.dataMigration({profile_img_key: profileImgKey});
 
@@ -171,6 +172,8 @@ export class MemberService {
 
     async deleteImg(member: Member): Promise<void> {
         const originalProfileImgKey = member.profile_img_key;
+
+        console.log(originalProfileImgKey)
 
         member.dataMigration({profile_img_key: null});
 

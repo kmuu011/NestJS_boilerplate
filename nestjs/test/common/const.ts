@@ -1,4 +1,13 @@
-import {DeleteResult, UpdateResult} from "typeorm";
+import {DeleteResult, InsertResult, UpdateResult} from "typeorm";
+
+export const getInsertResult = (): InsertResult => {
+    const insertResult: InsertResult = new InsertResult();
+
+    insertResult.generatedMaps = [];
+    insertResult.raw = [];
+
+    return insertResult;
+}
 
 export const getUpdateResult = (): UpdateResult => {
     const updateResult: UpdateResult = new UpdateResult();
@@ -32,4 +41,10 @@ export const mockConnection = {
             save: (r => r)
         }
     })
+}
+
+export const mockUtilsUseDb = {
+    createKey : jest.fn().mockImplementation(
+        () => Promise.resolve(() => {return 'testKey'})
+    )
 }
