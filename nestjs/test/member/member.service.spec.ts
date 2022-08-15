@@ -2,7 +2,7 @@ import {Member} from "../../src/modules/member/entities/member.entity";
 import {Test, TestingModule} from "@nestjs/testing";
 import {
     getCreateMemberData,
-    getMockMember, getProfileImageData, getUpdateMemberData,
+    getProfileImageData, getUpdateMemberData,
     loginHeader, mockMemberRepository,
     savedMemberData,
 } from "./member";
@@ -11,7 +11,7 @@ import {MemberRepository} from "../../src/modules/member/member.repository";
 import {TokenRepository} from "../../src/modules/member/token/token.repository";
 import {TodoGroupRepository} from "../../src/modules/todoGroup/todoGroup.repository";
 import {LoginMemberDto} from "../../src/modules/member/dto/login-member.dto";
-import {Connection, DeleteResult} from "typeorm";
+import {Connection, DeleteResult, UpdateResult} from "typeorm";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {mockTokenRepository} from "./token/token";
 
@@ -111,7 +111,9 @@ describe('Member Service', () => {
 
             const updateMemberData: UpdateMemberDto = getUpdateMemberData();
 
-            await memberService.updateMember(updateMemberData, member);
+            const updateResult: UpdateResult = await memberService.updateMember(updateMemberData, member);
+
+            expect(updateResult.affected).toBe(1);
         });
     });
 

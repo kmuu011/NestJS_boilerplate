@@ -8,7 +8,7 @@ import {LoginMemberDto} from "./dto/login-member.dto";
 import {TokenRepository} from "./token/token.repository";
 import {createKey} from "../../../libs/utils";
 
-import {writeFileSync, existsSync, unlinkSync, readFileSync} from "fs";
+import {writeFileSync, existsSync, unlinkSync} from "fs";
 
 import {FileType} from "../../common/type/type";
 import {UpdateMemberDto} from "./dto/update-member.dto";
@@ -120,7 +120,7 @@ export class MemberService {
         return !(await this.memberRepository.duplicateCheck(key, value));
     }
 
-    async updateMember(updateMemberDto: UpdateMemberDto, member: Member): Promise<void> {
+    async updateMember(updateMemberDto: UpdateMemberDto, member: Member): Promise<UpdateResult> {
         const memberInfo: Member = await this.memberRepository.select(member, undefined,true);
 
         if(memberInfo.auth_type === 0) {
@@ -142,10 +142,18 @@ export class MemberService {
         if(updateResult.affected !== 1){
             throw Message.SERVER_ERROR;
         }
+
+        return updateResult;
     }
 
     async signOut(member: Member): Promise<DeleteResult> {
-        return await this.memberRepository.signOut(member);
+        const deleteResult: DeleteResult = await this.memberRepository.signOut(member);
+
+        if(deleteResult.affected !== 1){
+            throw Message.SERVER_ERROR;
+        }
+
+        return deleteResult;
     }
 
     async updateImg(file: FileType, member: Member): Promise<string> {
@@ -172,8 +180,6 @@ export class MemberService {
 
     async deleteImg(member: Member): Promise<void> {
         const originalProfileImgKey = member.profile_img_key;
-
-        console.log(originalProfileImgKey)
 
         member.dataMigration({profile_img_key: null});
 
