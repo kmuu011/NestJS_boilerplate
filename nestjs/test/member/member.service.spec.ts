@@ -29,7 +29,6 @@ describe('Member Service', () => {
     let createdMemberInfo: Member;
     let profileImgKey: string;
 
-
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
             imports:[
@@ -58,9 +57,7 @@ describe('Member Service', () => {
                     provide: Connection,
                     useValue: mockConnection
                 },
-
                 MemberService,
-
             ]
         })
             .overrideProvider(Connection)

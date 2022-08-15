@@ -19,8 +19,8 @@ export const getMockToken = (where?) => {
 }
 
 export const mockTokenRepository = {
-    select: jest.fn().mockImplementation(() => Promise.resolve(getMockToken())),
+    select: jest.fn().mockImplementation((where) => Promise.resolve(getMockToken(where))),
     findOne: jest.fn().mockImplementation(
         (where) =>  Promise.resolve(getMockToken(where))),
-    saveToken: jest.fn().mockImplementation(() => Promise.resolve(getMockToken()))
+    saveToken: jest.fn().mockImplementation((token: Token) => Promise.resolve(getMockToken()))
 }
