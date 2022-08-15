@@ -1,8 +1,12 @@
 #!/bin/sh
+SHELL_PATH=$(dirname $0)
+
+cd $SHELL_PATH
+
 cd ..
 
 cd nestjs
 
-npm install -g npm install
+sudo npm install -g npm install
 
 
