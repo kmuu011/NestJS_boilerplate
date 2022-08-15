@@ -8,13 +8,13 @@ import {LoginMemberDto} from "./dto/login-member.dto";
 import {TokenRepository} from "./token/token.repository";
 import {createKey} from "../../../libs/utils";
 
-import {writeFileSync, existsSync, unlinkSync, readFileSync} from "fs";
+import {writeFileSync, existsSync, unlinkSync} from "fs";
 
 import {FileType} from "../../common/type/type";
 import {UpdateMemberDto} from "./dto/update-member.dto";
 import {encryptPassword} from "../../../libs/member";
 import {staticPath, filePath} from "../../../config/config";
-import {Connection, DeleteResult} from "typeorm";
+import {Connection, DeleteResult, UpdateResult} from "typeorm";
 import {TodoGroup} from "../todoGroup/entities/todoGroup.entity";
 import {TodoGroupRepository} from "../todoGroup/todoGroup.repository";
 import {Token} from "./entities/token.entity";
@@ -120,8 +120,8 @@ export class MemberService {
         return !(await this.memberRepository.duplicateCheck(key, value));
     }
 
-    async updateMember(updateMemberDto: UpdateMemberDto, member: Member): Promise<void> {
-        const memberInfo = await this.memberRepository.select(member, undefined,true);
+    async updateMember(updateMemberDto: UpdateMemberDto, member: Member): Promise<UpdateResult> {
+        const memberInfo: Member = await this.memberRepository.select(member, undefined,true);
 
         if(memberInfo.auth_type === 0) {
             updateMemberDto.originalPassword = encryptPassword(updateMemberDto.originalPassword);
@@ -137,20 +137,29 @@ export class MemberService {
 
         memberInfo.dataMigration(updateMemberDto);
 
-        const updateResult = await this.memberRepository.updateMember(memberInfo);
+        const updateResult: UpdateResult = await this.memberRepository.updateMember(memberInfo);
 
         if(updateResult.affected !== 1){
             throw Message.SERVER_ERROR;
         }
+
+        return updateResult;
     }
 
     async signOut(member: Member): Promise<DeleteResult> {
-        return await this.memberRepository.signOut(member);
+        const deleteResult: DeleteResult = await this.memberRepository.signOut(member);
+
+        if(deleteResult.affected !== 1){
+            throw Message.SERVER_ERROR;
+        }
+
+        return deleteResult;
     }
 
     async updateImg(file: FileType, member: Member): Promise<string> {
         const originalProfileImgKey = member.profile_img_key;
-        const profileImgKey = filePath.profileImg + await createKey(this.memberRepository, 'profile_img_key', 16) + '_' + Date.now() + '.' + file.fileType;
+
+        const profileImgKey = filePath.profileImg + await createKey<MemberRepository>(this.memberRepository, 'profile_img_key', 16) + '_' + Date.now() + '.' + file.fileType;
 
         member.dataMigration({profile_img_key: profileImgKey});
 

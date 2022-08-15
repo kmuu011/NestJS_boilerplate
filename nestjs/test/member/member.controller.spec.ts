@@ -4,7 +4,7 @@ import {TypeOrmModule} from "@nestjs/typeorm";
 import {typeOrmOptions} from "../../config/config";
 import {
     getCreateMemberData, getProfileImageData, getUpdateMemberData,
-    loginHeader,
+    loginHeader, mockMemberService,
     savedMemberData,
 } from "./member";
 import {MemberRepository} from "../../src/modules/member/member.repository";
@@ -38,7 +38,10 @@ describe('Member Controller', () => {
             ],
             controllers: [MemberController],
             providers: [
-                MemberService
+                {
+                    provide: MemberService,
+                    useValue: mockMemberService
+                }
             ]
         }).compile();
 
@@ -51,7 +54,11 @@ describe('Member Controller', () => {
             const req: Request = createRequest();
             req.headers = loginHeader;
 
-            const loginMemberDto: LoginMemberDto = {id: savedMemberData.id, password: savedMemberData.password, keep_check: false};
+            const loginMemberDto: LoginMemberDto = {
+                id: savedMemberData.id,
+                password: savedMemberData.password,
+                keep_check: false
+            };
 
             const loginResponseType: LoginResponseType = await memberController.login(req, loginMemberDto);
 
@@ -68,7 +75,6 @@ describe('Member Controller', () => {
             expect(signUpResponse.result).toBeTruthy();
         });
     });
-
 
     describe('updateMember()', () => {
         it('멤버 수정', async () => {
@@ -98,15 +104,15 @@ describe('Member Controller', () => {
             for(let i=0 ; i<checkKeyList.length ; i++){
                 let duplicateCheckDto: DuplicateCheckMemberDto = {type: i, value: savedMemberData[checkKeyList[i]]}
 
-                const dupCheckFalse: ResponseBooleanType = await memberController.duplicateCheck(duplicateCheckDto);
+                const responseUnUsable: ResponseBooleanType = await memberController.duplicateCheck(duplicateCheckDto);
 
-                expect(!dupCheckFalse.usable).toBeTruthy();
+                expect(responseUnUsable.usable).toBeFalsy();
 
                 duplicateCheckDto = {type: i, value: randomString};
 
-                const dupCheckTrue: ResponseBooleanType = await memberController.duplicateCheck(duplicateCheckDto);
+                const responseUsable: ResponseBooleanType = await memberController.duplicateCheck(duplicateCheckDto);
 
-                expect(!dupCheckTrue.usable).toBeFalsy();
+                expect(responseUsable.usable).toBeTruthy();
             }
         });
     });
@@ -162,10 +168,8 @@ describe('Member Controller', () => {
             const member: Member = new Member();
             member.dataMigration(savedMemberData);
 
-            const savedMember: Member = await memberService.select(member)
-
             req.locals = {
-                memberInfo: savedMember
+                memberInfo: member
             };
 
             const deleteImgResponse: ResponseBooleanType = await memberController.deleteImg(req);

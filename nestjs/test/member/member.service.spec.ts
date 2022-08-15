@@ -2,7 +2,7 @@ import {Member} from "../../src/modules/member/entities/member.entity";
 import {Test, TestingModule} from "@nestjs/testing";
 import {
     getCreateMemberData,
-    getMockMember,
+    getProfileImageData, getUpdateMemberData,
     loginHeader, mockMemberRepository,
     savedMemberData,
 } from "./member";
@@ -11,14 +11,17 @@ import {MemberRepository} from "../../src/modules/member/member.repository";
 import {TokenRepository} from "../../src/modules/member/token/token.repository";
 import {TodoGroupRepository} from "../../src/modules/todoGroup/todoGroup.repository";
 import {LoginMemberDto} from "../../src/modules/member/dto/login-member.dto";
-import {Connection, QueryRunner, Repository} from "typeorm";
-import {getRepositoryToken, TypeOrmModule} from "@nestjs/typeorm";
-import {getMockToken, mockTokenRepository} from "./token/token";
-import spyOn = jest.spyOn;
+import {Connection, DeleteResult, UpdateResult} from "typeorm";
+import {TypeOrmModule} from "@nestjs/typeorm";
+import {mockTokenRepository} from "./token/token";
 
 import {CreateMemberDto} from "../../src/modules/member/dto/create-member-dto";
 import {mockConnection} from "../common/const";
-import {typeOrmOptions} from "../../config/config";
+import {staticPath, typeOrmOptions} from "../../config/config";
+import {mockTodoGroupRepository} from "./todoGroup/todoGroup";
+import {UpdateMemberDto} from "../../src/modules/member/dto/update-member.dto";
+import {FileType} from "../../src/common/type/type";
+import {existsSync, readFileSync} from "fs";
 
 describe('Member Service', () => {
     let memberService: MemberService;
@@ -49,19 +52,19 @@ describe('Member Service', () => {
                 },
                 {
                     provide: TodoGroupRepository,
-                    useValue: {}
+                    useValue: mockTodoGroupRepository
                 },
-                // {
-                //     provide: Connection,
-                //     useValue: mockConnection
-                // },
+                {
+                    provide: Connection,
+                    useValue: mockConnection
+                },
 
                 MemberService,
 
             ]
         })
-            // .overrideProvider(Connection)
-            // .useValue(mockConnection)
+            .overrideProvider(Connection)
+            .useValue(mockConnection)
             .compile()
 
         memberService = module.get<MemberService>(MemberService);
@@ -87,63 +90,68 @@ describe('Member Service', () => {
         });
     });
 
-    // describe('duplicateCheck()', () => {
-    //     it('중복 체크', async () => {
-    //         const checkKeyList = ['id', 'nickname', 'email'];
-    //
-    //         const randomString = createRandomString(12);
-    //
-    //         for(const key of checkKeyList){
-    //             const dupCheckFalse = await memberService.duplicateCheck(key, savedMemberData[key]);
-    //             expect(!dupCheckFalse).toBeTruthy();
-    //
-    //             const dupCheckTrue = await memberService.duplicateCheck(key, randomString);
-    //             expect(!dupCheckTrue).toBeFalsy()
-    //         }
-    //     });
-    // });
-    //
-    // describe('updateMember()', () => {
-    //     it('멤버 수정', async () => {
-    //         const member: Member = new Member();
-    //         member.dataMigration(savedMemberData);
-    //
-    //         const updateMemberData: UpdateMemberDto = getUpdateMemberData();
-    //
-    //         await memberService.updateMember(updateMemberData, member);
-    //     });
-    // });
-    //
-    // describe('signOut()', () => {
-    //     it('회원 탈퇴', async () => {
-    //         const deleteResult: DeleteResult = await memberService.signOut(createdMemberInfo);
-    //
-    //         expect(deleteResult.affected).toBe(1);
-    //     });
-    // });
-    //
-    // describe('updateImg()', () => {
-    //     it('프로필 사진 수정', async () => {
-    //         const imgData: FileType = getProfileImageData();
-    //
-    //         profileImgKey = await memberService.updateImg(imgData, loginMemberInfo);
-    //
-    //         const fileBuffer: Buffer = readFileSync(staticPath + profileImgKey);
-    //
-    //         expect(fileBuffer.buffer instanceof ArrayBuffer).toBeTruthy();
-    //     });
-    // });
-    //
-    // describe('deleteUpdate()', () => {
-    //     it('프로필 사진 삭제', async () => {
-    //         const profileImgPath = staticPath + profileImgKey;
-    //
-    //         expect(existsSync(profileImgPath)).toBeTruthy();
-    //
-    //         await memberService.deleteImg(loginMemberInfo);
-    //
-    //         expect(existsSync(profileImgPath)).toBeFalsy();
-    //     });
-    // });
+    describe('duplicateCheck()', () => {
+        it('중복 체크', async () => {
+            const checkKeyList = ['id', 'nickname', 'email'];
+
+            for(const key of checkKeyList){
+                const isDuplicate = await memberService.duplicateCheck(key, savedMemberData[key]);
+                expect(isDuplicate).toBeFalsy();
+
+                const isNotDuplicate = await memberService.duplicateCheck(key, key);
+                expect(isNotDuplicate).toBeTruthy();
+            }
+        });
+    });
+
+    describe('updateMember()', () => {
+        it('멤버 수정', async () => {
+            const member: Member = new Member();
+            member.dataMigration(savedMemberData);
+
+            const updateMemberData: UpdateMemberDto = getUpdateMemberData();
+
+            const updateResult: UpdateResult = await memberService.updateMember(updateMemberData, member);
+
+            expect(updateResult.affected).toBe(1);
+        });
+    });
+
+    describe('signOut()', () => {
+        it('회원 탈퇴', async () => {
+            const member: Member = await getCreateMemberData(true);
+            const deleteResult: DeleteResult = await memberService.signOut(member);
+
+            expect(deleteResult.affected).toBe(1);
+        });
+    });
+
+    describe('updateImg()', () => {
+        it('프로필 사진 수정', async () => {
+            const imgData: FileType = getProfileImageData();
+            const member: Member = await getCreateMemberData(true);
+
+            profileImgKey = await memberService.updateImg(imgData, member);
+
+            const fileBuffer: Buffer = readFileSync(staticPath + profileImgKey);
+
+            expect(fileBuffer.buffer instanceof ArrayBuffer).toBeTruthy();
+            expect(true).toBeTruthy();
+        });
+    });
+
+    describe('deleteUpdate()', () => {
+        it('프로필 사진 삭제', async () => {
+            const profileImgPath = staticPath + profileImgKey;
+
+            expect(existsSync(profileImgPath)).toBeTruthy();
+
+            loginMemberInfo.dataMigration({profile_img_key: profileImgKey})
+
+            await memberService.deleteImg(loginMemberInfo);
+
+            expect(existsSync(profileImgPath)).toBeFalsy();
+        });
+    });
 
 });

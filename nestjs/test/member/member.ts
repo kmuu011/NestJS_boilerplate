@@ -4,8 +4,9 @@ import {readFileSync} from "fs";
 import {basePath} from "../../config/config";
 import Buffer from "buffer";
 import {UpdateMemberDto} from "../../src/modules/member/dto/update-member.dto";
-import {savedTokenInfo} from "./token/token";
-import {getUpdateResult} from "../common/const";
+import {getMockToken} from "./token/token";
+import {getDeleteResult, getUpdateResult} from "../common/const";
+import {FileType} from "../../src/common/type/type";
 
 export const savedMemberData = {
     idx: 112,
@@ -15,9 +16,15 @@ export const savedMemberData = {
     email: 'tts1@email.com'
 };
 
-export const getMockMember = (): Member => {
+export const getMockMember = (where?): Member => {
     const member = new Member();
-    member.dataMigration({ ...savedMemberData, tokenInfo: savedTokenInfo });
+    member.dataMigration(savedMemberData);
+    member.tokenInfo = getMockToken();
+
+    if (where !== undefined) {
+        return undefined;
+    }
+
     return member;
 };
 
@@ -39,7 +46,7 @@ export const getCreateMemberData = (encryptPassword): Member => {
         email: key + "@naver.com"
     });
 
-    if(encryptPassword) {
+    if (encryptPassword) {
         member.passwordEncrypt();
     }
 
@@ -55,7 +62,7 @@ export const getUpdateMemberData = (): UpdateMemberDto => {
     };
 }
 
-export const getProfileImageData = () => {
+export const getProfileImageData = (): FileType => {
     const fileBuffer: Buffer = readFileSync(basePath + '/test/static/img/cute.jpg');
     return {
         fileBuffer,
@@ -65,9 +72,33 @@ export const getProfileImageData = () => {
     }
 }
 
+export const getDuplicateCheckResult = (key, data): Boolean => {
+    return savedMemberData[key] === data;
+}
+
 export const mockMemberRepository = {
     select: jest.fn().mockImplementation(() => Promise.resolve(getMockMember())),
-    findOne: jest.fn().mockImplementation(() => Promise.resolve(getMockMember())),
+    findOne: jest.fn().mockImplementation((where) => Promise.resolve(getMockMember(where))),
     updateMember: jest.fn().mockImplementation(() => Promise.resolve(getUpdateResult())),
-    signUp: jest.fn().mockImplementation(() => Promise.resolve(getUpdateResult())),
+    signUp: jest.fn().mockImplementation(() => Promise.resolve(getCreateMemberData(true))),
+    duplicateCheck: jest.fn().mockImplementation(
+        (key: string, data: string) => Promise.resolve(getDuplicateCheckResult(key, data))
+    ),
+    signOut: jest.fn().mockImplementation(() => Promise.resolve(getDeleteResult()))
+}
+
+export const mockMemberService = {
+    login: jest.fn().mockImplementation(() => Promise.resolve(getMockMember())),
+    signUp: jest.fn().mockImplementation(() => Promise.resolve()),
+    duplicateCheck: jest.fn().mockImplementation(
+        (key: string, data: string) => Promise.resolve(!(getDuplicateCheckResult(key, data)))
+    ),
+    updateMember: jest.fn().mockImplementation(() => Promise.resolve(getDeleteResult())),
+    signOut: jest.fn().mockImplementation((member: Member) => Promise.resolve()),
+    updateImg: jest.fn().mockImplementation(
+        (file: FileType, member: Member) => Promise.resolve(() => {
+            return 'profileFileKey';
+        })
+    ),
+    deleteImg: jest.fn().mockImplementation((member: Member) => Promise.resolve())
 }

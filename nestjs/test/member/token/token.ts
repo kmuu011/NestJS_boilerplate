@@ -6,25 +6,21 @@ export const savedTokenInfo = {
     code: 'hm9bj5u1laa1a1s3g2uiunduhh5lufbo'
 }
 
-export const getMockToken = () => {
+export const getMockToken = (where?) => {
     const token: Token = new Token();
 
     token.dataMigration(savedTokenInfo);
 
+    if(where !== undefined){
+        return undefined;
+    }
+
     return token;
 }
+
 export const mockTokenRepository = {
     select: jest.fn().mockImplementation(() => Promise.resolve(getMockToken())),
-    findOne: jest.fn().mockImplementation((where) => {
-        let result;
-
-        if(where !== undefined){
-            result = undefined;
-        }else{
-            result = getMockToken();
-        }
-
-        return Promise.resolve(result);
-    }),
+    findOne: jest.fn().mockImplementation(
+        (where) =>  Promise.resolve(getMockToken(where))),
     saveToken: jest.fn().mockImplementation(() => Promise.resolve(getMockToken()))
 }
