@@ -1,7 +1,7 @@
 import {MemberRepository} from "../../src/modules/member/member.repository";
 import {Member} from "../../src/modules/member/entities/member.entity";
 import {Test, TestingModule} from "@nestjs/testing";
-import {getRepositoryToken, TypeOrmModule} from "@nestjs/typeorm";
+import {TypeOrmModule} from "@nestjs/typeorm";
 import {DeleteResult, UpdateResult} from "typeorm";
 import {typeOrmOptions} from "../../config/config";
 import {
@@ -23,13 +23,6 @@ describe('Member Repository', () => {
                     MemberRepository,
                 ])
             ],
-            providers: [
-                MemberRepository,
-                {
-                    provide: getRepositoryToken(Member),
-                    useValue: MemberRepository
-                }
-            ]
         }).compile()
 
         memberRepository = module.get<MemberRepository>(MemberRepository);
