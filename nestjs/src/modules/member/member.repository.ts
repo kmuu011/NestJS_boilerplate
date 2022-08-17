@@ -39,7 +39,7 @@ export class MemberRepository extends Repository<Member> {
     }
 
     async updateMember(member: Member): Promise<UpdateResult> {
-        const obj = getUpdateObject(memberUpdateKeys, member, true);
+        const obj = getUpdateObject<Member>(memberUpdateKeys, member, true);
 
         return await this.update(member.idx, obj);
     }

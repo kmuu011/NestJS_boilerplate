@@ -7,6 +7,7 @@ import {UpdateMemberDto} from "../../src/modules/member/dto/update-member.dto";
 import {getMockToken} from "./token/token";
 import {getDeleteResult, getUpdateResult} from "../common/const";
 import {FileType} from "../../src/common/type/type";
+import {MemberRepository} from "../../src/modules/member/member.repository";
 
 export const savedMemberData = {
     idx: 112,
@@ -15,6 +16,16 @@ export const savedMemberData = {
     nickname: 'tts1',
     email: 'tts1@email.com'
 };
+
+export const getSavedMember = async (entity: MemberRepository): Promise<Member> => {
+    const loginMember: Member = new Member();
+    loginMember.dataMigration(savedMemberData);
+    loginMember.passwordEncrypt();
+
+    const selectResult: Member = await entity.select(loginMember, 'id, password', true);
+
+    return !selectResult ? await entity.signUp(undefined, loginMember) : selectResult;
+}
 
 export const getMockMember = (where?): Member => {
     const member = new Member();

@@ -1,57 +1,60 @@
 import {MemberRepository} from "../../src/modules/member/member.repository";
 import {Member} from "../../src/modules/member/entities/member.entity";
 import {Test, TestingModule} from "@nestjs/testing";
+import {TypeOrmModule} from "@nestjs/typeorm";
 import {DeleteResult, UpdateResult} from "typeorm";
+import {typeOrmOptions} from "../../config/config";
 import {
-    getMockMember, savedMemberData,
+    getCreateMemberData,
+    getSavedMember
 } from "./member";
-
-import spyOn = jest.spyOn;
-import {getDeleteResult, getUpdateResult} from "../common/const";
+import {createRandomString} from "../../libs/utils";
 
 describe('Member Repository', () => {
     let memberRepository: MemberRepository;
-    const mockMember: Member = getMockMember();
+    let savedMemberInfo: Member;
+    let createdMemberInfo: Member;
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            providers: [
-                MemberRepository,
-            ]
+            imports: [
+                TypeOrmModule.forRoot(typeOrmOptions),
+                TypeOrmModule.forFeature([
+                    MemberRepository,
+                ])
+            ],
         }).compile()
 
-        memberRepository = module.get<MemberRepository>(MemberRepository)
+        memberRepository = module.get<MemberRepository>(MemberRepository);
+
+        savedMemberInfo = await getSavedMember(memberRepository);
     });
-
-    describe('signUp()', () => {
-        it('회원가입 기능', async () => {
-            spyOn(memberRepository, 'save')
-                .mockImplementation(() => Promise.resolve(mockMember));
-
-            const signUpResult: Member = await memberRepository.signUp(undefined, mockMember);
-
-            expect(signUpResult instanceof Member).toBeTruthy();
-        });
-    })
 
     describe('login()', () => {
         it('로그인 기능', async () => {
-            spyOn(memberRepository, 'findOne')
-                .mockImplementation(() => Promise.resolve(mockMember))
-
-            const loginResult: Member = await memberRepository.select(mockMember, 'id, password');
+            const loginResult: Member = await memberRepository.select(savedMemberInfo, 'id, password');
 
             expect(loginResult instanceof Member).toBeTruthy();
         });
     })
 
+    describe('signUp()', () => {
+        it('회원가입 기능', async () => {
+            const memberDto: Member = getCreateMemberData(true);
+
+            const signUpResult: Member = await memberRepository.signUp(undefined, memberDto);
+
+            expect(signUpResult instanceof Member).toBeTruthy();
+
+            createdMemberInfo = signUpResult;
+        });
+    })
+
     describe('updateMember()', () => {
         it('멤버 수정', async () => {
-            spyOn(memberRepository, 'update')
-                .mockImplementation(() => Promise.resolve(getUpdateResult()))
+            const updateResult: UpdateResult = await memberRepository.updateMember(savedMemberInfo);
 
-            const updateResult: UpdateResult = await memberRepository.updateMember(mockMember);
-
+            expect(updateResult instanceof UpdateResult).toBeTruthy();
             expect(updateResult.affected).toBe(1);
         });
     })
@@ -60,19 +63,21 @@ describe('Member Repository', () => {
         it('중복 체크', async () => {
             const checkKeyList = ['id', 'nickname', 'email'];
 
-            for(const key of checkKeyList){
-                const isDuplicate = await memberRepository.duplicateCheck(key, savedMemberData[key]);
-                expect(!isDuplicate).toBeFalsy();
+            const randomString = createRandomString(12);
+
+            for (const key of checkKeyList) {
+                const dupCheckTrue = await memberRepository.duplicateCheck(key, savedMemberInfo[key]);
+                expect(!dupCheckTrue).toBeFalsy();
+
+                const dupCheckFalse = await memberRepository.duplicateCheck(key, randomString);
+                expect(!dupCheckFalse).toBeTruthy();
             }
         });
     })
 
     describe('signOut()', () => {
         it('회원 탈퇴', async () => {
-            spyOn(memberRepository, 'delete')
-                .mockImplementation(() => Promise.resolve(getDeleteResult()));
-
-            const deleteResult: DeleteResult = await memberRepository.signOut(mockMember);
+            const deleteResult: DeleteResult = await memberRepository.signOut(createdMemberInfo);
 
             expect(deleteResult.affected).toBe(1);
         });
