@@ -1,6 +1,7 @@
-import {savedTokenInfo} from "../token/token";
+import {getInsertResult} from "../../common/const";
 
-// export const mockTokenRepository = {
-//     select: jest.fn().mockImplementation(() => Promise.resolve(savedTokenInfo)),
-//     findOne: jest.fn().mockImplementation(() => Promise.resolve(savedTokenInfo)),
-// }
+export const mockTodoGroupRepository = {
+    select: jest.fn().mockImplementation(() => Promise.resolve()),
+    findOne: jest.fn().mockImplementation(() => Promise.resolve()),
+    createTodoGroup: jest.fn().mockImplementation(() => Promise.resolve(getInsertResult())),
+}
