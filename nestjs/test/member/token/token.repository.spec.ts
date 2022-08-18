@@ -45,7 +45,8 @@ describe('Token Repository', () => {
 
     describe('saveToken()', () => {
         it('토큰 저장 기능', async () => {
-            const token: Token = new Token();
+            const token: Token = (await tokenRepository.select(undefined, savedMemberInfo)) ?? new Token();
+
             token.dataMigration({ ...savedTokenInfo, member: savedMemberInfo });
 
             const result: Token = await tokenRepository.saveToken(token);
