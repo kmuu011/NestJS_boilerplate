@@ -4,12 +4,12 @@ import {Test, TestingModule} from "@nestjs/testing";
 import {getRepositoryToken, TypeOrmModule} from "@nestjs/typeorm";
 import {typeOrmOptions} from "../../../config/config";
 import {Token} from "../../../src/modules/member/entities/token.entity";
-import {savedMemberData} from "../member";
+import {getSavedMember} from "../member";
 import {savedTokenInfo} from "./token";
 
 describe('Token Repository', () => {
     let tokenRepository: TokenRepository;
-    let savedMemberInfo: Member;
+    const savedMemberInfo: Member = getSavedMember();
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -29,9 +29,6 @@ describe('Token Repository', () => {
         }).compile();
 
         tokenRepository = module.get<TokenRepository>(TokenRepository);
-        savedMemberInfo = new Member();
-        savedMemberInfo.dataMigration(savedMemberData);
-        savedMemberInfo.passwordEncrypt();
     });
 
     describe('select()', () => {
