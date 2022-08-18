@@ -1,4 +1,4 @@
-import {EntityRepository, Repository, UpdateResult} from "typeorm";
+import {EntityRepository, Repository} from "typeorm";
 import {Token} from "../entities/token.entity";
 import {Member} from "../entities/member.entity";
 

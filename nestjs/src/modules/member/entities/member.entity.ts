@@ -63,11 +63,11 @@ export class Member extends BaseEntity {
     admin: number = undefined;
 
     @CreateDateColumn()
-    @Column({type: 'timestamp', default: () => "now", comment: '회원가입 일자'})
+    @Column({type: 'datetime', default: () => "now", comment: '회원가입 일자'})
     created_at: string = undefined;
 
     @UpdateDateColumn()
-    @Column({type: 'timestamp', default: () => "now", comment: '수정 일자'})
+    @Column({type: 'datetime', default: () => "now", comment: '수정 일자'})
     updated_at: string = undefined;
 
     @IsNumber()

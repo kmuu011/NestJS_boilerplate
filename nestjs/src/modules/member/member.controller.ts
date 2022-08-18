@@ -84,6 +84,7 @@ export class MemberController {
         @Body() updateMemberDto: UpdateMemberDto
     ): Promise<ResponseBooleanType> {
         const memberInfo = req.locals.memberInfo;
+
         for (const key of duplicateCheckKeys) {
             if (key === 'id') continue;
 
