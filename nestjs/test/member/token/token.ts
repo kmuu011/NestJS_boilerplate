@@ -6,7 +6,7 @@ export const savedTokenInfo = {
     code: 'hm9bj5u1laa1a1s3g2uiunduhh5lufbo'
 }
 
-export const getMockToken = (where?) => {
+export const getTokenInfo = (where?) => {
     const token: Token = new Token();
 
     token.dataMigration(savedTokenInfo);
@@ -16,11 +16,4 @@ export const getMockToken = (where?) => {
     }
 
     return token;
-}
-
-export const mockTokenRepository = {
-    select: jest.fn().mockImplementation((where) => Promise.resolve(getMockToken(where))),
-    findOne: jest.fn().mockImplementation(
-        (where) =>  Promise.resolve(getMockToken(where))),
-    saveToken: jest.fn().mockImplementation((token: Token) => Promise.resolve(getMockToken()))
 }

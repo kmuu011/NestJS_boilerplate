@@ -23,11 +23,17 @@ describe('Member Repository', () => {
                     MemberRepository,
                 ])
             ],
-        }).compile()
+        }).compile();
 
         memberRepository = module.get<MemberRepository>(MemberRepository);
 
-        savedMemberInfo = await getSavedMember(memberRepository);
+        savedMemberInfo = getSavedMember(true);
+
+        const selectResult: Member = await memberRepository.select(savedMemberInfo, 'id, password', true);
+
+        if(!selectResult){
+            await memberRepository.signUp(undefined, savedMemberInfo);
+        }
     });
 
     describe('login()', () => {
