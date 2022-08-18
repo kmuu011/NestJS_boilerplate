@@ -1,79 +1,59 @@
 import {Member} from "../../src/modules/member/entities/member.entity";
 import {Test, TestingModule} from "@nestjs/testing";
+import {getRepositoryToken, TypeOrmModule} from "@nestjs/typeorm";
+import {staticPath, typeOrmOptions} from "../../config/config";
 import {
-    getCreateMemberData,
-    getProfileImageData, getUpdateMemberData,
-    loginHeader, mockMemberRepository,
-    savedMemberData,
+    getCreateMemberData, getLoginMemberDto, getProfileImageData, getUpdateMemberDto,
+    loginHeader,
 } from "./member";
 import {MemberService} from "../../src/modules/member/member.service";
 import {MemberRepository} from "../../src/modules/member/member.repository";
 import {TokenRepository} from "../../src/modules/member/token/token.repository";
 import {TodoGroupRepository} from "../../src/modules/todoGroup/todoGroup.repository";
 import {LoginMemberDto} from "../../src/modules/member/dto/login-member.dto";
-import {Connection, DeleteResult, UpdateResult} from "typeorm";
-import {TypeOrmModule} from "@nestjs/typeorm";
-import {mockTokenRepository} from "./token/token";
-
 import {CreateMemberDto} from "../../src/modules/member/dto/create-member-dto";
-import {mockConnection} from "../common/const";
-import {staticPath, typeOrmOptions} from "../../config/config";
-import {mockTodoGroupRepository} from "./todoGroup/todoGroup";
+import {createRandomString} from "../../libs/utils";
 import {UpdateMemberDto} from "../../src/modules/member/dto/update-member.dto";
 import {FileType} from "../../src/common/type/type";
+import Buffer from "buffer";
 import {existsSync, readFileSync} from "fs";
+import {DeleteResult} from "typeorm";
 
 describe('Member Service', () => {
     let memberService: MemberService;
-    let loginMemberInfo: Member;
+    let savedMemberInfo: Member;
     let createdMemberInfo: Member;
     let profileImgKey: string;
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            imports:[
+            imports: [
                 TypeOrmModule.forRoot(typeOrmOptions),
                 TypeOrmModule.forFeature([
                     MemberRepository,
                     TokenRepository,
                     TodoGroupRepository
-                ]),
+                ])
             ],
-
             providers: [
-                {
-                    provide: MemberRepository,
-                    useValue: mockMemberRepository
-                },
-                {
-                    provide: TokenRepository,
-                    useValue: mockTokenRepository
-                },
-                {
-                    provide: TodoGroupRepository,
-                    useValue: mockTodoGroupRepository
-                },
-                {
-                    provide: Connection,
-                    useValue: mockConnection
-                },
                 MemberService,
+                {
+                    provide: getRepositoryToken(Member),
+                    useValue: MemberService
+                }
             ]
-        })
-            .overrideProvider(Connection)
-            .useValue(mockConnection)
-            .compile()
+        }).compile()
 
-        memberService = module.get<MemberService>(MemberService);
+        memberService = module.get<MemberService>(MemberService)
     });
 
     describe('login()', () => {
         it('로그인', async () => {
-            const loginMemberDto: LoginMemberDto = {id: savedMemberData.id, password: savedMemberData.password, keep_check: false};
+            const loginMemberDto: LoginMemberDto = getLoginMemberDto();
 
-            loginMemberInfo = await memberService.login(loginMemberDto, loginHeader);
+            savedMemberInfo = await memberService.login(loginMemberDto, loginHeader);
 
-            expect(loginMemberInfo instanceof Member).toBeTruthy();
+            expect(savedMemberInfo instanceof Member).toBeTruthy();
         });
     });
 
@@ -91,33 +71,29 @@ describe('Member Service', () => {
         it('중복 체크', async () => {
             const checkKeyList = ['id', 'nickname', 'email'];
 
-            for(const key of checkKeyList){
-                const isDuplicate = await memberService.duplicateCheck(key, savedMemberData[key]);
-                expect(isDuplicate).toBeFalsy();
+            const randomString = createRandomString(12);
 
-                const isNotDuplicate = await memberService.duplicateCheck(key, key);
-                expect(isNotDuplicate).toBeTruthy();
+            for(const key of checkKeyList){
+                const dupCheckFalse = await memberService.duplicateCheck(key, savedMemberInfo[key]);
+                expect(!dupCheckFalse).toBeTruthy();
+
+                const dupCheckTrue = await memberService.duplicateCheck(key, randomString);
+                expect(!dupCheckTrue).toBeFalsy()
             }
         });
     });
 
     describe('updateMember()', () => {
         it('멤버 수정', async () => {
-            const member: Member = new Member();
-            member.dataMigration(savedMemberData);
+            const updateMemberData: UpdateMemberDto = getUpdateMemberDto();
 
-            const updateMemberData: UpdateMemberDto = getUpdateMemberData();
-
-            const updateResult: UpdateResult = await memberService.updateMember(updateMemberData, member);
-
-            expect(updateResult.affected).toBe(1);
+            await memberService.updateMember(updateMemberData, savedMemberInfo);
         });
     });
 
     describe('signOut()', () => {
         it('회원 탈퇴', async () => {
-            const member: Member = await getCreateMemberData(true);
-            const deleteResult: DeleteResult = await memberService.signOut(member);
+            const deleteResult: DeleteResult = await memberService.signOut(createdMemberInfo);
 
             expect(deleteResult.affected).toBe(1);
         });
@@ -126,14 +102,12 @@ describe('Member Service', () => {
     describe('updateImg()', () => {
         it('프로필 사진 수정', async () => {
             const imgData: FileType = getProfileImageData();
-            const member: Member = await getCreateMemberData(true);
 
-            profileImgKey = await memberService.updateImg(imgData, member);
+            profileImgKey = await memberService.updateImg(imgData, savedMemberInfo);
 
             const fileBuffer: Buffer = readFileSync(staticPath + profileImgKey);
 
             expect(fileBuffer.buffer instanceof ArrayBuffer).toBeTruthy();
-            expect(true).toBeTruthy();
         });
     });
 
@@ -143,9 +117,7 @@ describe('Member Service', () => {
 
             expect(existsSync(profileImgPath)).toBeTruthy();
 
-            loginMemberInfo.dataMigration({profile_img_key: profileImgKey})
-
-            await memberService.deleteImg(loginMemberInfo);
+            await memberService.deleteImg(savedMemberInfo);
 
             expect(existsSync(profileImgPath)).toBeFalsy();
         });

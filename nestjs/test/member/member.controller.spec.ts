@@ -3,9 +3,8 @@ import {Test, TestingModule} from "@nestjs/testing";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {typeOrmOptions} from "../../config/config";
 import {
-    getCreateMemberData, getProfileImageData, getUpdateMemberData,
-    loginHeader, mockMemberService,
-    savedMemberData,
+    getCreateMemberData, getLoginMemberDto, getProfileImageData, getSavedMember, getUpdateMemberDto,
+    loginHeader,
 } from "./member";
 import {MemberRepository} from "../../src/modules/member/member.repository";
 import {TokenRepository} from "../../src/modules/member/token/token.repository";
@@ -25,6 +24,7 @@ import {DuplicateCheckMemberDto} from "../../src/modules/member/dto/duplicate-ch
 describe('Member Controller', () => {
     let memberController: MemberController;
     let memberService: MemberService;
+    const savedMemberInfo: Member = getSavedMember();
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -38,10 +38,7 @@ describe('Member Controller', () => {
             ],
             controllers: [MemberController],
             providers: [
-                {
-                    provide: MemberService,
-                    useValue: mockMemberService
-                }
+                MemberService
             ]
         }).compile();
 
@@ -52,13 +49,10 @@ describe('Member Controller', () => {
     describe('login()', () => {
         it('로그인', async () => {
             const req: Request = createRequest();
+
             req.headers = loginHeader;
 
-            const loginMemberDto: LoginMemberDto = {
-                id: savedMemberData.id,
-                password: savedMemberData.password,
-                keep_check: false
-            };
+            const loginMemberDto: LoginMemberDto = getLoginMemberDto();
 
             const loginResponseType: LoginResponseType = await memberController.login(req, loginMemberDto);
 
@@ -79,15 +73,12 @@ describe('Member Controller', () => {
     describe('updateMember()', () => {
         it('멤버 수정', async () => {
             const req: Request = createRequest();
-            const member: Member = new Member();
-            member.dataMigration(savedMemberData);
-            member.password = undefined;
 
             req.locals = {
-                memberInfo: member
+                memberInfo: savedMemberInfo
             };
 
-            const updateMemberDto: UpdateMemberDto = getUpdateMemberData();
+            const updateMemberDto: UpdateMemberDto = getUpdateMemberDto();
 
             const updateResponse: ResponseBooleanType = await memberController.updateMember(req, updateMemberDto);
 
@@ -102,17 +93,17 @@ describe('Member Controller', () => {
             const randomString = createRandomString(12);
 
             for(let i=0 ; i<checkKeyList.length ; i++){
-                let duplicateCheckDto: DuplicateCheckMemberDto = {type: i, value: savedMemberData[checkKeyList[i]]}
+                let duplicateCheckDto: DuplicateCheckMemberDto = {type: i, value: savedMemberInfo[checkKeyList[i]]}
 
-                const responseUnUsable: ResponseBooleanType = await memberController.duplicateCheck(duplicateCheckDto);
+                const dupCheckFalse: ResponseBooleanType = await memberController.duplicateCheck(duplicateCheckDto);
 
-                expect(responseUnUsable.usable).toBeFalsy();
+                expect(!dupCheckFalse.usable).toBeTruthy();
 
                 duplicateCheckDto = {type: i, value: randomString};
 
-                const responseUsable: ResponseBooleanType = await memberController.duplicateCheck(duplicateCheckDto);
+                const dupCheckTrue: ResponseBooleanType = await memberController.duplicateCheck(duplicateCheckDto);
 
-                expect(responseUsable.usable).toBeTruthy();
+                expect(!dupCheckTrue.usable).toBeFalsy();
             }
         });
     });
@@ -139,12 +130,9 @@ describe('Member Controller', () => {
         it('프로필 사진 수정', async () => {
             const imgData: FileType = getProfileImageData();
             const req: Request = createRequest();
-            const member: Member = new Member();
-            member.dataMigration(savedMemberData);
-            member.password = undefined;
 
             req.locals = {
-                memberInfo: member
+                memberInfo: savedMemberInfo
             };
 
             const file = {
@@ -165,11 +153,11 @@ describe('Member Controller', () => {
     describe('deleteImg()', () => {
         it('프로필 사진 삭제', async () => {
             const req: Request = createRequest();
-            const member: Member = new Member();
-            member.dataMigration(savedMemberData);
+
+            const savedMember: Member = await memberService.select(savedMemberInfo)
 
             req.locals = {
-                memberInfo: member
+                memberInfo: savedMember
             };
 
             const deleteImgResponse: ResponseBooleanType = await memberController.deleteImg(req);
@@ -177,6 +165,5 @@ describe('Member Controller', () => {
             expect(deleteImgResponse.result).toBeTruthy();
         });
     });
-
 
 });

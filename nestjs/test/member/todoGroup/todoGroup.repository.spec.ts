@@ -2,12 +2,12 @@ import {Test, TestingModule} from "@nestjs/testing";
 import spyOn = jest.spyOn;
 import {TodoGroupRepository} from "../../../src/modules/todoGroup/todoGroup.repository";
 import {Member} from "../../../src/modules/member/entities/member.entity";
-import {getMockMember} from "../member";
+import {getSavedMember} from "../member";
 import {TodoGroup} from "../../../src/modules/todoGroup/entities/todoGroup.entity";
 
 describe('TodoGroup Repository', () => {
     let todoGroupRepository: TodoGroupRepository;
-    const mockMember: Member = getMockMember();
+    const mockMember: Member = getSavedMember();
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
