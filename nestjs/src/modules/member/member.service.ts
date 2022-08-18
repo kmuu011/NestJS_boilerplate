@@ -161,9 +161,14 @@ export class MemberService {
 
         const profileImgKey = filePath.profileImg + await createKey<MemberRepository>(this.memberRepository, 'profile_img_key', 16) + '_' + Date.now() + '.' + file.fileType;
 
-        member.dataMigration({profile_img_key: profileImgKey});
+        const updateMember: Member = new Member();
 
-        const updateResult = await this.memberRepository.updateMember(member);
+        updateMember.dataMigration({
+            profile_img_key: profileImgKey,
+            idx: member.idx
+        });
+
+        const updateResult = await this.memberRepository.updateMember(updateMember);
 
         if(updateResult.affected !== 1) {
             throw Message.SERVER_ERROR;

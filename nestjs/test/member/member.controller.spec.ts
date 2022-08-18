@@ -3,9 +3,8 @@ import {Test, TestingModule} from "@nestjs/testing";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {typeOrmOptions} from "../../config/config";
 import {
-    getCreateMemberData, getLoginMemberDto, getProfileImageData, getUpdateMemberDto,
+    getCreateMemberData, getLoginMemberDto, getProfileImageData, getSavedMember, getUpdateMemberDto,
     loginHeader,
-    savedMemberData,
 } from "./member";
 import {MemberRepository} from "../../src/modules/member/member.repository";
 import {TokenRepository} from "../../src/modules/member/token/token.repository";
@@ -25,6 +24,7 @@ import {DuplicateCheckMemberDto} from "../../src/modules/member/dto/duplicate-ch
 describe('Member Controller', () => {
     let memberController: MemberController;
     let memberService: MemberService;
+    const savedMemberInfo: Member = getSavedMember();
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -49,6 +49,7 @@ describe('Member Controller', () => {
     describe('login()', () => {
         it('로그인', async () => {
             const req: Request = createRequest();
+
             req.headers = loginHeader;
 
             const loginMemberDto: LoginMemberDto = getLoginMemberDto();
@@ -72,12 +73,9 @@ describe('Member Controller', () => {
     describe('updateMember()', () => {
         it('멤버 수정', async () => {
             const req: Request = createRequest();
-            const member: Member = new Member();
-            member.dataMigration(savedMemberData);
-            member.password = undefined;
 
             req.locals = {
-                memberInfo: member
+                memberInfo: savedMemberInfo
             };
 
             const updateMemberDto: UpdateMemberDto = getUpdateMemberDto();
@@ -95,7 +93,7 @@ describe('Member Controller', () => {
             const randomString = createRandomString(12);
 
             for(let i=0 ; i<checkKeyList.length ; i++){
-                let duplicateCheckDto: DuplicateCheckMemberDto = {type: i, value: savedMemberData[checkKeyList[i]]}
+                let duplicateCheckDto: DuplicateCheckMemberDto = {type: i, value: savedMemberInfo[checkKeyList[i]]}
 
                 const dupCheckFalse: ResponseBooleanType = await memberController.duplicateCheck(duplicateCheckDto);
 
@@ -132,12 +130,9 @@ describe('Member Controller', () => {
         it('프로필 사진 수정', async () => {
             const imgData: FileType = getProfileImageData();
             const req: Request = createRequest();
-            const member: Member = new Member();
-            member.dataMigration(savedMemberData);
-            member.password = undefined;
 
             req.locals = {
-                memberInfo: member
+                memberInfo: savedMemberInfo
             };
 
             const file = {
@@ -158,10 +153,8 @@ describe('Member Controller', () => {
     describe('deleteImg()', () => {
         it('프로필 사진 삭제', async () => {
             const req: Request = createRequest();
-            const member: Member = new Member();
-            member.dataMigration(savedMemberData);
 
-            const savedMember: Member = await memberService.select(member)
+            const savedMember: Member = await memberService.select(savedMemberInfo)
 
             req.locals = {
                 memberInfo: savedMember
