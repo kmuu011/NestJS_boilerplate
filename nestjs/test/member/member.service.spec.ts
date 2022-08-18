@@ -115,6 +115,10 @@ describe('Member Service', () => {
         it('프로필 사진 삭제', async () => {
             const profileImgPath = staticPath + profileImgKey;
 
+            savedMemberInfo.dataMigration(
+                {profile_img_key: profileImgKey}
+            );
+
             expect(existsSync(profileImgPath)).toBeTruthy();
 
             await memberService.deleteImg(savedMemberInfo);
