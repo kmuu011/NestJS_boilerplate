@@ -20,7 +20,7 @@ export class AuthGuard implements CanActivate {
         const now: number = Date.now();
         const req: Request = context.switchToHttp().getRequest();
         const res: Response = context.switchToHttp().getResponse();
-        const { ip, "user-agent": userAgent, "token-code": tokenCode } = req.headers
+        const { ip, "user-agent": userAgent, "token-code": tokenCode } = req.headers;
 
         const member: Member = new Member();
 
