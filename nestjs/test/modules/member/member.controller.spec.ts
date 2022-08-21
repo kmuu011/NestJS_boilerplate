@@ -1,25 +1,25 @@
-import {Member} from "../../src/modules/member/entities/member.entity";
+import {Member} from "../../../src/modules/member/entities/member.entity";
 import {Test, TestingModule} from "@nestjs/testing";
 import {TypeOrmModule} from "@nestjs/typeorm";
-import {typeOrmOptions} from "../../config/config";
+import {typeOrmOptions} from "../../../config/config";
 import {
     getCreateMemberData, getLoginMemberDto, getProfileImageData, getSavedMember, getUpdateMemberDto,
     loginHeader,
 } from "./member";
-import {MemberRepository} from "../../src/modules/member/member.repository";
-import {TokenRepository} from "../../src/modules/member/token/token.repository";
-import {TodoGroupRepository} from "../../src/modules/todoGroup/todoGroup.repository";
-import {LoginMemberDto} from "../../src/modules/member/dto/login-member.dto";
-import {MemberController} from "../../src/modules/member/member.controller";
-import {MemberService} from "../../src/modules/member/member.service";
+import {MemberRepository} from "../../../src/modules/member/member.repository";
+import {TokenRepository} from "../../../src/modules/member/token/token.repository";
+import {TodoGroupRepository} from "../../../src/modules/todoGroup/todoGroup.repository";
+import {LoginMemberDto} from "../../../src/modules/member/dto/login-member.dto";
+import {MemberController} from "../../../src/modules/member/member.controller";
+import {MemberService} from "../../../src/modules/member/member.service";
 
 import {createRequest} from "node-mocks-http";
 import {Request} from "express";
-import {FileType, LoginResponseType, ResponseBooleanType} from "../../src/common/type/type";
-import {CreateMemberDto} from "../../src/modules/member/dto/create-member-dto";
-import {UpdateMemberDto} from "../../src/modules/member/dto/update-member.dto";
-import {createRandomString} from "../../libs/utils";
-import {DuplicateCheckMemberDto} from "../../src/modules/member/dto/duplicate-check-member.dto";
+import {FileType, LoginResponseType, ResponseBooleanType} from "../../../src/common/type/type";
+import {CreateMemberDto} from "../../../src/modules/member/dto/create-member-dto";
+import {UpdateMemberDto} from "../../../src/modules/member/dto/update-member.dto";
+import {createRandomString} from "../../../libs/utils";
+import {DuplicateCheckMemberDto} from "../../../src/modules/member/dto/duplicate-check-member.dto";
 
 describe('Member Controller', () => {
     let memberController: MemberController;

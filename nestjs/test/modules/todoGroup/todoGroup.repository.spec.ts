@@ -1,7 +1,7 @@
 import {Test, TestingModule} from "@nestjs/testing";
 import {TodoGroupRepository} from "../../../src/modules/todoGroup/todoGroup.repository";
 import {Member} from "../../../src/modules/member/entities/member.entity";
-import {getSavedMember} from "../member";
+import {getSavedMember} from "../member/member";
 import {TodoGroup} from "../../../src/modules/todoGroup/entities/todoGroup.entity";
 
 describe('TodoGroup Repository', () => {

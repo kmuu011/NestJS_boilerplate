@@ -1,14 +1,14 @@
-import {MemberRepository} from "../../src/modules/member/member.repository";
-import {Member} from "../../src/modules/member/entities/member.entity";
+import {MemberRepository} from "../../../src/modules/member/member.repository";
+import {Member} from "../../../src/modules/member/entities/member.entity";
 import {Test, TestingModule} from "@nestjs/testing";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {DeleteResult, UpdateResult} from "typeorm";
-import {typeOrmOptions} from "../../config/config";
+import {typeOrmOptions} from "../../../config/config";
 import {
     getCreateMemberData,
     getSavedMember
 } from "./member";
-import {createRandomString} from "../../libs/utils";
+import {createRandomString} from "../../../libs/utils";
 
 describe('Member Repository', () => {
     let memberRepository: MemberRepository;
