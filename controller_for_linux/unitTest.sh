@@ -7,4 +7,5 @@ cd ..
 
 cd nestjs
 
+npm run test:clearCache
 npm run test:watch
