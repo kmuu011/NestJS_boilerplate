@@ -15,7 +15,7 @@ export class TodoGroupInterceptor implements NestInterceptor {
     async intercept(context: ExecutionContext, next: CallHandler): Promise<any> {
         const req: Request = context.switchToHttp().getRequest();
         const memberInfo: Member = req.locals.memberInfo;
-        const todoGroupIdx: number = Number(req.params.todoGroupIdx)
+        const todoGroupIdx: number = Number(req.params.todoGroupIdx);
 
         const todoGroupInfo: TodoGroup = await this.todoGroupRepository.selectOne(memberInfo, todoGroupIdx);
 

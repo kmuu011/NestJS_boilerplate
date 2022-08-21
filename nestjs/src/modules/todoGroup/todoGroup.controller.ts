@@ -38,7 +38,7 @@ export class TodoGroupController {
     }
 
     @Post()
-    async createGroup(
+    async createTodoGroup(
         @Req() req: Request,
         @Body() body: CreateTodoGroupDto
     ): Promise<TodoGroup> {

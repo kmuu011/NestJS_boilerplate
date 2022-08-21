@@ -26,12 +26,24 @@ describe('TodoGroup Repository', () => {
 
         todoGroupRepository = module.get<TodoGroupRepository>(TodoGroupRepository);
 
-        savedTodoGroupInfo = await todoGroupRepository.createTodoGroup(undefined, getSavedTodoGroup());
+        const todoGroupData = getSavedTodoGroup();
+
+        for(let i=0 ; i<4 ; i++){
+            todoGroupData.idx = i+1;
+            const todoGroup: TodoGroup = await todoGroupRepository.selectOne(savedMemberInfo, todoGroupData.idx);
+
+            if(todoGroup){
+                if(i === 1) savedTodoGroupInfo = todoGroup;
+                continue;
+            }
+
+            await todoGroupRepository.createTodoGroup(undefined, todoGroupData);
+        }
     });
 
     describe('selectOne()', () => {
         it('할일 그룹 상세 조회', async () => {
-            const result: TodoGroup = await todoGroupRepository.selectOne(savedMemberInfo, 277)
+            const result: TodoGroup = await todoGroupRepository.selectOne(savedMemberInfo, savedTodoGroupInfo.idx);
 
             expect(result instanceof TodoGroup).toBeTruthy();
         });
@@ -40,7 +52,7 @@ describe('TodoGroup Repository', () => {
     describe('selectList()', () => {
         it('할일 그룹 목록 조회', async () => {
             const result: [TodoGroup[], number] = await todoGroupRepository.selectList(savedMemberInfo, 1, 10);
-
+            
             expect(result[0].every(v => v instanceof TodoGroup)).toBeTruthy();
             expect(typeof result[1] === "number").toBeTruthy()
         });

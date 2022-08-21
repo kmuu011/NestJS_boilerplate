@@ -74,7 +74,7 @@ export class TodoGroupService {
         return await this.todoGroupRepository.createTodoGroup(undefined, todoGroup);
     }
 
-    async update(member: Member, todoGroup: TodoGroup, body: UpdateTodoGroupDto): Promise<void> {
+    async update(member: Member, todoGroup: TodoGroup, body: UpdateTodoGroupDto): Promise<UpdateResult> {
         todoGroup.title = body.title;
 
         const updateResult: UpdateResult = await this.todoGroupRepository.updateTodoGroup(todoGroup);
@@ -86,9 +86,11 @@ export class TodoGroupService {
         if (todoGroup.order !== body.order && body.order !== undefined) {
             await this.arrangeOrder(member, todoGroup, body.order);
         }
+
+        return updateResult;
     }
 
-    async delete(member: Member, todoGroup: TodoGroup): Promise<void> {
+    async delete(member: Member, todoGroup: TodoGroup): Promise<DeleteResult> {
         const deleteResult: DeleteResult = await this.todoGroupRepository.deleteTodoGroup(todoGroup);
 
         if (deleteResult.affected !== 1) {
@@ -96,6 +98,8 @@ export class TodoGroupService {
         }
 
         await this.arrangeOrder(member);
+
+        return deleteResult
     }
 
 }
