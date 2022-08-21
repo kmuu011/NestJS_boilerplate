@@ -1,20 +1,20 @@
-import {Member} from "../../src/modules/member/entities/member.entity";
+import {Member} from "../../../src/modules/member/entities/member.entity";
 import {Test, TestingModule} from "@nestjs/testing";
 import {getRepositoryToken, TypeOrmModule} from "@nestjs/typeorm";
-import {staticPath, typeOrmOptions} from "../../config/config";
+import {staticPath, typeOrmOptions} from "../../../config/config";
 import {
     getCreateMemberData, getLoginMemberDto, getProfileImageData, getUpdateMemberDto,
     loginHeader,
 } from "./member";
-import {MemberService} from "../../src/modules/member/member.service";
-import {MemberRepository} from "../../src/modules/member/member.repository";
-import {TokenRepository} from "../../src/modules/member/token/token.repository";
-import {TodoGroupRepository} from "../../src/modules/todoGroup/todoGroup.repository";
-import {LoginMemberDto} from "../../src/modules/member/dto/login-member.dto";
-import {CreateMemberDto} from "../../src/modules/member/dto/create-member-dto";
-import {createRandomString} from "../../libs/utils";
-import {UpdateMemberDto} from "../../src/modules/member/dto/update-member.dto";
-import {FileType} from "../../src/common/type/type";
+import {MemberService} from "../../../src/modules/member/member.service";
+import {MemberRepository} from "../../../src/modules/member/member.repository";
+import {TokenRepository} from "../../../src/modules/member/token/token.repository";
+import {TodoGroupRepository} from "../../../src/modules/todoGroup/todoGroup.repository";
+import {LoginMemberDto} from "../../../src/modules/member/dto/login-member.dto";
+import {CreateMemberDto} from "../../../src/modules/member/dto/create-member-dto";
+import {createRandomString} from "../../../libs/utils";
+import {UpdateMemberDto} from "../../../src/modules/member/dto/update-member.dto";
+import {FileType} from "../../../src/common/type/type";
 import Buffer from "buffer";
 import {existsSync, readFileSync} from "fs";
 import {DeleteResult} from "typeorm";

@@ -1,12 +1,12 @@
-import {Member} from "../../src/modules/member/entities/member.entity";
-import {createRandomString} from "../../libs/utils";
+import {Member} from "../../../src/modules/member/entities/member.entity";
+import {createRandomString} from "../../../libs/utils";
 import {readFileSync} from "fs";
-import {basePath} from "../../config/config";
+import {basePath} from "../../../config/config";
 import Buffer from "buffer";
-import {UpdateMemberDto} from "../../src/modules/member/dto/update-member.dto";
+import {UpdateMemberDto} from "../../../src/modules/member/dto/update-member.dto";
 import {getTokenInfo} from "./token/token";
-import {FileType} from "../../src/common/type/type";
-import {LoginMemberDto} from "../../src/modules/member/dto/login-member.dto";
+import {FileType} from "../../../src/common/type/type";
+import {LoginMemberDto} from "../../../src/modules/member/dto/login-member.dto";
 
 export const savedMemberData = {
     idx: 112,

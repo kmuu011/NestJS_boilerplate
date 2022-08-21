@@ -1,9 +1,9 @@
-import {TokenRepository} from "../../../src/modules/member/token/token.repository";
-import {Member} from "../../../src/modules/member/entities/member.entity";
+import {TokenRepository} from "../../../../src/modules/member/token/token.repository";
+import {Member} from "../../../../src/modules/member/entities/member.entity";
 import {Test, TestingModule} from "@nestjs/testing";
 import {getRepositoryToken, TypeOrmModule} from "@nestjs/typeorm";
-import {typeOrmOptions} from "../../../config/config";
-import {Token} from "../../../src/modules/member/entities/token.entity";
+import {typeOrmOptions} from "../../../../config/config";
+import {Token} from "../../../../src/modules/member/entities/token.entity";
 import {getSavedMember} from "../member";
 import {savedTokenInfo} from "./token";
 
