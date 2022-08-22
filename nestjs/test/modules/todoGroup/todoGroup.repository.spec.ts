@@ -9,9 +9,10 @@ import {getCreateTodoGroupData, getSavedTodoGroup} from "./todoGroup";
 import {DeleteResult, UpdateResult} from "typeorm";
 
 describe('TodoGroup Repository', () => {
-    let todoGroupRepository: TodoGroupRepository;
     const savedMemberInfo: Member = getSavedMember();
-    let savedTodoGroupInfo: TodoGroup;
+    const savedTodoGroupInfo: TodoGroup = getSavedTodoGroup();
+
+    let todoGroupRepository: TodoGroupRepository;
     let createdTodoGroupInfo: TodoGroup;
 
     beforeAll(async () => {
@@ -26,19 +27,16 @@ describe('TodoGroup Repository', () => {
 
         todoGroupRepository = module.get<TodoGroupRepository>(TodoGroupRepository);
 
-        const todoGroupData = getSavedTodoGroup();
-
         for(let i=0 ; i<4 ; i++){
-            todoGroupData.idx = i+1;
-            const todoGroup: TodoGroup = await todoGroupRepository.selectOne(savedMemberInfo, todoGroupData.idx);
+            savedTodoGroupInfo.idx = i+1;
+            const todoGroup: TodoGroup = await todoGroupRepository.selectOne(savedMemberInfo, savedTodoGroupInfo.idx);
 
-            if(todoGroup){
-                if(i === 1) savedTodoGroupInfo = todoGroup;
-                continue;
-            }
+            if (todoGroup) continue;
 
-            await todoGroupRepository.createTodoGroup(undefined, todoGroupData);
+            await todoGroupRepository.createTodoGroup(undefined, savedTodoGroupInfo);
         }
+
+        savedTodoGroupInfo.idx = (getSavedTodoGroup()).idx;
     });
 
     describe('selectOne()', () => {
@@ -52,7 +50,7 @@ describe('TodoGroup Repository', () => {
     describe('selectList()', () => {
         it('할일 그룹 목록 조회', async () => {
             const result: [TodoGroup[], number] = await todoGroupRepository.selectList(savedMemberInfo, 1, 10);
-            
+
             expect(result[0].every(v => v instanceof TodoGroup)).toBeTruthy();
             expect(typeof result[1] === "number").toBeTruthy()
         });

@@ -15,9 +15,8 @@ import {getSavedTodoGroup} from "./todoGroup";
 import {TodoGroupInterceptor} from "../../../src/modules/todoGroup/todoGroup.interceptor";
 import {CallHandler, ExecutionContext} from "@nestjs/common";
 
-describe('TodoGroup Controller', () => {
+describe('TodoGroup Interceptor', () => {
     let todoGroupController: TodoGroupController;
-    let todoGroupService: TodoGroupService;
     let todoGroupInterceptor: TodoGroupInterceptor;
     const savedMemberInfo: Member = getSavedMember();
     const savedTodoGroupInfo: TodoGroup = getSavedTodoGroup();
