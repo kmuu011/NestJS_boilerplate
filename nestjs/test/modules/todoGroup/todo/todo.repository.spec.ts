@@ -9,8 +9,6 @@ import {TodoGroupRepository} from "../../../../src/modules/todoGroup/todoGroup.r
 import {Todo} from "../../../../src/modules/todoGroup/todo/entities/todo.entity";
 import {getCreateTodoData, getSavedTodo} from "./todo";
 import {UpdateTodoDto} from "../../../../src/modules/todoGroup/todo/dto/update-todo-dto";
-import {updateOutput} from "ts-jest";
-import {create} from "domain";
 
 describe('Todo Repository', () => {
     const savedTodoGroupInfo: TodoGroup = getSavedTodoGroup();
