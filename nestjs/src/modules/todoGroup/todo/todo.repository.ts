@@ -12,7 +12,6 @@ export class TodoRepository extends Repository<Todo> {
             where: {todoGroup, idx: todoIdx}
         });
     }
-
     async selectList(todoGroup: TodoGroup, page?: number, count?: number): Promise<[Todo[], number]> {
         let query = this.createQueryBuilder('t');
 
@@ -49,6 +48,5 @@ export class TodoRepository extends Repository<Todo> {
     async deleteTodo(todo: Todo): Promise<DeleteResult> {
         return await this.delete(todo.idx);
     }
-
 
 }

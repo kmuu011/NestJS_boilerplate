@@ -27,7 +27,7 @@ export class TodoGroupController {
     constructor(private readonly todoGroupService: TodoGroupService) {}
 
     @Get()
-    async getTodoGroupList(
+    async selectTodoGroupList(
         @Req() req: Request,
         @Query() query: SelectQueryDto
     ): Promise<SelectListResponseType<TodoGroup>> {

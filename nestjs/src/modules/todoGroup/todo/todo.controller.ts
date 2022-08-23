@@ -33,7 +33,7 @@ export class TodoController {
     ) {}
 
     @Get('/')
-    async selectList(
+    async selectTodolist(
         @Req() req: Request,
         @Query() query: SelectQueryDto
     ): Promise<SelectListResponseType<Todo>> {

@@ -13,14 +13,12 @@ import {ResponseBooleanType, SelectListResponseType} from "../../../src/common/t
 import {TodoGroup} from "../../../src/modules/todoGroup/entities/todoGroup.entity";
 import {CreateTodoGroupDto} from "../../../src/modules/todoGroup/dto/create-todoGroup-dto";
 import {getCreateTodoGroupData, getSavedTodoGroup} from "./todoGroup";
-import {TodoGroupInterceptor} from "../../../src/modules/todoGroup/todoGroup.interceptor";
 import {UpdateTodoGroupDto} from "../../../src/modules/todoGroup/dto/update-todoGroup-dto";
 import {getSelectQueryDto} from "../../common/const";
 
 describe('TodoGroup Controller', () => {
     let todoGroupController: TodoGroupController;
     let todoGroupService: TodoGroupService;
-    let todoGroupInterceptor: TodoGroupInterceptor;
     let createdTodoGroup: TodoGroup;
     const savedMemberInfo: Member = getSavedMember();
     const savedTodoGroupInfo: TodoGroup = getSavedTodoGroup();
@@ -37,16 +35,11 @@ describe('TodoGroup Controller', () => {
             controllers: [TodoGroupController],
             providers: [
                 TodoGroupService,
-                {
-                    provide: TodoGroupInterceptor,
-                    useValue: TodoGroupInterceptor
-                }
             ]
         }).compile();
 
         todoGroupController = module.get<TodoGroupController>(TodoGroupController);
         todoGroupService = module.get<TodoGroupService>(TodoGroupService);
-        todoGroupInterceptor = module.get<TodoGroupInterceptor>(TodoGroupInterceptor);
     });
 
     describe('selectList()', () => {
@@ -58,7 +51,7 @@ describe('TodoGroup Controller', () => {
             };
 
             const response: SelectListResponseType<TodoGroup>
-                = await todoGroupController.getTodoGroupList(req, getSelectQueryDto());
+                = await todoGroupController.selectTodoGroupList(req, getSelectQueryDto());
 
             expect(response.items.every(v => v instanceof TodoGroup)).toBeTruthy();
         });
