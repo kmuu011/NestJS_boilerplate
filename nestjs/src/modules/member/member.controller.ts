@@ -1,7 +1,7 @@
 import {
     Body,
     Controller, Delete,
-    Get,
+    Get, HttpCode,
     Patch,
     Post,
     Req, Res,
@@ -37,12 +37,13 @@ export class MemberController {
 
     @Post('/auth')
     @UseGuards(AuthGuard)
+    @HttpCode(200)
     async auth(
         @Req() req: Request
     ): Promise<Member> {
         const memberInfo = req.locals.memberInfo;
 
-        console.log(memberInfo);
+        // console.log(memberInfo);
 
         return memberInfo;
     }
