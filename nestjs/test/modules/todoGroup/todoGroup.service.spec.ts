@@ -28,12 +28,8 @@ describe('TodoGroup Service', () => {
             ],
             providers: [
                 TodoGroupService,
-                {
-                    provide: getRepositoryToken(TodoGroup),
-                    useValue: TodoGroupService
-                }
             ]
-        }).compile()
+        }).compile();
 
         todoGroupService = module.get<TodoGroupService>(TodoGroupService)
     });

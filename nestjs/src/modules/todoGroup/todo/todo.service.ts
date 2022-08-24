@@ -40,7 +40,7 @@ export class TodoService {
         return this.todoRepository.createTodo(todo)
     }
 
-    async update(todo: Todo, updateTodoDto: UpdateTodoDto): Promise<void> {
+    async update(todo: Todo, updateTodoDto: UpdateTodoDto): Promise<UpdateResult> {
         todo.dataMigration(updateTodoDto);
 
         const updateResult: UpdateResult = await this.todoRepository.updateTodo(todo, updateTodoDto);
@@ -48,14 +48,18 @@ export class TodoService {
         if (updateResult.affected !== 1) {
             throw Message.SERVER_ERROR;
         }
+
+        return updateResult;
     }
 
-    async delete(todo: Todo): Promise<void> {
+    async delete(todo: Todo): Promise<DeleteResult> {
         const deleteResult: DeleteResult = await this.todoRepository.deleteTodo(todo);
 
         if (deleteResult.affected !== 1) {
             throw Message.SERVER_ERROR;
         }
+
+        return deleteResult;
     }
 
 }
