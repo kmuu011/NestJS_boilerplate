@@ -70,8 +70,11 @@ export const getUpdateMemberDto = (): UpdateMemberDto => {
     };
 }
 
+export const getProfileImagePath = (): string => {
+    return basePath + '/test/static/img/cute.jpg';
+}
 export const getProfileImageData = (): FileType => {
-    const fileBuffer: Buffer = readFileSync(basePath + '/test/static/img/cute.jpg');
+    const fileBuffer: Buffer = readFileSync(getProfileImagePath());
     return {
         fileBuffer,
         fileType: 'jpg',
