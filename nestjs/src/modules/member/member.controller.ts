@@ -3,7 +3,7 @@ import {
     Controller, Delete,
     Get, HttpCode,
     Patch,
-    Post,
+    Post, Query,
     Req, Res,
     UploadedFile,
     UseGuards,
@@ -49,6 +49,7 @@ export class MemberController {
     }
 
     @Post('/login')
+    @HttpCode(200)
     async login(
         @Req() req: Request,
         @Body() loginMemberDto: LoginMemberDto
@@ -109,7 +110,7 @@ export class MemberController {
 
     @Get('/duplicateCheck')
     async duplicateCheck(
-        @Body() duplicateCheckDto: DuplicateCheckMemberDto
+        @Query() duplicateCheckDto: DuplicateCheckMemberDto
     ): Promise<ResponseBooleanType> {
         const {type, value} = duplicateCheckDto;
 

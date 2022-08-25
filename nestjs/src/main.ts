@@ -9,6 +9,7 @@ import {port} from 'config/config';
 import {ValidationPipe} from "@nestjs/common";
 import {Handlers} from "@sentry/node";
 import {sentrySettingRun} from "./sentry/cli/createRelease";
+import {json} from "express";
 
 const appOptions = {
     cors: true
@@ -25,6 +26,7 @@ const validationOptions = {
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, appOptions);
+    app.use(json({ limit: '50mb' }));
 
     await sentrySettingRun();
 

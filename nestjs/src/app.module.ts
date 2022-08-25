@@ -13,7 +13,7 @@ import {TokenRepository} from "./modules/member/token/token.repository";
 import {TodoGroupRepository} from "./modules/todoGroup/todoGroup.repository";
 import * as Sentry from '@sentry/node';
 import { SentryModule } from './sentry/sentry.module';
-import '@sentry/tracing'
+import '@sentry/tracing';
 
 @Global()
 @Module({
