@@ -93,15 +93,18 @@ describe('Member Controller', () => {
             const randomString = createRandomString(12);
 
             for(let i=0 ; i<checkKeyList.length ; i++){
-                let duplicateCheckDto: DuplicateCheckMemberDto = {type: i, value: savedMemberInfo[checkKeyList[i]]}
+                let duplicateCheckDto: DuplicateCheckMemberDto
+                    = {type: i, value: savedMemberInfo[checkKeyList[i]]}
 
-                const dupCheckFalse: ResponseBooleanType = await memberController.duplicateCheck(duplicateCheckDto);
+                const dupCheckFalse: ResponseBooleanType
+                    = await memberController.duplicateCheck(duplicateCheckDto);
 
                 expect(!dupCheckFalse.usable).toBeTruthy();
 
                 duplicateCheckDto = {type: i, value: randomString};
 
-                const dupCheckTrue: ResponseBooleanType = await memberController.duplicateCheck(duplicateCheckDto);
+                const dupCheckTrue: ResponseBooleanType
+                    = await memberController.duplicateCheck(duplicateCheckDto);
 
                 expect(!dupCheckTrue.usable).toBeFalsy();
             }
