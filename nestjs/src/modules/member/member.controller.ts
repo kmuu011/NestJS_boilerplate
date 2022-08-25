@@ -47,7 +47,7 @@ export class MemberController {
 
         return memberInfo;
     }
-
+    
     @Post('/login')
     @HttpCode(200)
     async login(
@@ -171,7 +171,5 @@ export class MemberController {
 
         res.download(staticPath + profileImgKey, 'test.jpg');
     }
-
-
 
 }
