@@ -3,7 +3,7 @@ const serverType = process.env.NODE_ENV;
 import {sentry, sentryConfig} from 'config/config';
 
 export const sentrySettingRun = async () => {
-    if(serverType !== 'development') return;
+    if(serverType !== 'localDevelopment') return;
 
     try {
         const releaseName = sentry.release;
