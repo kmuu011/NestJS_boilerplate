@@ -26,6 +26,7 @@ import {staticPath, multerOptions} from "../../../config/config";
 import * as validator from "../../../libs/validator";
 import {FileType, LoginResponseType, ResponseBooleanType} from "../../common/type/type";
 import {Message} from "../../../libs/message";
+import {ApiCreatedResponse, ApiHeader, ApiOperation} from "@nestjs/swagger";
 
 const duplicateCheckKeys = ['id', 'nickname', 'email'];
 
@@ -38,6 +39,11 @@ export class MemberController {
     @Post('/auth')
     @UseGuards(AuthGuard)
     @HttpCode(200)
+    @ApiOperation({ summary: 'tokenCode 체크', description: 'tokenCode가 유효한지 체크한다.' })
+    @ApiCreatedResponse({ description: '토큰 코드 체크 완료.', type: Member })
+    @ApiHeader({description: '토큰 코드', name: 'token-code'})
+    @ApiHeader({description: '아이피', name: 'ip'})
+    @ApiHeader({description: '유저 에이전트', name: 'user-agent'})
     async auth(
         @Req() req: Request
     ): Promise<Member> {
@@ -50,10 +56,13 @@ export class MemberController {
     
     @Post('/login')
     @HttpCode(200)
+    @ApiHeader({description: '아이피', name: 'ip'})
+    @ApiHeader({description: '유저 에이전트', name: 'user-agent'})
     async login(
         @Req() req: Request,
         @Body() loginMemberDto: LoginMemberDto
     ): Promise<LoginResponseType> {
+        console.log(req.headers)
         const member: Member = await this.memberService.login(loginMemberDto, req.headers);
 
         return {

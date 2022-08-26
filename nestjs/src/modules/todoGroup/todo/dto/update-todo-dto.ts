@@ -1,6 +1,6 @@
-import {PickType} from "@nestjs/mapped-types";
 import {Todo} from "../entities/todo.entity";
 import {IsBoolean, IsOptional} from "class-validator";
+import {ApiPropertyOptional, PickType} from "@nestjs/swagger";
 
 export class UpdateTodoDto extends PickType(
     Todo,
@@ -8,5 +8,6 @@ export class UpdateTodoDto extends PickType(
 ) {
     @IsBoolean()
     @IsOptional()
+    @ApiPropertyOptional()
     readonly complete: boolean;
 }

@@ -1,5 +1,5 @@
 import {Member} from "../entities/member.entity";
-import {PickType} from "@nestjs/mapped-types";
+import {PickType} from "@nestjs/swagger";
 
 export class LoginMemberDto extends PickType(
     Member,

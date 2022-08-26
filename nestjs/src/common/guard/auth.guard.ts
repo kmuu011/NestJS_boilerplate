@@ -8,6 +8,8 @@ import {Request, Response} from "express";
 import { auth } from "../../../config/config";
 import {Token} from "../../modules/member/entities/token.entity";
 
+const serverType = process.env.NODE_ENV;
+
 @Injectable()
 export class AuthGuard implements CanActivate {
     constructor(
@@ -34,8 +36,8 @@ export class AuthGuard implements CanActivate {
             .where('t.memberIdx = m.idx ' +
                 'AND t.code = :code', {code: tokenCode})
             .getOne();
-
-        if(!memberInfo || memberInfo.member.ip !== ip || memberInfo.member.user_agent !== userAgent){
+        
+        if(!memberInfo || (serverType !== 'localDevelopment' && (memberInfo.member.ip !== ip || memberInfo.member.user_agent !== userAgent))){
             throw Message.UNAUTHORIZED;
         }
 

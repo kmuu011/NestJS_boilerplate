@@ -10,6 +10,7 @@ import {
 import {JwtPayload} from "jsonwebtoken";
 import {createToken, decodeToken, encryptPassword} from "../../../../libs/member";
 import {TodoGroup} from "../../todoGroup/entities/todoGroup.entity";
+import {ApiProperty} from "@nestjs/swagger";
 
 @Entity({name: 'member'})
 export class Member extends BaseEntity {
@@ -26,10 +27,12 @@ export class Member extends BaseEntity {
     @Length(3, 15)
     @IsString()
     @Column({type: 'varchar', length: 20, unique: true, comment: '유저 아이디'})
+    @ApiProperty()
     id: string = undefined;
 
     @IsString()
     @Column({type: 'varchar', length: 200, comment: '유저 비밀번호'})
+    @ApiProperty()
     password: string = undefined;
 
     @IsBoolean()
@@ -43,6 +46,7 @@ export class Member extends BaseEntity {
     @Length(2, 20)
     @IsString()
     @Column({type: 'varchar', length: 20, comment: '유저 닉네임'})
+    @ApiProperty()
     nickname: string = undefined;
 
     @NotContains('어드민')
@@ -52,6 +56,7 @@ export class Member extends BaseEntity {
     @NotContains('관리자')
     @IsEmail()
     @Column({type: 'varchar', length: 150, unique: true, comment: '유저 이메일'})
+    @ApiProperty()
     email: string = undefined;
 
     @IsString()
@@ -87,6 +92,7 @@ export class Member extends BaseEntity {
     user_agent: string = undefined;
 
     @IsBoolean()
+    @ApiProperty()
     keep_check: boolean = undefined;
 
     @OneToOne(() => Token, token => token.member)

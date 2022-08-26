@@ -1,6 +1,6 @@
 import {IsNotEmpty, IsOptional, IsString} from "class-validator";
-import {PickType} from "@nestjs/mapped-types";
 import {Member} from "../entities/member.entity";
+import {ApiProperty, ApiPropertyOptional, PickType} from "@nestjs/swagger";
 
 export class UpdateMemberDto extends PickType(
     Member,
@@ -9,10 +9,12 @@ export class UpdateMemberDto extends PickType(
     @IsNotEmpty()
     @IsString()
     @IsOptional()
+    @ApiPropertyOptional()
     password: string;
 
     @IsNotEmpty()
     @IsString()
     @IsOptional()
+    @ApiPropertyOptional()
     originalPassword: string;
 }
