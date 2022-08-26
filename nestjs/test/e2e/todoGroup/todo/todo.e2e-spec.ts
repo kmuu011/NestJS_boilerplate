@@ -1,17 +1,17 @@
 import {Test, TestingModule} from '@nestjs/testing';
 import {INestApplication} from '@nestjs/common';
 import * as request from 'supertest';
-import {AppModule} from "../../../dist/src/app.module";
-import {
-    getSavedMember,
-} from "../../modules/member/member";
-import {Member} from "../../../src/modules/member/entities/member.entity";
-import {getCreateTodoGroupData} from "../../modules/todoGroup/todoGroup";
-import {TodoGroup} from "../../../src/modules/todoGroup/entities/todoGroup.entity";
+import {Member} from "../../../../src/modules/member/entities/member.entity";
+import {getSavedMember} from "../../../modules/member/member";
+import {TodoGroup} from "../../../../src/modules/todoGroup/entities/todoGroup.entity";
+import {AppModule} from "../../../../dist/src/app.module";
+import {getSavedTodoGroup} from "../../../modules/todoGroup/todoGroup";
+import {Todo} from "../../../../src/modules/todoGroup/todo/entities/todo.entity";
 
 describe('TodoGroupController (e2e)', () => {
     const savedMemberInfo: Member = getSavedMember();
-    let createdTodoGroupInfo: TodoGroup;
+    const savedTodoGroupInfo: TodoGroup = getSavedTodoGroup();
+    let createdTodoInfo: Todo;
     let app: INestApplication;
 
     beforeAll(async () => {
@@ -30,10 +30,11 @@ describe('TodoGroupController (e2e)', () => {
         await app.close();
     });
 
-    describe('/todoGroup', () => {
+    describe('/todo', () => {
         it('/ (GET)', async () => {
             const response = await request(app.getHttpServer())
-                .get('/todoGroup?page=1&count=10')
+                .get('/todoGroup/'+ savedTodoGroupInfo.idx
+                    +'/todo?page=1&count=10')
                 .set('ip', '127.0.0.1')
                 .set('user-agent', 'test-agent')
                 .set('token-code', savedMemberInfo.tokenInfo.code)
@@ -50,44 +51,30 @@ describe('TodoGroupController (e2e)', () => {
 
         it('/ (POST)', async () => {
             const response = await request(app.getHttpServer())
-                .post('/todoGroup')
-                .set('ip', '127.0.0.1')
-                .set('user-agent', 'test-agent')
-                .set('token-code', savedMemberInfo.tokenInfo.code)
-                .send(
-                    getCreateTodoGroupData()
-                )
-                .expect(201);
-
-            createdTodoGroupInfo = response.body;
-        });
-    });
-
-    describe('/todoGroup/:todoGroupIdx', () => {
-        it('/ (GET)', async () => {
-            const response = await request(app.getHttpServer())
-                .get('/todoGroup/' + createdTodoGroupInfo.idx)
-                .set('ip', '127.0.0.1')
-                .set('user-agent', 'test-agent')
-                .set('token-code', savedMemberInfo.tokenInfo.code)
-                .expect(200);
-
-            const resultTodoGroup: TodoGroup = response.body;
-
-            expect(resultTodoGroup.idx === createdTodoGroupInfo.idx).toBeTruthy();
-            expect(resultTodoGroup.title === createdTodoGroupInfo.title).toBeTruthy();
-            expect(resultTodoGroup.order === createdTodoGroupInfo.order).toBeTruthy();
-        });
-
-        it('/ (PATCH)', async () => {
-            const response = await request(app.getHttpServer())
-                .patch('/todoGroup/' + createdTodoGroupInfo.idx)
+                .post('/todoGroup/'+ savedTodoGroupInfo.idx + '/todo')
                 .set('ip', '127.0.0.1')
                 .set('user-agent', 'test-agent')
                 .set('token-code', savedMemberInfo.tokenInfo.code)
                 .send({
-                    title: '수정된 할일 그룹 제목',
-                    order: 3
+                    content: '할일 1'
+                })
+                .expect(201);
+
+            createdTodoInfo = response.body;
+        });
+    });
+
+    describe('/todo/:todoIdx', () => {
+        it('/ (PATCH)', async () => {
+            const response = await request(app.getHttpServer())
+                .patch('/todoGroup/'+ savedTodoGroupInfo.idx
+                    + '/todo/' + createdTodoInfo.idx)
+                .set('ip', '127.0.0.1')
+                .set('user-agent', 'test-agent')
+                .set('token-code', savedMemberInfo.tokenInfo.code)
+                .send({
+                    content: '수정된 할일',
+                    complete: false
                 })
                 .expect(200);
 
@@ -96,7 +83,8 @@ describe('TodoGroupController (e2e)', () => {
 
         it('/ (DELETE)', async () => {
             const response = await request(app.getHttpServer())
-                .delete('/todoGroup/' + createdTodoGroupInfo.idx)
+                .delete('/todoGroup/'+ savedTodoGroupInfo.idx
+                    + '/todo/' + createdTodoInfo.idx)
                 .set('ip', '127.0.0.1')
                 .set('user-agent', 'test-agent')
                 .set('token-code', savedMemberInfo.tokenInfo.code)
@@ -104,7 +92,7 @@ describe('TodoGroupController (e2e)', () => {
 
             expect(response.body.result).toBeTruthy();
         });
-
     });
+
 
 });
