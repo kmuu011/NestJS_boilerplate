@@ -26,7 +26,7 @@ import {staticPath, multerOptions} from "../../../config/config";
 import * as validator from "../../../libs/validator";
 import {FileType, LoginResponseType, ResponseBooleanType} from "../../common/type/type";
 import {Message} from "../../../libs/message";
-import {ApiBody, ApiHeader, ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
+import {ApiBody, ApiConsumes, ApiHeader, ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 
 const duplicateCheckKeys = ['id', 'nickname', 'email'];
 
@@ -59,9 +59,6 @@ export class MemberController {
         @Req() req: Request,
         @Body() loginMemberDto: LoginMemberDto
     ): Promise<LoginResponseType> {
-        console.log(req.headers);
-        console.log(req.connection.remoteAddress);
-        console.log(req.headers['x-forwarded-for'])
         const member: Member = await this.memberService.login(loginMemberDto, req.headers);
 
         return {
@@ -129,6 +126,8 @@ export class MemberController {
 
     @Delete('/signOut')
     @UseGuards(AuthGuard)
+    @ApiOperation({ summary: '회원 탈퇴', description: '회원을 탈퇴합니다.' })
+    @ApiHeader({description: '토큰 코드', name: 'token-code'})
     async signOut(
         @Req() req: Request,
     ): Promise<ResponseBooleanType> {
@@ -142,6 +141,19 @@ export class MemberController {
     @Patch('img')
     @UseGuards(AuthGuard)
     @UseInterceptors(FileInterceptor('file', multerOptions))
+    @ApiConsumes('multipart/form-data')
+    @ApiBody({
+        schema: {
+            type: 'object',
+            properties: {
+                file: {
+                    type: 'string',
+                    format: 'binary'
+                }
+            }
+        }
+    })
+    @ApiHeader({description: '토큰 코드', name: 'token-code'})
     async updateImg(
         @Req() req: Request,
         @UploadedFile() file
@@ -157,6 +169,7 @@ export class MemberController {
 
     @Delete('img')
     @UseGuards(AuthGuard)
+    @ApiHeader({description: '토큰 코드', name: 'token-code'})
     async deleteImg(
         @Req() req: Request,
     ): Promise<ResponseBooleanType> {
@@ -170,6 +183,7 @@ export class MemberController {
     //업로드한 이미지 다운로드 테스트
     @Get('img')
     @UseGuards(AuthGuard)
+    @ApiHeader({description: '토큰 코드', name: 'token-code'})
     async getImg(
         @Req() req: Request,
         @Res() res: Response
