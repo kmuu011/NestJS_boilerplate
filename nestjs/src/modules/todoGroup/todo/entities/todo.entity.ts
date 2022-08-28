@@ -7,6 +7,7 @@ import {
     PrimaryGeneratedColumn,
 } from 'typeorm';
 import {TodoGroup} from "../../entities/todoGroup.entity";
+import {ApiProperty} from "@nestjs/swagger";
 
 @Entity({name: 'todo'})
 export class Todo extends BaseEntity {
@@ -25,6 +26,7 @@ export class Todo extends BaseEntity {
 
     @IsString()
     @Column({type: 'varchar', length: 300, comment: '할일 내용'})
+    @ApiProperty()
     content: string = undefined;
 
     @IsDateString()

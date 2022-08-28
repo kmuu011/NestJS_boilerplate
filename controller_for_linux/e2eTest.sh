@@ -8,5 +8,5 @@ cd ..
 cd nestjs
 
 npm run build
-
+npm run test:clearCache
 npm run test:e2e

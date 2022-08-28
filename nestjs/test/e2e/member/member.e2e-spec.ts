@@ -1,21 +1,19 @@
 import {Test, TestingModule} from '@nestjs/testing';
 import {INestApplication} from '@nestjs/common';
 import * as request from 'supertest';
-import {AppModule} from "../../src/app.module";
+import {AppModule} from "../../../dist/src/app.module";
 import {
     getCreateMemberData,
-    getLoginMemberDto,
     getProfileImagePath,
     getSavedMember,
-} from "../modules/member/member";
-import {Member} from "../../src/modules/member/entities/member.entity";
-import {UpdateMemberDto} from "../../src/modules/member/dto/update-member.dto";
+} from "../../modules/member/member";
+import {Member} from "../../../src/modules/member/entities/member.entity";
+import {UpdateMemberDto} from "../../../src/modules/member/dto/update-member.dto";
 import {json} from "express";
 
 describe('MemberController (e2e)', () => {
     const savedMemberInfo: Member = getSavedMember();
     const createMemberInfo: Member = getCreateMemberData(false);
-    let tokenCode: string;
     let createMemberTokenCode: string;
     let app: INestApplication;
 
@@ -35,33 +33,9 @@ describe('MemberController (e2e)', () => {
 
     afterAll(async () => {
         await app.close();
-    })
+    });
 
     describe('/member', () => {
-        it('/login (POST)', async () => {
-            const response = await request(app.getHttpServer())
-                .post('/member/login')
-                .set('ip', '127.0.0.1')
-                .set('user-agent', 'test-agent')
-                .send(
-                    getLoginMemberDto()
-                )
-                .expect(200);
-
-            tokenCode = response.body.tokenCode;
-        });
-
-        it('/auth (POST)', async () => {
-            const response = await request(app.getHttpServer())
-                .post('/member/auth')
-                .set('ip', '127.0.0.1')
-                .set('user-agent', 'test-agent')
-                .set('token-code', tokenCode)
-                .expect(200);
-
-            expect(response.body.id).toBe(savedMemberInfo.id);
-        });
-
         it('/signUp (POST)', async () => {
             const response = await request(app.getHttpServer())
                 .post('/member/signUp')
@@ -72,18 +46,32 @@ describe('MemberController (e2e)', () => {
 
             expect(response.body.result).toBeTruthy();
 
-            const createdMemberLoginResponse
-                = await request(app.getHttpServer())
+        });
+
+        it('/login (POST)', async () => {
+            const response = await request(app.getHttpServer())
                 .post('/member/login')
                 .set('ip', '127.0.0.1')
                 .set('user-agent', 'test-agent')
                 .send({
                     id: createMemberInfo.id,
-                    password: createMemberInfo.password
+                    password: createMemberInfo.password,
+                    keep_check: false
                 })
                 .expect(200);
 
-            createMemberTokenCode = createdMemberLoginResponse.body.tokenCode;
+            createMemberTokenCode = response.body.tokenCode;
+        });
+
+        it('/auth (POST)', async () => {
+            const response = await request(app.getHttpServer())
+                .post('/member/auth')
+                .set('ip', '127.0.0.1')
+                .set('user-agent', 'test-agent')
+                .set('token-code', createMemberTokenCode)
+                .expect(200);
+
+            expect(response.body.id).toBe(createMemberInfo.id);
         });
 
         it('/ (Patch)', async () => {
@@ -100,17 +88,6 @@ describe('MemberController (e2e)', () => {
                 .set('user-agent', 'test-agent')
                 .set('token-code', createMemberTokenCode)
                 .send(updateMemberDto)
-                .expect(200);
-
-            expect(response.body.result).toBeTruthy();
-        });
-
-        it('/signOut (Delete)', async () => {
-            const response = await request(app.getHttpServer())
-                .delete('/member/signOut')
-                .set('ip', '127.0.0.1')
-                .set('user-agent', 'test-agent')
-                .set('token-code', createMemberTokenCode)
                 .expect(200);
 
             expect(response.body.result).toBeTruthy();
@@ -171,7 +148,7 @@ describe('MemberController (e2e)', () => {
                 .patch('/member/img')
                 .set('ip', '127.0.0.1')
                 .set('user-agent', 'test-agent')
-                .set('token-code', tokenCode)
+                .set('token-code', createMemberTokenCode)
                 .attach('file', getProfileImagePath())
                 .expect(200);
 
@@ -183,7 +160,18 @@ describe('MemberController (e2e)', () => {
                 .delete('/member/img')
                 .set('ip', '127.0.0.1')
                 .set('user-agent', 'test-agent')
-                .set('token-code', tokenCode)
+                .set('token-code', createMemberTokenCode)
+                .expect(200);
+
+            expect(response.body.result).toBeTruthy();
+        });
+
+        it('/signOut (Delete)', async () => {
+            const response = await request(app.getHttpServer())
+                .delete('/member/signOut')
+                .set('ip', '127.0.0.1')
+                .set('user-agent', 'test-agent')
+                .set('token-code', createMemberTokenCode)
                 .expect(200);
 
             expect(response.body.result).toBeTruthy();

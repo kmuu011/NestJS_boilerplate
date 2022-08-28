@@ -1,6 +1,6 @@
-import {PickType} from "@nestjs/mapped-types";
 import {TodoGroup} from "../entities/todoGroup.entity";
 import {IsNumber, IsOptional} from "class-validator";
+import {ApiPropertyOptional, PickType} from "@nestjs/swagger";
 
 export class UpdateTodoGroupDto extends PickType(
     TodoGroup,
@@ -9,5 +9,6 @@ export class UpdateTodoGroupDto extends PickType(
 
     @IsNumber()
     @IsOptional()
+    @ApiPropertyOptional()
     readonly order: number;
 }

@@ -8,6 +8,7 @@ import {
     PrimaryGeneratedColumn,
 } from 'typeorm';
 import {Todo} from "../todo/entities/todo.entity";
+import {ApiProperty, ApiPropertyOptional} from "@nestjs/swagger";
 
 @Entity({name: 'todo_group'})
 export class TodoGroup extends BaseEntity {
@@ -26,10 +27,12 @@ export class TodoGroup extends BaseEntity {
 
     @IsString()
     @Column({type: 'varchar', length: 100, comment: '할일 그룹 제목'})
+    @ApiProperty()
     title: string = undefined;
 
     @IsNumber()
     @Column({type: "tinyint", default: 1, comment: "순서"})
+    @ApiProperty()
     order: number = undefined;
 
     @OneToMany(() => Todo, todo => todo.todoGroup, {

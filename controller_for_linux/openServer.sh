@@ -7,4 +7,4 @@ cd ..
 
 cd nestjs
 
-npm run start:dev
+npm run start:local
