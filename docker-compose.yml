@@ -9,13 +9,11 @@ services:
       - node_0:node_0
     ports:
       - "80:80"
-      - "443:443"
     volumes:
       - ./nginx/html:/usr/share/nginx/html
       - ./nginx/config:/etc/nginx
     expose:
       - "80"
-      - "443"
     container_name: "nginx"
     restart: always
     networks:
@@ -39,7 +37,7 @@ services:
       context: .
       dockerfile: docker_file/node/Dockerfile
     ports:
-      - "28081"
+      - "8081"
     working_dir: /home/nestjs/app
     volumes:
       - ./nestjs:/home/nestjs/app
@@ -49,7 +47,7 @@ services:
 
     command: "npm run start:prod"
     expose:
-      - "28081"
+      - "8081"
     restart: always
     container_name: "node_0"
     networks:

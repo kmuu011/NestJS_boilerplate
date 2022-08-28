@@ -27,12 +27,16 @@ export class Member extends BaseEntity {
     @Length(3, 15)
     @IsString()
     @Column({type: 'varchar', length: 20, unique: true, comment: '유저 아이디'})
-    @ApiProperty()
+    @ApiProperty({
+        example: 'tts'
+    })
     id: string = undefined;
 
     @IsString()
     @Column({type: 'varchar', length: 200, comment: '유저 비밀번호'})
-    @ApiProperty()
+    @ApiProperty({
+        example: 'tts0000'
+    })
     password: string = undefined;
 
     @IsBoolean()
@@ -46,7 +50,9 @@ export class Member extends BaseEntity {
     @Length(2, 20)
     @IsString()
     @Column({type: 'varchar', length: 20, comment: '유저 닉네임'})
-    @ApiProperty()
+    @ApiProperty({
+        example: 'tts'
+    })
     nickname: string = undefined;
 
     @NotContains('어드민')
@@ -56,7 +62,9 @@ export class Member extends BaseEntity {
     @NotContains('관리자')
     @IsEmail()
     @Column({type: 'varchar', length: 150, unique: true, comment: '유저 이메일'})
-    @ApiProperty()
+    @ApiProperty({
+        example: 'tts@email.com'
+    })
     email: string = undefined;
 
     @IsString()
