@@ -9,12 +9,16 @@ export class UpdateMemberDto extends PickType(
     @IsNotEmpty()
     @IsString()
     @IsOptional()
-    @ApiPropertyOptional()
+    @ApiPropertyOptional({
+        example: 'tts0000'
+    })
     password: string;
 
     @IsNotEmpty()
     @IsString()
     @IsOptional()
-    @ApiPropertyOptional()
+    @ApiPropertyOptional({
+        example: 'tts0000'
+    })
     originalPassword: string;
 }
