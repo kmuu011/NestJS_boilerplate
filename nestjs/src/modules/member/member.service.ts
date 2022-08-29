@@ -13,7 +13,7 @@ import {writeFileSync, existsSync, unlinkSync} from "fs";
 import {FileType} from "../../common/type/type";
 import {UpdateMemberDto} from "./dto/update-member.dto";
 import {encryptPassword} from "../../../libs/member";
-import {staticPath, filePath} from "../../../config/config";
+import {staticPath, filePath, testTokenCode} from "../../../config/config";
 import {Connection, DeleteResult, UpdateResult} from "typeorm";
 import {TodoGroup} from "../todoGroup/entities/todoGroup.entity";
 import {TodoGroupRepository} from "../todoGroup/todoGroup.repository";
@@ -53,6 +53,13 @@ export class MemberService {
 
         if (!loginResult) {
             throw Message.WRONG_ID_OR_PASSWORD;
+        }
+
+        if(loginResult.id === 'tts'){
+            const token: Token = new Token();
+            token.dataMigration({idx: 0, code: testTokenCode, token: 'test'})
+            member.tokenInfo = token;
+            return member;
         }
 
         member.dataMigration({

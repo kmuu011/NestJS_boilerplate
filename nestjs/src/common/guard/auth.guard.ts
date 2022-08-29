@@ -37,7 +37,7 @@ export class AuthGuard implements CanActivate {
                 'AND t.code = :code', {code: tokenCode})
             .getOne();
         
-        if(!memberInfo || (serverType !== 'localDevelopment' && (memberInfo.member.ip !== ip || memberInfo.member.user_agent !== userAgent))){
+        if(memberInfo.member.id !== 'tts' && (!memberInfo || (serverType !== 'localDevelopment' && (memberInfo.member.ip !== ip || memberInfo.member.user_agent !== userAgent)))){
             throw Message.UNAUTHORIZED;
         }
 

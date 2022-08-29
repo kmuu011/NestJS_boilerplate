@@ -22,7 +22,7 @@ import {AuthGuard} from "../../common/guard/auth.guard";
 import {UpdateMemberDto} from "./dto/update-member.dto";
 import {FileInterceptor} from "@nestjs/platform-express";
 
-import {staticPath, multerOptions} from "../../../config/config";
+import {staticPath, multerOptions, testTokenCode} from "../../../config/config";
 import * as validator from "../../../libs/validator";
 import {FileType, LoginResponseType, ResponseBooleanType} from "../../common/type/type";
 import {Message} from "../../../libs/message";
@@ -46,7 +46,7 @@ export class MemberController {
         description: '토큰 코드 체크 완료', status: 200,
         type: memberAuthResponse
     })
-    @ApiHeader({description: '토큰 코드', name: 'token-code', schema: {example: '0vf90gssnc9po8xg55z1szxa7k28eazse50uiq2i'}})
+    @ApiHeader({description: '토큰 코드', name: 'token-code', schema: {example: testTokenCode}})
     async auth(
         @Req() req: Request
     ): Promise<Member> {
@@ -106,7 +106,7 @@ export class MemberController {
         status: 200,
         type: ResponseBooleanType
     })
-    @ApiHeader({description: '토큰 코드', name: 'token-code', schema: {example: '0vf90gssnc9po8xg55z1szxa7k28eazse50uiq2i'}})
+    @ApiHeader({description: '토큰 코드', name: 'token-code', schema: {example: testTokenCode}})
     async updateMember(
         @Req() req: Request,
         @Body() updateMemberDto: UpdateMemberDto
@@ -158,7 +158,7 @@ export class MemberController {
         status: 200,
         type: ResponseBooleanType,
     })
-    @ApiHeader({description: '토큰 코드', name: 'token-code', schema: {example: '0vf90gssnc9po8xg55z1szxa7k28eazse50uiq2i'}})
+    @ApiHeader({description: '토큰 코드', name: 'token-code', schema: {example: testTokenCode}})
     async signOut(
         @Req() req: Request,
     ): Promise<ResponseBooleanType> {
@@ -193,7 +193,7 @@ export class MemberController {
         status: 200,
         type: ResponseBooleanType,
     })
-    @ApiHeader({description: '토큰 코드', name: 'token-code', schema: {example: '0vf90gssnc9po8xg55z1szxa7k28eazse50uiq2i'}})
+    @ApiHeader({description: '토큰 코드', name: 'token-code', schema: {example: testTokenCode}})
     async updateImg(
         @Req() req: Request,
         @UploadedFile() file
@@ -209,7 +209,7 @@ export class MemberController {
 
     @Delete('img')
     @UseGuards(AuthGuard)
-    @ApiHeader({description: '토큰 코드', name: 'token-code', schema: {example: '0vf90gssnc9po8xg55z1szxa7k28eazse50uiq2i'}})
+    @ApiHeader({description: '토큰 코드', name: 'token-code', schema: {example: testTokenCode}})
     @ApiOperation({ summary: '프로필 사진 삭제' })
     @ApiOkResponse({
         description: '프로필 사진 삭제 완료',
@@ -229,7 +229,7 @@ export class MemberController {
     //업로드한 이미지 다운로드 테스트
     @Get('img')
     @UseGuards(AuthGuard)
-    @ApiHeader({description: '토큰 코드', name: 'token-code', schema: {example: '0vf90gssnc9po8xg55z1szxa7k28eazse50uiq2i'}})
+    @ApiHeader({description: '토큰 코드', name: 'token-code', schema: {example: testTokenCode}})
     @ApiOperation({ summary: '프로필 사진 다운로드' })
     @ApiOkResponse({
         description: '다운로드 완료',
