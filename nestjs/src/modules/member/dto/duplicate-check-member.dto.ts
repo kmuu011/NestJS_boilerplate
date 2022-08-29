@@ -4,7 +4,8 @@ import {ApiProperty} from "@nestjs/swagger";
 export class DuplicateCheckMemberDto {
     @IsNumber()
     @ApiProperty({
-        example: 0
+        example: 0,
+        description: '0: id, 1: nickname, 2: email'
     })
     readonly type: number;
 

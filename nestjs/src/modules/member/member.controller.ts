@@ -26,7 +26,8 @@ import {staticPath, multerOptions} from "../../../config/config";
 import * as validator from "../../../libs/validator";
 import {FileType, LoginResponseType, ResponseBooleanType} from "../../common/type/type";
 import {Message} from "../../../libs/message";
-import {ApiBody, ApiConsumes, ApiHeader, ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
+import {ApiBody, ApiConsumes, ApiCreatedResponse, ApiHeader, ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
+import {memberAuthResponse} from "../../common/swagger/customResponse";
 
 const duplicateCheckKeys = ['id', 'nickname', 'email'];
 
@@ -40,8 +41,11 @@ export class MemberController {
     @Post('/auth')
     @UseGuards(AuthGuard)
     @HttpCode(200)
-    @ApiOperation({ summary: 'tokenCode 체크', description: 'tokenCode가 유효한지 체크한다.' })
-    @ApiResponse({description: '토큰 코드 체크 완료', status: 200, type: Member})
+    @ApiOperation({ summary: 'tokenCode 체크', description: 'tokenCode가 유효한지 체크' })
+    @ApiResponse({
+        description: '토큰 코드 체크 완료', status: 200,
+        type: memberAuthResponse
+    })
     @ApiHeader({description: '토큰 코드', name: 'token-code'})
     async auth(
         @Req() req: Request
@@ -55,6 +59,11 @@ export class MemberController {
     
     @Post('/login')
     @HttpCode(200)
+    @ApiOperation({ summary: '로그인' })
+    @ApiResponse({
+        description: '로그인 성공', status: 200,
+        type: LoginResponseType
+    })
     async login(
         @Req() req: Request,
         @Body() loginMemberDto: LoginMemberDto
@@ -67,6 +76,11 @@ export class MemberController {
     }
 
     @Post('/signUp')
+    @ApiOperation({ summary: '회원가입' })
+    @ApiCreatedResponse({
+        description: '회원가입 성공',
+        type: ResponseBooleanType
+    })
     async signUp(
         @Body() createMemberDto: CreateMemberDto
     ): Promise<ResponseBooleanType> {
@@ -86,6 +100,13 @@ export class MemberController {
 
     @Patch('/')
     @UseGuards(AuthGuard)
+    @ApiOperation({ summary: '회원정보 수정' })
+    @ApiResponse({
+        description: '회원정보 수정 완료',
+        status: 200,
+        type: ResponseBooleanType
+    })
+    @ApiHeader({description: '토큰 코드', name: 'token-code'})
     async updateMember(
         @Req() req: Request,
         @Body() updateMemberDto: UpdateMemberDto
@@ -114,19 +135,29 @@ export class MemberController {
     }
 
     @Get('/duplicateCheck')
+    @ApiOperation({ summary: '중복 체크' })
+    @ApiResponse({
+        description: 'true: 중복, false: 중복 아님 사용가능 ',
+        status: 200,
+        type: ResponseBooleanType,
+    })
     async duplicateCheck(
         @Query() duplicateCheckDto: DuplicateCheckMemberDto
     ): Promise<ResponseBooleanType> {
         const {type, value} = duplicateCheckDto;
 
         return {
-            usable: await this.memberService.duplicateCheck(duplicateCheckKeys[type], value)
+            result: await this.memberService.duplicateCheck(duplicateCheckKeys[type], value)
         };
     }
 
     @Delete('/signOut')
     @UseGuards(AuthGuard)
-    @ApiOperation({ summary: '회원 탈퇴', description: '회원을 탈퇴합니다.' })
+    @ApiOperation({summary: '회원 탈퇴', description: '탈퇴하고 모든 데이터가 삭제됨.'})
+    @ApiResponse({
+        status: 200,
+        type: ResponseBooleanType,
+    })
     @ApiHeader({description: '토큰 코드', name: 'token-code'})
     async signOut(
         @Req() req: Request,
@@ -153,6 +184,12 @@ export class MemberController {
             }
         }
     })
+    @ApiOperation({ summary: '프로필 사진 변경' })
+    @ApiResponse({
+        description: '프로필 사진 변경 완료',
+        status: 200,
+        type: ResponseBooleanType,
+    })
     @ApiHeader({description: '토큰 코드', name: 'token-code'})
     async updateImg(
         @Req() req: Request,
@@ -170,6 +207,12 @@ export class MemberController {
     @Delete('img')
     @UseGuards(AuthGuard)
     @ApiHeader({description: '토큰 코드', name: 'token-code'})
+    @ApiOperation({ summary: '프로필 사진 삭제' })
+    @ApiResponse({
+        description: '프로필 사진 삭제 완료',
+        status: 200,
+        type: ResponseBooleanType,
+    })
     async deleteImg(
         @Req() req: Request,
     ): Promise<ResponseBooleanType> {
@@ -184,6 +227,20 @@ export class MemberController {
     @Get('img')
     @UseGuards(AuthGuard)
     @ApiHeader({description: '토큰 코드', name: 'token-code'})
+    @ApiOperation({ summary: '프로필 사진 다운로드' })
+    @ApiResponse({
+        description: '다운로드 완료',
+        status: 200,
+        schema: {
+            type: 'object',
+            properties: {
+                file: {
+                    type: 'string',
+                    format: 'binary'
+                }
+            }
+        }
+    })
     async getImg(
         @Req() req: Request,
         @Res() res: Response
