@@ -20,13 +20,19 @@ import {UpdateTodoGroupDto} from "./dto/update-todoGroup-dto";
 import {TodoGroup} from "./entities/todoGroup.entity";
 import {ResponseBooleanType, SelectListResponseType} from "../../common/type/type";
 import {TodoGroupInterceptor} from "./todoGroup.interceptor";
+import {ApiCreatedResponse, ApiHeader, ApiOkResponse, ApiOperation, ApiTags} from "@nestjs/swagger";
+import {ApiOkResponseSelectList} from "../../common/swagger/customDecorator";
 
 @Controller('/todoGroup')
 @UseGuards(AuthGuard)
+@ApiTags('TodoGroup')
 export class TodoGroupController {
     constructor(private readonly todoGroupService: TodoGroupService) {}
 
     @Get()
+    @ApiOperation({ summary: '할일 그룹 조회' })
+    @ApiOkResponseSelectList(TodoGroup, '할일 그룹 조회 성공')
+    @ApiHeader({description: '토큰 코드', name: 'token-code', schema: {example: '0vf90gssnc9po8xg55z1szxa7k28eazse50uiq2i'}})
     async selectTodoGroupList(
         @Req() req: Request,
         @Query() query: SelectQueryDto
@@ -38,6 +44,12 @@ export class TodoGroupController {
     }
 
     @Post()
+    @ApiOperation({ summary: '할일 그룹 등록' })
+    @ApiCreatedResponse({
+        description: '할일 그룹 등록 성공',
+        type: TodoGroup
+    })
+    @ApiHeader({description: '토큰 코드', name: 'token-code', schema: {example: '0vf90gssnc9po8xg55z1szxa7k28eazse50uiq2i'}})
     async createTodoGroup(
         @Req() req: Request,
         @Body() body: CreateTodoGroupDto
@@ -53,6 +65,12 @@ export class TodoGroupController {
 
     @Get('/:todoGroupIdx(\\d+)')
     @UseInterceptors(TodoGroupInterceptor)
+    @ApiOperation({ summary: '할일 그룹 단일 조회' })
+    @ApiOkResponse({
+        description: '할일 그룹 단일 조회',
+        type: TodoGroup
+    })
+    @ApiHeader({description: '토큰 코드', name: 'token-code', schema: {example: '0vf90gssnc9po8xg55z1szxa7k28eazse50uiq2i'}})
     async selectOneTodoGroup(
         @Req() req: Request,
         @Param('todoGroupIdx') todoGroupIdx: number,
@@ -62,6 +80,12 @@ export class TodoGroupController {
 
     @Patch('/:todoGroupIdx(\\d+)')
     @UseInterceptors(TodoGroupInterceptor)
+    @ApiOperation({ summary: '할일 그룹 수정' })
+    @ApiOkResponse({
+        description: '할일 그룹 수정',
+        type: ResponseBooleanType
+    })
+    @ApiHeader({description: '토큰 코드', name: 'token-code', schema: {example: '0vf90gssnc9po8xg55z1szxa7k28eazse50uiq2i'}})
     async updateTodoGroup(
         @Req() req: Request,
         @Body() body: UpdateTodoGroupDto,
@@ -76,6 +100,12 @@ export class TodoGroupController {
 
     @Delete('/:todoGroupIdx(\\d+)')
     @UseInterceptors(TodoGroupInterceptor)
+    @ApiOperation({ summary: '할일 그룹 삭제' })
+    @ApiOkResponse({
+        description: '할일 그룹 삭제',
+        type: ResponseBooleanType
+    })
+    @ApiHeader({description: '토큰 코드', name: 'token-code', schema: {example: '0vf90gssnc9po8xg55z1szxa7k28eazse50uiq2i'}})
     async deleteTodoGroup(
         @Req() req: Request,
         @Param('todoGroupIdx') todoGroupIdx: number,

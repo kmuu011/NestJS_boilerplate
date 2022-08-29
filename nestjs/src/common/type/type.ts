@@ -2,6 +2,7 @@ import Buffer from "buffer";
 import {Member} from "../../modules/member/entities/member.entity";
 import {TodoGroup} from "../../modules/todoGroup/entities/todoGroup.entity";
 import {Todo} from "../../modules/todoGroup/todo/entities/todo.entity";
+import {ApiProperty} from "@nestjs/swagger";
 
 export interface FileType {
     fileType: string;
@@ -19,11 +20,27 @@ export interface ValidatorTypeObj {
     [key: string]: ValidatorType;
 }
 
-export interface SelectListResponseType<T> {
+export class SelectListResponseType<T> {
     items: T[];
+
+    @ApiProperty({
+        example: 1
+    })
     page: number;
+
+    @ApiProperty({
+        example: 10
+    })
     count: number;
+
+    @ApiProperty({
+        example: 32
+    })
     totalCount: number;
+
+    @ApiProperty({
+        example: 4
+    })
     last: number;
 }
 
@@ -33,11 +50,17 @@ export interface LocalsType {
     todoInfo?: Todo;
 }
 
-export interface LoginResponseType {
+export class LoginResponseType {
+    @ApiProperty({
+        example: 'j8quvthu89vnrodf3t9ug1wj5vf0e9z6fnmmlukc'
+    })
     tokenCode: string;
 }
 
-export interface ResponseBooleanType {
-    [key: string]: boolean;
+export class ResponseBooleanType {
+    @ApiProperty({
+        example: true
+    })
+    result: boolean;
 }
 

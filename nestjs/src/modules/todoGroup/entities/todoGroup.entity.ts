@@ -8,13 +8,16 @@ import {
     PrimaryGeneratedColumn,
 } from 'typeorm';
 import {Todo} from "../todo/entities/todo.entity";
-import {ApiProperty, ApiPropertyOptional} from "@nestjs/swagger";
+import {ApiProperty} from "@nestjs/swagger";
 
 @Entity({name: 'todo_group'})
 export class TodoGroup extends BaseEntity {
     @IsNumber()
     @PrimaryGeneratedColumn()
     @Column({primary: true, type: "int", unique: true, unsigned: true})
+    @ApiProperty({
+        example: 1
+    })
     idx: number = undefined
 
     @ManyToOne(() => Member, member => member.todoGroupList, {
@@ -27,12 +30,16 @@ export class TodoGroup extends BaseEntity {
 
     @IsString()
     @Column({type: 'varchar', length: 100, comment: '할일 그룹 제목'})
-    @ApiProperty()
+    @ApiProperty({
+        example: '할일 그룹'
+    })
     title: string = undefined;
 
     @IsNumber()
     @Column({type: "tinyint", default: 1, comment: "순서"})
-    @ApiProperty()
+    @ApiProperty({
+        example: 1
+    })
     order: number = undefined;
 
     @OneToMany(() => Todo, todo => todo.todoGroup, {
@@ -44,10 +51,16 @@ export class TodoGroup extends BaseEntity {
 
     @IsDateString()
     @Column({type: "timestamp", default: () => "now", comment: "생성 일자"})
+    @ApiProperty({
+        example: "2022-08-29T06:48:31.000Z"
+    })
     created_at: string = undefined;
 
     @IsDateString()
     @Column({type: "timestamp", default: () => "now", comment: "수정 일자"})
+    @ApiProperty({
+        example: "2022-08-29T06:48:31.000Z"
+    })
     updated_at: string = undefined;
 
     dataMigration(object: object): void {

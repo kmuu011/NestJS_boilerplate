@@ -17,6 +17,9 @@ export class Member extends BaseEntity {
     @IsNumber()
     @PrimaryGeneratedColumn()
     @Column({primary: true, type: "int", unique: true, unsigned: true})
+    @ApiProperty({
+        example: '3'
+    })
     idx: number = undefined;
 
     @NotContains('어드민')
@@ -69,6 +72,9 @@ export class Member extends BaseEntity {
 
     @IsString()
     @Column({type: 'varchar', length: 200, nullable: true, comment: '유저 프로필 이미지 키'})
+    @ApiProperty({
+        example: 'profileImgs/50uykzhuk5d0hf79_1661698886122.jpg'
+    })
     profile_img_key: string = undefined;
 
     @IsNumber()
@@ -85,25 +91,40 @@ export class Member extends BaseEntity {
 
     @IsNumber()
     @Column({type: 'tinyint', default: 0, comment: '가입 유형'})
+    @ApiProperty({
+        example: '0'
+    })
     auth_type: number = undefined;
 
     @IsString()
     @Column({type: 'varchar', length: 100, nullable: true, comment: '소셜 가입 유니크 키'})
+    @ApiProperty({
+        example: '394711'
+    })
     auth_id: string = undefined;
 
     @IsString()
     @Column({type: 'varchar', length: 30, nullable: true, comment: '접속 IP'})
+    @ApiProperty({
+        example: '127.0.0.1'
+    })
     ip: string = undefined;
 
     @IsString()
     @Column({type: 'varchar', length: 400, nullable: true, comment: '접속 환경'})
+    @ApiProperty({
+        example: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'
+    })
     user_agent: string = undefined;
 
     @IsBoolean()
-    @ApiProperty()
+    @ApiProperty({
+        example: false
+    })
     keep_check: boolean = undefined;
 
     @OneToOne(() => Token, token => token.member)
+    @ApiProperty()
     tokenInfo: Token;
 
     @OneToMany(() => TodoGroup, todoGroup => todoGroup.member)
