@@ -22,9 +22,25 @@ export interface ValidatorTypeObj {
 
 export class SelectListResponseType<T> {
     items: T[];
+
+    @ApiProperty({
+        example: 1
+    })
     page: number;
+
+    @ApiProperty({
+        example: 10
+    })
     count: number;
+
+    @ApiProperty({
+        example: 32
+    })
     totalCount: number;
+
+    @ApiProperty({
+        example: 4
+    })
     last: number;
 }
 

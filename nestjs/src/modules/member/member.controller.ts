@@ -26,7 +26,7 @@ import {staticPath, multerOptions} from "../../../config/config";
 import * as validator from "../../../libs/validator";
 import {FileType, LoginResponseType, ResponseBooleanType} from "../../common/type/type";
 import {Message} from "../../../libs/message";
-import {ApiBody, ApiConsumes, ApiCreatedResponse, ApiHeader, ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
+import {ApiBody, ApiConsumes, ApiCreatedResponse, ApiHeader, ApiOperation, ApiOkResponse, ApiTags} from "@nestjs/swagger";
 import {memberAuthResponse} from "../../common/swagger/customResponse";
 
 const duplicateCheckKeys = ['id', 'nickname', 'email'];
@@ -42,7 +42,7 @@ export class MemberController {
     @UseGuards(AuthGuard)
     @HttpCode(200)
     @ApiOperation({ summary: 'tokenCode 체크', description: 'tokenCode가 유효한지 체크' })
-    @ApiResponse({
+    @ApiOkResponse({
         description: '토큰 코드 체크 완료', status: 200,
         type: memberAuthResponse
     })
@@ -60,7 +60,7 @@ export class MemberController {
     @Post('/login')
     @HttpCode(200)
     @ApiOperation({ summary: '로그인' })
-    @ApiResponse({
+    @ApiOkResponse({
         description: '로그인 성공', status: 200,
         type: LoginResponseType
     })
@@ -101,7 +101,7 @@ export class MemberController {
     @Patch('/')
     @UseGuards(AuthGuard)
     @ApiOperation({ summary: '회원정보 수정' })
-    @ApiResponse({
+    @ApiOkResponse({
         description: '회원정보 수정 완료',
         status: 200,
         type: ResponseBooleanType
@@ -136,7 +136,7 @@ export class MemberController {
 
     @Get('/duplicateCheck')
     @ApiOperation({ summary: '중복 체크' })
-    @ApiResponse({
+    @ApiOkResponse({
         description: 'true: 중복, false: 중복 아님 사용가능 ',
         status: 200,
         type: ResponseBooleanType,
@@ -154,7 +154,7 @@ export class MemberController {
     @Delete('/signOut')
     @UseGuards(AuthGuard)
     @ApiOperation({summary: '회원 탈퇴', description: '탈퇴하고 모든 데이터가 삭제됨.'})
-    @ApiResponse({
+    @ApiOkResponse({
         status: 200,
         type: ResponseBooleanType,
     })
@@ -185,7 +185,7 @@ export class MemberController {
         }
     })
     @ApiOperation({ summary: '프로필 사진 변경' })
-    @ApiResponse({
+    @ApiOkResponse({
         description: '프로필 사진 변경 완료',
         status: 200,
         type: ResponseBooleanType,
@@ -208,7 +208,7 @@ export class MemberController {
     @UseGuards(AuthGuard)
     @ApiHeader({description: '토큰 코드', name: 'token-code'})
     @ApiOperation({ summary: '프로필 사진 삭제' })
-    @ApiResponse({
+    @ApiOkResponse({
         description: '프로필 사진 삭제 완료',
         status: 200,
         type: ResponseBooleanType,
@@ -228,7 +228,7 @@ export class MemberController {
     @UseGuards(AuthGuard)
     @ApiHeader({description: '토큰 코드', name: 'token-code'})
     @ApiOperation({ summary: '프로필 사진 다운로드' })
-    @ApiResponse({
+    @ApiOkResponse({
         description: '다운로드 완료',
         status: 200,
         schema: {

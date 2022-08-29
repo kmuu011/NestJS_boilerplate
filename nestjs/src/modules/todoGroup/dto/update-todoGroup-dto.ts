@@ -9,6 +9,8 @@ export class UpdateTodoGroupDto extends PickType(
 
     @IsNumber()
     @IsOptional()
-    @ApiPropertyOptional()
+    @ApiPropertyOptional({
+        example: 1
+    })
     readonly order: number;
 }
