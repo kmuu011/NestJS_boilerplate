@@ -46,7 +46,7 @@ export class MemberController {
         description: '토큰 코드 체크 완료', status: 200,
         type: memberAuthResponse
     })
-    @ApiHeader({description: '토큰 코드', name: 'token-code'})
+    @ApiHeader({description: '토큰 코드', name: 'token-code', schema: {example: '0vf90gssnc9po8xg55z1szxa7k28eazse50uiq2i'}})
     async auth(
         @Req() req: Request
     ): Promise<Member> {
@@ -106,7 +106,7 @@ export class MemberController {
         status: 200,
         type: ResponseBooleanType
     })
-    @ApiHeader({description: '토큰 코드', name: 'token-code'})
+    @ApiHeader({description: '토큰 코드', name: 'token-code', schema: {example: '0vf90gssnc9po8xg55z1szxa7k28eazse50uiq2i'}})
     async updateMember(
         @Req() req: Request,
         @Body() updateMemberDto: UpdateMemberDto
@@ -158,10 +158,13 @@ export class MemberController {
         status: 200,
         type: ResponseBooleanType,
     })
-    @ApiHeader({description: '토큰 코드', name: 'token-code'})
+    @ApiHeader({description: '토큰 코드', name: 'token-code', schema: {example: '0vf90gssnc9po8xg55z1szxa7k28eazse50uiq2i'}})
     async signOut(
         @Req() req: Request,
     ): Promise<ResponseBooleanType> {
+        if(req.locals.memberInfo.id === 'tts') {
+            throw Message.CUSTOM_ERROR('테스트 전용 계정은 탈퇴할 수 없습니다.');
+        }
         await this.memberService.signOut(req.locals.memberInfo);
 
         return {
@@ -190,7 +193,7 @@ export class MemberController {
         status: 200,
         type: ResponseBooleanType,
     })
-    @ApiHeader({description: '토큰 코드', name: 'token-code'})
+    @ApiHeader({description: '토큰 코드', name: 'token-code', schema: {example: '0vf90gssnc9po8xg55z1szxa7k28eazse50uiq2i'}})
     async updateImg(
         @Req() req: Request,
         @UploadedFile() file
@@ -206,7 +209,7 @@ export class MemberController {
 
     @Delete('img')
     @UseGuards(AuthGuard)
-    @ApiHeader({description: '토큰 코드', name: 'token-code'})
+    @ApiHeader({description: '토큰 코드', name: 'token-code', schema: {example: '0vf90gssnc9po8xg55z1szxa7k28eazse50uiq2i'}})
     @ApiOperation({ summary: '프로필 사진 삭제' })
     @ApiOkResponse({
         description: '프로필 사진 삭제 완료',
@@ -226,7 +229,7 @@ export class MemberController {
     //업로드한 이미지 다운로드 테스트
     @Get('img')
     @UseGuards(AuthGuard)
-    @ApiHeader({description: '토큰 코드', name: 'token-code'})
+    @ApiHeader({description: '토큰 코드', name: 'token-code', schema: {example: '0vf90gssnc9po8xg55z1szxa7k28eazse50uiq2i'}})
     @ApiOperation({ summary: '프로필 사진 다운로드' })
     @ApiOkResponse({
         description: '다운로드 완료',
