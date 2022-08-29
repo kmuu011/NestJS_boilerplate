@@ -24,6 +24,7 @@ import {TodoInterceptor} from "./todo.interceptor";
 import {TodoGroupInterceptor} from "../todoGroup.interceptor";
 import {ApiHeader, ApiOkResponse, ApiOperation, ApiParam, ApiTags} from "@nestjs/swagger";
 import {ApiOkResponseSelectList} from "../../../common/swagger/customDecorator";
+import {testTokenCode} from "../../../../config/config";
 
 @Controller('/todoGroup/:todoGroupIdx(\\d+)/todo')
 @UseInterceptors(TodoGroupInterceptor)
@@ -38,7 +39,7 @@ export class TodoController {
     @Get('/')
     @ApiOperation({summary: '할일 조회'})
     @ApiOkResponseSelectList(Todo, '할일 조회 성공')
-    @ApiHeader({description: '토큰 코드', name: 'token-code', schema: {example: '0vf90gssnc9po8xg55z1szxa7k28eazse50uiq2i'}})
+    @ApiHeader({description: '토큰 코드', name: 'token-code', schema: {example: testTokenCode}})
     @ApiParam({type: 'number', name: 'todoGroupIdx'})
     async selectTodolist(
         @Req() req: Request,
@@ -53,7 +54,7 @@ export class TodoController {
     @Post('/')
     @ApiOperation({summary: '할일 등록'})
     @ApiOkResponse({description: '할일 등록 성공', type: Todo})
-    @ApiHeader({description: '토큰 코드', name: 'token-code', schema: {example: '0vf90gssnc9po8xg55z1szxa7k28eazse50uiq2i'}})
+    @ApiHeader({description: '토큰 코드', name: 'token-code', schema: {example: testTokenCode}})
     @ApiParam({type: 'number', name: 'todoGroupIdx'})
     async createTodo(
         @Req() req: Request,
@@ -68,7 +69,7 @@ export class TodoController {
     @UseInterceptors(TodoInterceptor)
     @ApiOperation({summary: '할일 수정'})
     @ApiOkResponse({description: '할일 수정 성공', type: ResponseBooleanType})
-    @ApiHeader({description: '토큰 코드', name: 'token-code', schema: {example: '0vf90gssnc9po8xg55z1szxa7k28eazse50uiq2i'}})
+    @ApiHeader({description: '토큰 코드', name: 'token-code', schema: {example: testTokenCode}})
     @ApiParam({type: 'number', name: 'todoGroupIdx'})
     @ApiParam({type: 'number', name: 'todoIdx'})
     async updateTodo(
@@ -86,7 +87,7 @@ export class TodoController {
     @UseInterceptors(TodoInterceptor)
     @ApiOperation({summary: '할일 삭제'})
     @ApiOkResponse({description: '할일 삭제 성공', type: ResponseBooleanType})
-    @ApiHeader({description: '토큰 코드', name: 'token-code', schema: {example: '0vf90gssnc9po8xg55z1szxa7k28eazse50uiq2i'}})
+    @ApiHeader({description: '토큰 코드', name: 'token-code', schema: {example: testTokenCode}})
     @ApiParam({type: 'number', name: 'todoGroupIdx'})
     @ApiParam({type: 'number', name: 'todoIdx'})
     async deleteTodo(
