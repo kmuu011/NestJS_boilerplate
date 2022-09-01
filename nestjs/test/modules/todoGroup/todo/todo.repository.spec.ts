@@ -84,7 +84,7 @@ describe('Todo Repository', () => {
 
             const notCompletedOne: Todo
                 = await todoRepository.selectOne(savedTodoGroupInfo, createdTodoInfo.idx);
-            expect(notCompletedOne.completed_at === null).toBeTruthy();
+            expect(notCompletedOne.completedAt === null).toBeTruthy();
 
             updateTodoDto = {
                 content: '완료된 할일',
@@ -97,7 +97,7 @@ describe('Todo Repository', () => {
 
             const completedOne: Todo
                 = await todoRepository.selectOne(savedTodoGroupInfo, createdTodoInfo.idx);
-            expect(completedOne.completed_at !== null).toBeTruthy();
+            expect(completedOne.completedAt !== null).toBeTruthy();
         });
     });
 

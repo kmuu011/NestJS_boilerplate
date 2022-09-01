@@ -77,7 +77,7 @@ export const getUpdateObject = <T>(keys: string[], entity: T, includeUpdateAt: b
     const obj: any = {};
 
     if(includeUpdateAt){
-        obj.updated_at = () => "now()";
+        obj.updatedAt = () => "now()";
     }
 
     for (const key of keys){

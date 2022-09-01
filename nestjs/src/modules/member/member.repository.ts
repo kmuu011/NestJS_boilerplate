@@ -2,8 +2,8 @@ import {Member} from "./entities/member.entity";
 import {DeleteResult, EntityRepository, QueryRunner, Repository, UpdateResult} from "typeorm";
 import {getUpdateObject} from "../../../libs/utils";
 
-const memberSelectKeys: any = ["idx", "id", "nickname", "email", "admin", "profile_img_key", "auth_type", "ip", "user_agent", "created_at", "updated_at"];
-const memberUpdateKeys: string[] = ["nickname", "email", "profile_img_key", "ip", "user_agent", "password"];
+const memberSelectKeys: any = ["idx", "id", "nickname", "email", "admin", "profileImgKey", "authType", "ip", "userAgent", "createdAt", "updatedAt"];
+const memberUpdateKeys: string[] = ["nickname", "email", "profileImgKey", "ip", "userAgent", "password"];
 
 @EntityRepository(Member)
 export class MemberRepository extends Repository<Member> {

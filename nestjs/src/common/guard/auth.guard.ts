@@ -28,8 +28,8 @@ export class AuthGuard implements CanActivate {
 
         const memberInfo = await this.tokenRepository.createQueryBuilder('t')
             .select([
-                'm.idx', 'm.id', 'm.nickname', 'm.email', 'm.profile_img_key', 'm.created_at',
-                'm.ip', 'm.user_agent', 'm.auth_type', 'm.auth_id',
+                'm.idx', 'm.id', 'm.nickname', 'm.email', 'm.profileImgKey', 'm.createdAt',
+                'm.ip', 'm.userAgent', 'm.authType', 'm.authId',
                 't.idx', 't.code', 't.token'
             ])
             .leftJoin('t.member', 'm')
@@ -37,7 +37,7 @@ export class AuthGuard implements CanActivate {
                 'AND t.code = :code', {code: tokenCode})
             .getOne();
 
-        if(memberInfo?.member?.id !== 'tts' && (!memberInfo || (serverType !== 'localDevelopment' && (memberInfo.member.ip !== ip || memberInfo.member.user_agent !== userAgent)))){
+        if(memberInfo?.member?.id !== 'tts' && (!memberInfo || (serverType !== 'localDevelopment' && (memberInfo.member.ip !== ip || memberInfo.member.userAgent !== userAgent)))){
             throw Message.UNAUTHORIZED;
         }
 
@@ -48,9 +48,9 @@ export class AuthGuard implements CanActivate {
 
         const jwtPayload = await member.decodeToken();
 
-        if(jwtPayload.keep_check === true && ((now-jwtPayload.time)/1000) > auth.tokenRefreshTime){
+        if(jwtPayload.keepCheck === true && ((now-jwtPayload.time)/1000) > auth.tokenRefreshTime){
             member.dataMigration({
-                keep_check: jwtPayload.keep_check
+                keepCheck: jwtPayload.keepCheck
             });
 
             const token: Token = await this.tokenRepository.select(undefined, member);
