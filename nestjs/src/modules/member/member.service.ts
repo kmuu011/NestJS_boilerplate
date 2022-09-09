@@ -31,7 +31,7 @@ export class MemberService {
     async auth(headers): Promise<void> {
         const member: Member = new Member();
         member.dataMigration({
-            user_agent: headers["user_agent"],
+            userAgent: headers["userAgent"],
             ip: headers["ip"]
         });
 
@@ -44,7 +44,7 @@ export class MemberService {
 
     async login(loginMemberDto: LoginMemberDto, headers): Promise<Member> {
         const member: Member = new Member();
-        const {ip, "user-agent": user_agent} = headers;
+        const {ip, "user-agent": userAgent} = headers;
         member.dataMigration(loginMemberDto);
 
         member.passwordEncrypt();
@@ -64,7 +64,7 @@ export class MemberService {
 
         member.dataMigration({
             ...loginResult,
-            ...{ip, user_agent}
+            ...{ip, userAgent}
         });
 
         const newToken: string = member.createToken();
@@ -130,7 +130,7 @@ export class MemberService {
     async updateMember(updateMemberDto: UpdateMemberDto, member: Member): Promise<UpdateResult> {
         const memberInfo: Member = await this.memberRepository.select(member, undefined,true);
 
-        if(memberInfo.auth_type === 0) {
+        if(memberInfo.authType === 0) {
             updateMemberDto.originalPassword = encryptPassword(updateMemberDto.originalPassword);
 
             if (updateMemberDto.originalPassword !== memberInfo.password) {
@@ -164,14 +164,14 @@ export class MemberService {
     }
 
     async updateImg(file: FileType, member: Member): Promise<string> {
-        const originalProfileImgKey = member.profile_img_key;
+        const originalProfileImgKey = member.profileImgKey;
 
-        const profileImgKey = filePath.profileImg + await createKey<MemberRepository>(this.memberRepository, 'profile_img_key', 16) + '_' + Date.now() + '.' + file.fileType;
+        const profileImgKey = filePath.profileImg + await createKey<MemberRepository>(this.memberRepository, 'profileImgKey', 16) + '_' + Date.now() + '.' + file.fileType;
 
         const updateMember: Member = new Member();
 
         updateMember.dataMigration({
-            profile_img_key: profileImgKey,
+            profileImgKey: profileImgKey,
             idx: member.idx
         });
 
@@ -191,9 +191,9 @@ export class MemberService {
     }
 
     async deleteImg(member: Member): Promise<void> {
-        const originalProfileImgKey = member.profile_img_key;
+        const originalProfileImgKey = member.profileImgKey;
 
-        member.dataMigration({profile_img_key: null});
+        member.dataMigration({profileImgKey: null});
 
         const updateResult = await this.memberRepository.updateMember(member);
 

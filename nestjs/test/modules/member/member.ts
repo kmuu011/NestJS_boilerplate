@@ -57,7 +57,7 @@ export const getLoginMemberDto = (): LoginMemberDto => {
     return {
         id: savedMemberData.id,
         password: savedMemberData.password,
-        keep_check: false
+        keepCheck: false
     };
 }
 

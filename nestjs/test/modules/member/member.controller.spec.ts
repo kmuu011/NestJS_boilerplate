@@ -99,14 +99,14 @@ describe('Member Controller', () => {
                 const dupCheckFalse: ResponseBooleanType
                     = await memberController.duplicateCheck(duplicateCheckDto);
 
-                expect(!dupCheckFalse.usable).toBeTruthy();
+                expect(!dupCheckFalse.result).toBeTruthy();
 
                 duplicateCheckDto = {type: i, value: randomString};
 
                 const dupCheckTrue: ResponseBooleanType
                     = await memberController.duplicateCheck(duplicateCheckDto);
 
-                expect(!dupCheckTrue.usable).toBeFalsy();
+                expect(!dupCheckTrue.result).toBeFalsy();
             }
         });
     });

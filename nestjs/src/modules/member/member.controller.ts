@@ -123,7 +123,7 @@ export class MemberController {
             }
         }
 
-        if (memberInfo.auth_type === 0 && updateMemberDto.originalPassword === undefined) {
+        if (memberInfo.authType === 0 && updateMemberDto.originalPassword === undefined) {
             throw Message.INVALID_PARAM('originalPassword');
         }
 
@@ -249,7 +249,7 @@ export class MemberController {
         @Res() res: Response
     ): Promise<void> {
         const member: Member = req.locals.memberInfo;
-        const profileImgKey = member.profile_img_key;
+        const profileImgKey = member.profileImgKey;
 
         res.download(staticPath + profileImgKey, 'test.jpg');
     }

@@ -116,7 +116,7 @@ describe('Member Service', () => {
             const profileImgPath = staticPath + profileImgKey;
 
             savedMemberInfo.dataMigration(
-                {profile_img_key: profileImgKey}
+                {profileImgKey: profileImgKey}
             );
 
             expect(existsSync(profileImgPath)).toBeTruthy();

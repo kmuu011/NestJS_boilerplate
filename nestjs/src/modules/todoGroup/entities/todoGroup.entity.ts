@@ -54,14 +54,14 @@ export class TodoGroup extends BaseEntity {
     @ApiProperty({
         example: "2022-08-29T06:48:31.000Z"
     })
-    created_at: string = undefined;
+    createdAt: string = undefined;
 
     @IsDateString()
     @Column({type: "timestamp", default: () => "now", comment: "수정 일자"})
     @ApiProperty({
         example: "2022-08-29T06:48:31.000Z"
     })
-    updated_at: string = undefined;
+    updatedAt: string = undefined;
 
     dataMigration(object: object): void {
         for (let k in new TodoGroup()) {

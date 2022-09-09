@@ -43,7 +43,7 @@ export class Member extends BaseEntity {
     password: string = undefined;
 
     @IsBoolean()
-    password_encrypted: boolean = undefined;
+    passwordEncrypted: boolean = undefined;
 
     @NotContains('어드민')
     @NotContains('admin')
@@ -75,7 +75,7 @@ export class Member extends BaseEntity {
     @ApiProperty({
         example: 'profileImgs/50uykzhuk5d0hf79_1661698886122.jpg'
     })
-    profile_img_key: string = undefined;
+    profileImgKey: string = undefined;
 
     @IsNumber()
     @Column({type: 'tinyint', default: 0, unsigned: true, comment: '관리자 유무'})
@@ -83,25 +83,25 @@ export class Member extends BaseEntity {
 
     @CreateDateColumn()
     @Column({type: 'datetime', default: () => "now", comment: '회원가입 일자'})
-    created_at: string = undefined;
+    createdAt: string = undefined;
 
     @UpdateDateColumn()
     @Column({type: 'datetime', default: () => "now", comment: '수정 일자'})
-    updated_at: string = undefined;
+    updatedAt: string = undefined;
 
     @IsNumber()
     @Column({type: 'tinyint', default: 0, comment: '가입 유형'})
     @ApiProperty({
         example: '0'
     })
-    auth_type: number = undefined;
+    authType: number = undefined;
 
     @IsString()
     @Column({type: 'varchar', length: 100, nullable: true, comment: '소셜 가입 유니크 키'})
     @ApiProperty({
         example: '394711'
     })
-    auth_id: string = undefined;
+    authId: string = undefined;
 
     @IsString()
     @Column({type: 'varchar', length: 30, nullable: true, comment: '접속 IP'})
@@ -115,13 +115,13 @@ export class Member extends BaseEntity {
     @ApiProperty({
         example: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'
     })
-    user_agent: string = undefined;
+    userAgent: string = undefined;
 
     @IsBoolean()
     @ApiProperty({
         example: false
     })
-    keep_check: boolean = undefined;
+    keepCheck: boolean = undefined;
 
     @OneToOne(() => Token, token => token.member)
     @ApiProperty()
@@ -131,9 +131,9 @@ export class Member extends BaseEntity {
     todoGroupList: TodoGroup[];
 
     passwordEncrypt(): void {
-        if (this.password_encrypted !== true) {
+        if (this.passwordEncrypted !== true) {
             this.password = encryptPassword(this.password)
-            this.password_encrypted = true;
+            this.passwordEncrypted = true;
         }
     }
 
@@ -143,9 +143,9 @@ export class Member extends BaseEntity {
             id: this.id,
             nickname: this.nickname,
             ip: this.ip,
-            user_agent: this.user_agent,
-            keep_check: this.keep_check,
-            created_at: this.created_at,
+            userAgent: this.userAgent,
+            keepCheck: this.keepCheck,
+            createdAt: this.createdAt,
             time: Date.now()
         }
     }

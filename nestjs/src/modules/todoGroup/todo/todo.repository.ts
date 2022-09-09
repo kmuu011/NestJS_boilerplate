@@ -17,13 +17,13 @@ export class TodoRepository extends Repository<Todo> {
 
         if (page && count) {
             query = query
-                .skip(page - 1)
+                .skip((page - 1)*count)
                 .take(count);
         }
 
         return await query
             .where({todoGroup})
-            .orderBy('created_at')
+            .orderBy('createdAt')
             .getManyAndCount();
     }
 
@@ -35,10 +35,10 @@ export class TodoRepository extends Repository<Todo> {
         const obj = getUpdateObject(["content"], todo, true);
 
         if (updateTodoDto.complete !== undefined) {
-            if (updateTodoDto.complete === true && !todo.completed_at) {
-                obj.completed_at = () => "now()";
-            } else if(updateTodoDto.complete === false && todo.completed_at){
-                obj.completed_at = undefined;
+            if (updateTodoDto.complete === true && !todo.completedAt) {
+                obj.completedAt = () => "now()";
+            } else if(updateTodoDto.complete === false && todo.completedAt){
+                obj.completedAt = undefined;
             }
         }
 

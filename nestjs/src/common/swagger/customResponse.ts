@@ -5,8 +5,8 @@ export class memberAuthResponse extends PickType(
     Member,
     [
         'idx', 'id', 'nickname', 'email',
-        'profile_img_key', 'created_at',
-        'auth_type', 'ip', 'user_agent',
+        'profileImgKey', 'createdAt',
+        'authType', 'ip', 'userAgent',
         'tokenInfo'
     ] as const
 ) {}

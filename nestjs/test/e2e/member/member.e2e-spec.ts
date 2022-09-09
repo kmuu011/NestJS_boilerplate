@@ -56,7 +56,7 @@ describe('MemberController (e2e)', () => {
                 .send({
                     id: createMemberInfo.id,
                     password: createMemberInfo.password,
-                    keep_check: false
+                    keepCheck: false
                 })
                 .expect(200);
 
@@ -100,14 +100,14 @@ describe('MemberController (e2e)', () => {
                     .get('/member/duplicateCheck?type=0&value=' +savedMemberInfo.id)
                     .expect(200);
 
-                expect(dupCheckFalseResponse.body.usable).toBeFalsy();
+                expect(dupCheckFalseResponse.body.result).toBeFalsy();
 
                 const dupCheckTrueResponse
                     = await request(app.getHttpServer())
                     .get('/member/duplicateCheck?type=0&value=randomString')
                     .expect(200);
 
-                expect(dupCheckTrueResponse.body.usable).toBeTruthy();
+                expect(dupCheckTrueResponse.body.result).toBeTruthy();
             });
 
             it('nickname', async () => {
@@ -116,14 +116,14 @@ describe('MemberController (e2e)', () => {
                     .get('/member/duplicateCheck?type=1&value=' + savedMemberInfo.nickname)
                     .expect(200);
 
-                expect(dupCheckFalseResponse.body.usable).toBeFalsy();
+                expect(dupCheckFalseResponse.body.result).toBeFalsy();
 
                 const dupCheckTrueResponse
                     = await request(app.getHttpServer())
                     .get('/member/duplicateCheck?type=1&value=randomString')
                     .expect(200);
 
-                expect(dupCheckTrueResponse.body.usable).toBeTruthy();
+                expect(dupCheckTrueResponse.body.result).toBeTruthy();
             });
 
             it('email', async () => {
@@ -132,14 +132,14 @@ describe('MemberController (e2e)', () => {
                     .get('/member/duplicateCheck?type=2&value=' + savedMemberInfo.email)
                     .expect(200);
 
-                expect(dupCheckFalseResponse.body.usable).toBeFalsy();
+                expect(dupCheckFalseResponse.body.result).toBeFalsy();
 
                 const dupCheckTrueResponse
                     = await request(app.getHttpServer())
                     .get('/member/duplicateCheck?type=2&value=randomSting')
                     .expect(200);
 
-                expect(dupCheckTrueResponse.body.usable).toBeTruthy();
+                expect(dupCheckTrueResponse.body.result).toBeTruthy();
             });
         });
 

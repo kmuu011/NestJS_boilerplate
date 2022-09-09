@@ -60,7 +60,7 @@ function captureSentry (status: number, api: string, exception: HttpException, r
 
 @Catch(HttpException)
 export class ControllableExceptionFilter implements ExceptionFilter {
-    async catch(exception: HttpException, host: ArgumentsHost) {
+    async catch(exception: HttpException, host: ArgumentsHost): Promise<void> {
         const ctx = host.switchToHttp();
         const res = ctx.getResponse<Response>();
         const req = ctx.getRequest<Request>();
@@ -84,7 +84,7 @@ export class ControllableExceptionFilter implements ExceptionFilter {
 
 @Catch()
 export class OutOfControlExceptionFilter implements ExceptionFilter {
-    async catch(exception: any, host: ArgumentsHost) {
+    async catch(exception: any, host: ArgumentsHost): Promise<void> {
         const ctx = host.switchToHttp();
         const res = ctx.getResponse<Response>();
         const req = ctx.getRequest<Request>();
