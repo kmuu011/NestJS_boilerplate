@@ -17,7 +17,7 @@ export class TodoGroupRepository extends Repository<TodoGroup> {
 
         if(page && count){
             query = query
-                .skip(page-1)
+                .skip((page-1)*count)
                 .take(count);
         }
 
