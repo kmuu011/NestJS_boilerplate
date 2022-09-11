@@ -27,7 +27,7 @@ import * as validator from "../../../libs/validator";
 import {FileType, LoginResponseType, ResponseBooleanType} from "../../common/type/type";
 import {Message} from "../../../libs/message";
 import {ApiBody, ApiConsumes, ApiCreatedResponse, ApiHeader, ApiOperation, ApiOkResponse, ApiTags} from "@nestjs/swagger";
-import {memberAuthResponse} from "../../common/swagger/customResponse";
+import {memberAuthResponse} from "./swagger/customResponse";
 
 const duplicateCheckKeys = ['id', 'nickname', 'email'];
 
