@@ -23,7 +23,7 @@ export class TodoRepository extends Repository<Todo> {
 
         return await query
             .where({todoGroup})
-            .orderBy('createdAt')
+            .orderBy('createdAt', 'DESC')
             .getManyAndCount();
     }
 
