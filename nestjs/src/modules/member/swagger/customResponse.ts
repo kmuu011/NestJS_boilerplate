@@ -1,5 +1,5 @@
 import {PickType} from "@nestjs/swagger";
-import {Member} from "../../modules/member/entities/member.entity";
+import {Member} from "../entities/member.entity";
 
 export class memberAuthResponse extends PickType(
     Member,

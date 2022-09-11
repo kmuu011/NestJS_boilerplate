@@ -47,7 +47,7 @@ export class TodoGroup extends BaseEntity {
         onUpdate: "CASCADE"
     })
     @JoinColumn()
-    todoList: Todo[] = undefined;
+    todoList: Todo[];
 
     @IsDateString()
     @Column({type: "timestamp", default: () => "now", comment: "생성 일자"})

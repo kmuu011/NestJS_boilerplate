@@ -8,11 +8,13 @@ import {Message} from "../../../libs/message";
 import {UpdateTodoGroupDto} from "./dto/update-todoGroup-dto";
 import {SelectListResponseType} from "../../common/type/type";
 import {InjectRepository} from "@nestjs/typeorm";
+import {TodoRepository} from "./todo/todo.repository";
 
 @Injectable()
 export class TodoGroupService {
     constructor(
-        @InjectRepository(TodoGroupRepository) private readonly todoGroupRepository: TodoGroupRepository
+        @InjectRepository(TodoGroupRepository) private readonly todoGroupRepository: TodoGroupRepository,
+        @InjectRepository(TodoRepository) private readonly todoRepository: TodoRepository
     ) {}
 
     async arrangeOrder(member: Member, todoGroup?: TodoGroup, order?: number): Promise<void> {
@@ -50,6 +52,10 @@ export class TodoGroupService {
 
     async selectList(member: Member, page: number, count: number): Promise<SelectListResponseType<TodoGroup>> {
         const result = await this.todoGroupRepository.selectList(member, page, count);
+
+        for (const r of result[0]) {
+            r.todoList = (await this.todoRepository.selectList(r, 1, 5))[0];
+        }
 
         return {
             items: result[0],
