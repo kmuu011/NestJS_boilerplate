@@ -40,7 +40,8 @@ async function bootstrap() {
 
     const config = new DocumentBuilder()
         .setTitle('Nestjs Boiler Plate Example')
-        .setDescription('The Nestjs Boiler Plate API description')
+        .setDescription('API호출시 api/를 붙여주세요.' +
+            '<br/> ex) /api/member/auth')
         .setVersion(process.env.npm_package_version)
         .build();
     const document = SwaggerModule.createDocument(app, config);
@@ -56,7 +57,7 @@ async function bootstrap() {
 
     app.useGlobalPipes(new ValidationPipe(validationOptions));
 
-    // app.setGlobalPrefix('api');
+    app.setGlobalPrefix('api');
 
     // 예상 범위 밖의 예외 필터
     app.useGlobalFilters(new OutOfControlExceptionFilter());
