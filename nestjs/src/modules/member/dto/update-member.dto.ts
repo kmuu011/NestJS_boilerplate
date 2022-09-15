@@ -16,7 +16,6 @@ export class UpdateMemberDto extends PickType(
 
     @IsNotEmpty()
     @IsString()
-    @IsOptional()
     @ApiPropertyOptional({
         example: 'tts0000'
     })
