@@ -14,10 +14,16 @@ import {TodoGroupRepository} from "./modules/todoGroup/todoGroup.repository";
 import * as Sentry from '@sentry/node';
 import { SentryModule } from './sentry/sentry.module';
 import '@sentry/tracing';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import {join} from "path";
 
 @Global()
 @Module({
     imports: [
+        ServeStaticModule.forRoot({
+            rootPath: join(__dirname, '..','..', 'static'),
+            exclude: ['/api*']
+        }),
         SentryModule.forRoot(sentry),
         TypeOrmModule.forRoot(typeOrmOptions),
         TypeOrmModule.forFeature([
