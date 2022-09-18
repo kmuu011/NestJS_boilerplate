@@ -1,5 +1,5 @@
 # 프로젝트 설명
-간단한 Todo List 기능의 CRUD API가 구현되어있는 
+간단한 Todo List 기능과 로그인 및 회원가입 기능이 구현되어있는 
 
 Nest JS 보일러 플레이트
 
@@ -18,13 +18,10 @@ http://127.0.0.1:8081/api-docs
 |------|-----------|
 | test | test0000  |
 
-# 설치 및 실행
+# 실행 방법
 ```bash
 #nestjs 폴더로 이동
 cd nestjs
-
-#modules 설치
-npm install
 
 #서버 실행
 npm run start:dev
