@@ -1,11 +1,42 @@
 # 프로젝트 설명
-Nest JS 기반의 프로젝트입니다.
+간단한 Todo List 기능과 로그인 및 회원가입 기능이 구현되어있는 
 
-# 환경 설정
-| 프로그램 | 버전 |
-| ------ | ------ |
-| Node.js | v14.15.1 |
-| npm | v6.14.8 |
+Nest JS 보일러 플레이트
+
+### DB 환경
+Mysql과 TypeORM으로 구성
+
+### Error Log 환경
+sentry로 구성
+
+# Api 문서화 환경 및 접속 방법
+Swagger로 구성
+
+http://127.0.0.1:8081/api-docs
+
+| 아이디  | 비밀번호      |
+|------|-----------|
+| test | test0000  |
+
+# 실행 방법
+```bash
+#nestjs 폴더로 이동
+cd nestjs
+
+#서버 실행
+npm run start:dev
+```
+
+### docker-compose 환경에서 실행
+```bash
+# nestjs_boilerplate 폴더에서 실행할 것
+docker-compose -f docker-compose-dev up
+```
+
+## 주의사항
+nestjs/config/example.ts 파일의 이름을
+
+nestjs/config/config.ts로 변경해서 사용해야함.
 
 # 커밋 타입
 | 키워드      | 설명                               |
