@@ -3,10 +3,10 @@
 
 Nest JS 보일러 플레이트
 
-### DB 환경
+### DB
 Mysql과 TypeORM으로 구성
 
-### Error Log 환경
+### Error Logging
 sentry로 구성
 
 # Api 문서화 환경 및 접속 방법
