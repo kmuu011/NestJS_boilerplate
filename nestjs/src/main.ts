@@ -46,7 +46,6 @@ async function bootstrap() {
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api-docs', app, document);
 
-
     await sentrySettingRun();
 
     app.use(Handlers.requestHandler());
