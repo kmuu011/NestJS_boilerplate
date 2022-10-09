@@ -29,6 +29,7 @@ const validationOptions = {
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, appOptions);
     app.use(json({ limit: '50mb' }));
+    app.setGlobalPrefix('api');
 
     app.use(
         ['/api-docs'],
@@ -40,8 +41,6 @@ async function bootstrap() {
 
     const config = new DocumentBuilder()
         .setTitle('Nestjs Boiler Plate Example')
-        .setDescription('API호출시 api/를 붙여주세요.' +
-            '<br/> ex) /api/member/auth')
         .setVersion(process.env.npm_package_version)
         .build();
     const document = SwaggerModule.createDocument(app, config);
@@ -56,8 +55,6 @@ async function bootstrap() {
     // app.useGlobalInterceptors(new TestInterceptor());
 
     app.useGlobalPipes(new ValidationPipe(validationOptions));
-
-    app.setGlobalPrefix('api');
 
     // 예상 범위 밖의 예외 필터
     app.useGlobalFilters(new OutOfControlExceptionFilter());
